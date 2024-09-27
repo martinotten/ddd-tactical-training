@@ -122,7 +122,7 @@ public class BusinessRulesTest {
         scoringErgebnis.setPunkte(new Punkte(120));  // genau 120 Punkte
         assertEquals(ScoringFarbe.GRUEN, scoringErgebnis.berechneErgebnis(), "120 oder mehr Punkte sollten ein grünes Scoring-Ergebnis liefern.");
 
-        scoring.setPunkte(new Punkte(130));  // mehr als 120 Punkte
+        scoringErgebnis.setPunkte(new Punkte(130));  // mehr als 120 Punkte
         assertEquals(ScoringFarbe.GRUEN, scoringErgebnis.berechneErgebnis(), "Mehr als 120 Punkte sollten ein grünes Scoring-Ergebnis liefern.");
     }
 

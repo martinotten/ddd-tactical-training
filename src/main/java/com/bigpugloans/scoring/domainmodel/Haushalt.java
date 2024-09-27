@@ -6,8 +6,16 @@ public class Haushalt {
     private Waehrungsbetrag monatlicheDarlehensBelastungen;
     private Waehrungsbetrag monatlicheRate;
     private Waehrungsbetrag monatlicheSparen;
-
     private Waehrungsbetrag monatlicherUeberschussOhneTilgungen;
+
+    public Haushalt() {
+        this.monatlicheEinnahmen = new Waehrungsbetrag(0);
+        this.monatlicheAusgaben = new Waehrungsbetrag(0);
+        this.monatlicheDarlehensBelastungen = new Waehrungsbetrag(0);
+        this.monatlicheRate = new Waehrungsbetrag(0);
+        this.monatlicheSparen = new Waehrungsbetrag(0);
+        this.monatlicherUeberschussOhneTilgungen = new Waehrungsbetrag(0);
+    }
 
     public void setMonatlicheDarlehensBelastungen(Waehrungsbetrag monatlicheDarlehensBelastungen) {
         this.monatlicheDarlehensBelastungen = monatlicheDarlehensBelastungen;

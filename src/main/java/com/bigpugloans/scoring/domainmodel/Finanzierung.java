@@ -9,6 +9,15 @@ public class Finanzierung {
 
     private Prozentwert eigenkapitalanteil;
 
+    public Finanzierung() {
+        this.summeDarlehen = new Waehrungsbetrag(0);
+        this.beleihungswert = new Waehrungsbetrag(0);
+        this.eigenmittel = new Waehrungsbetrag(0);
+        this.marktwertImmobilie = new Waehrungsbetrag(0);
+        this.kaufnebenkosten = new Waehrungsbetrag(0);
+        this.eigenkapitalanteil = new Prozentwert(0);
+    }
+
     public void setEigenkapitalanteil(Prozentwert eigenkapitalanteil) {
         this.eigenkapitalanteil = eigenkapitalanteil;
     }

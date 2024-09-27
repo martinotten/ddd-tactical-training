@@ -19,7 +19,7 @@ public class ScoringErgebnis {
     public ScoringFarbe berechneErgebnis() {
         if (koKriterium) {
             return ScoringFarbe.ROT;
-        } else if (punkte.groesserAls(new Punkte(120))) {
+        } else if (punkte.groesserAls(new Punkte(119))) {
             return ScoringFarbe.GRUEN;
         } else {
             return ScoringFarbe.ROT;

@@ -1,6 +1,9 @@
-package com.bigpugloans.scoring.domainmodel;
+package com.bigpugloans.scoring.domainmodel.auskunfteiErgebnisCluster;
 
-public class AuskunfteiErgebnis {
+import com.bigpugloans.scoring.domainmodel.Prozentwert;
+import com.bigpugloans.scoring.domainmodel.Punkte;
+
+public class AuskunfteiErgebnisCluster {
     private boolean negativMerkmal;
 
     private int warnungen;

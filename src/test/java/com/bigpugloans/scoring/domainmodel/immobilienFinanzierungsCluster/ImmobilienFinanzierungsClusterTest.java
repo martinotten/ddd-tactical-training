@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster;
 
 import com.bigpugloans.scoring.domainmodel.*;
-import com.bigpugloans.scoring.domainmodel.ImmobilienFinanzierungsCluster;
+import com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

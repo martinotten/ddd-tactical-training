@@ -1,6 +1,10 @@
-package com.bigpugloans.scoring.domainmodel;
+package com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster;
 
-public class Finanzierung {
+import com.bigpugloans.scoring.domainmodel.Prozentwert;
+import com.bigpugloans.scoring.domainmodel.Punkte;
+import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
+
+public class ImmobilienFinanzierungsCluster {
     private Waehrungsbetrag summeDarlehen;
     private Waehrungsbetrag beleihungswert;
     private Waehrungsbetrag eigenmittel;
@@ -8,8 +12,10 @@ public class Finanzierung {
     private Waehrungsbetrag kaufnebenkosten;
 
     private Prozentwert eigenkapitalanteil;
+    private boolean marktwertDurchschnittlich;
 
-    public Finanzierung() {
+
+    public ImmobilienFinanzierungsCluster() {
         this.summeDarlehen = new Waehrungsbetrag(0);
         this.beleihungswert = new Waehrungsbetrag(0);
         this.eigenmittel = new Waehrungsbetrag(0);
@@ -17,7 +23,9 @@ public class Finanzierung {
         this.kaufnebenkosten = new Waehrungsbetrag(0);
         this.eigenkapitalanteil = new Prozentwert(0);
     }
-
+    public void setMarktwertDurchschnittlich(boolean marktwertDurchschnittlich) {
+        this.marktwertDurchschnittlich = marktwertDurchschnittlich;
+    }
     public void setEigenkapitalanteil(Prozentwert eigenkapitalanteil) {
         this.eigenkapitalanteil = eigenkapitalanteil;
     }
@@ -47,14 +55,18 @@ public class Finanzierung {
     }
 
     public Punkte berechnePunkte() {
+        Punkte ergebnis = new Punkte(0);
         if (eigenkapitalanteil.zwischen(new Prozentwert(15), new Prozentwert(20))) {
-            return new Punkte(5);
+            ergebnis = ergebnis.plus(new Punkte(5));
         } else if (eigenkapitalanteil.zwischen(new Prozentwert(20), new Prozentwert(30))) {
-            return new Punkte(10);
+            ergebnis = ergebnis.plus(new Punkte(10));
         } else if (eigenkapitalanteil.groesserAls(new Prozentwert(30))) {
-            return new Punkte(15);
-        } else {
-            return new Punkte(0);
+            ergebnis = ergebnis.plus(new Punkte(15));
         }
+
+        if(marktwertDurchschnittlich) {
+            ergebnis = ergebnis.plus(new Punkte(15));
+        }
+        return ergebnis;
     }
 }

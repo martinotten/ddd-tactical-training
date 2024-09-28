@@ -1,6 +1,9 @@
-package com.bigpugloans.scoring.domainmodel;
+package com.bigpugloans.scoring.domainmodel.monatlicheFinanzsituationCluster;
 
-public class Haushalt {
+import com.bigpugloans.scoring.domainmodel.Punkte;
+import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
+
+public class MonatlicheFinanzsituationCluster {
     private Waehrungsbetrag monatlicheEinnahmen;
     private Waehrungsbetrag monatlicheAusgaben;
     private Waehrungsbetrag monatlicheDarlehensBelastungen;
@@ -8,7 +11,7 @@ public class Haushalt {
     private Waehrungsbetrag monatlicheSparen;
     private Waehrungsbetrag monatlicherUeberschussOhneTilgungen;
 
-    public Haushalt() {
+    public MonatlicheFinanzsituationCluster() {
         this.monatlicheEinnahmen = new Waehrungsbetrag(0);
         this.monatlicheAusgaben = new Waehrungsbetrag(0);
         this.monatlicheDarlehensBelastungen = new Waehrungsbetrag(0);

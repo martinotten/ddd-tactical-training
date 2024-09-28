@@ -16,6 +16,11 @@ public class Punkte {
     public boolean groesserAls(Punkte anderePunkte) {
         return punkte > anderePunkte.punkte;
     }
+
+    public Punkte plus(Punkte anderePunkte) {
+        return new Punkte(punkte + anderePunkte.punkte);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

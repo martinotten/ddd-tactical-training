@@ -1,4 +1,7 @@
-package com.bigpugloans.scoring.domainmodel;
+package com.bigpugloans.scoring.domainmodel.scoringErgebnis;
+
+import com.bigpugloans.scoring.domainmodel.Punkte;
+import com.bigpugloans.scoring.domainmodel.ScoringFarbe;
 
 public class ScoringErgebnis {
     private Punkte punkte;

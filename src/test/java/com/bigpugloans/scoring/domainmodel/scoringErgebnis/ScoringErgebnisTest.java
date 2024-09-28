@@ -1,7 +1,6 @@
 package com.bigpugloans.scoring.domainmodel.scoringErgebnis;
 
 import com.bigpugloans.scoring.domainmodel.Punkte;
-import com.bigpugloans.scoring.domainmodel.ScoringErgebnis;
 import com.bigpugloans.scoring.domainmodel.ScoringFarbe;
 import org.junit.jupiter.api.Test;
 

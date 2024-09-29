@@ -11,29 +11,33 @@ public class AuskunfteiErgebnisClusterTest {
     @Test
     void negativMerkmalIstKoKriterium() {
         AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster();
-        auskunfteiErgebnisCluster.setNegativMerkmal(true);
-        assertTrue(auskunfteiErgebnisCluster.pruefeKoKriterium(), "Negativmerkmal sollte ein KO-Kriterium sein.");
+        auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(1);
+        ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren();
+        assertTrue(clusterGescored.koKriterien() == 1, "Negativmerkmal sollte ein KO-Kriterium sein.");
     }
 
     @Test
     void mehrAlsDreiWarnungenSindKoKriterium() {
         AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster();
         auskunfteiErgebnisCluster.setWarnungen(4); // Mehr als 3 Warnungen
-        assertTrue(auskunfteiErgebnisCluster.pruefeKoKriterium(), "Mehr als drei Warnungen sollten ein KO-Kriterium sein.");
+        ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren();
+        assertTrue(clusterGescored.koKriterien() == 1, "Mehr als 3 Warnungen sollte ein KO-Kriterium sein.");
     }
 
     @Test
     void rueckzahlungswahrscheinlichkeitUnter60IstKoKriterium() {
         AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster();
-        auskunfteiErgebnisCluster.setRueckzahlungswahrscheinlichkeit(new Prozentwert(59)); // < 60%
-        assertTrue(auskunfteiErgebnisCluster.pruefeKoKriterium(), "Rückzahlungswahrscheinlichkeit < 60 sollte ein KO-Kriterium sein.");
+        auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(59)); // < 60%
+        ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren();
+        assertTrue(clusterGescored.koKriterien == 1, "Rückzahlungswahrscheinlichkeit < 60% sollte ein KO-Kriterium sein.");
     }
 
     @Test
     void rueckzahlungswahrscheinlichkeitEntsprichtPunkte() {
         AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster();
-        auskunfteiErgebnisCluster.setRueckzahlungswahrscheinlichkeit(new Prozentwert(85));
-        Punkte punkte = auskunfteiErgebnisCluster.berechnePunkte();
-        assertEquals(new Punkte(85), punkte, "Die Rückzahlungswahrscheinlichkeit sollte den Punkten entsprechen.");
+        int rueckzahlungsWahrscheinlichkeit = 85;
+        auskunfteiErgebnisCluster.setRueckzahlungswahrscheinlichkeit(new Prozentwert(rueckzahlungsWahrscheinlichkeit));
+        ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren();
+        assertEquals(new Punkte(rueckzahlungsWahrscheinlichkeit), clusterGescored.punkte(), "Die Rückzahlungswahrscheinlichkeit sollte den Punkten entsprechen.");
     }
 }

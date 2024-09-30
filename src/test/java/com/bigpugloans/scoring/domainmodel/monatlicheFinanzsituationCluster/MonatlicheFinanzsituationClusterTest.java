@@ -1,5 +1,6 @@
 package com.bigpugloans.scoring.domainmodel.monatlicheFinanzsituationCluster;
 
+import com.bigpugloans.scoring.domainmodel.ClusterGescored;
 import com.bigpugloans.scoring.domainmodel.Punkte;
 import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ public class MonatlicheFinanzsituationClusterTest {
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(2500));
         ClusterGescored ergebnis = monatlicheFinanzsituationCluster.scoren();
-        assertTrue(ergebnis.koKriterien() == 1, "Monatliche Darlehensbelastungen > (Einnahmen - Ausgaben) sollte ein KO-Kriterium sein.");
+        assertTrue(ergebnis.koKriterien().anzahl() == 1, "Monatliche Darlehensbelastungen > (Einnahmen - Ausgaben) sollte ein KO-Kriterium sein.");
     }
     @Test
     void monatlicherHaushaltsueberschussOhneTilgungenUeber1500Gibt15Punkte() {

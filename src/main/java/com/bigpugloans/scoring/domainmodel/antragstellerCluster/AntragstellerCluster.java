@@ -1,7 +1,6 @@
 package com.bigpugloans.scoring.domainmodel.antragstellerCluster;
 
 import com.bigpugloans.scoring.domainmodel.ClusterGescored;
-import com.bigpugloans.scoring.domainmodel.KoKriterien;
 import com.bigpugloans.scoring.domainmodel.Punkte;
 import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
 
@@ -13,7 +12,7 @@ public class AntragstellerCluster {
         this.guthabenBeiMopsBank = new Waehrungsbetrag(0);
     }
 
-    public ClusterGescored berechnePunkte() {
+    public ClusterGescored scoren() {
 
         Punkte ergebnis = new Punkte(0);
         if ("Hamburg".equals(wohnort)) {

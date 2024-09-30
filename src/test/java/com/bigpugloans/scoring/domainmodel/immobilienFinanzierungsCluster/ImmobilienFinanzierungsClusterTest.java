@@ -13,7 +13,7 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.summeDarlehenHinzufuegen(new Waehrungsbetrag(200000));
         immobilienFinanzierungsCluster.beleihungswertHinzufuegen(new Waehrungsbetrag(150000));
         ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren();
-        assertTrue(ergebnis.koKriterien == 1, "Summe der Darlehen > Beleihungswert sollte ein KO-Kriterium sein.");
+        assertTrue(ergebnis.koKriterien() == 1, "Summe der Darlehen > Beleihungswert sollte ein KO-Kriterium sein.");
     }
 
     @Test
@@ -24,7 +24,7 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.marktwertHinzufuegen(new Waehrungsbetrag(210000));
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15000));
         ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren();
-        assertTrue(ergebnis.koKriterien == 1, "Summe Darlehen + Eigenmittel != Marktwert + Kaufnebenkosten sollte ein KO-Kriterium sein.");
+        assertTrue(ergebnis.koKriterien() == 1, "Summe Darlehen + Eigenmittel != Marktwert + Kaufnebenkosten sollte ein KO-Kriterium sein.");
     }
 
     @Test
@@ -41,7 +41,7 @@ public class ImmobilienFinanzierungsClusterTest {
         ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster();
         immobilienFinanzierungsCluster.marktwertHinzufuegen(new Waehrungsbetrag(100000));
         immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(25000));
-        Punkte punkte = immobilienFinanzierungsCluster.berechnePunkte();
+        ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren();
         assertEquals(new Punkte(10), ergebnis.punkte(), "Ein Eigenkapitalanteil > 20% sollte 10 Punkte geben.");
     }
 
@@ -50,7 +50,7 @@ public class ImmobilienFinanzierungsClusterTest {
         ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster();
         immobilienFinanzierungsCluster.marktwertHinzufuegen(new Waehrungsbetrag(100000));
         immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(35000));
-        Punkte punkte = immobilienFinanzierungsCluster.berechnePunkte();
+        ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren();
         assertEquals(new Punkte(15), ergebnis.punkte(), "Ein Eigenkapitalanteil > 30% sollte 15 Punkte geben.");
     }
 
@@ -58,7 +58,7 @@ public class ImmobilienFinanzierungsClusterTest {
     void marktwertDerImmobilieImDurchschnittGibt15Punkte() {
         ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster();
         immobilienFinanzierungsCluster.marktwertVerlgeichHinzufuegen(true);
-        Punkte punkte = immobilienFinanzierungsCluster.berechnePunkte();
+        ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren();
         assertEquals(new Punkte(15), ergebnis.punkte(), "Ein durchschnittlicher Marktwert der Immobilie sollte 15 Punkte geben.");
     }
 }

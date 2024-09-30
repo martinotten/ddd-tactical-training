@@ -24,4 +24,8 @@ public class Waehrungsbetrag {
     public Waehrungsbetrag minus(Waehrungsbetrag andererBetrag) {
         return new Waehrungsbetrag(betrag.subtract(andererBetrag.betrag).intValue());
     }
+
+    public Prozentwert anteilVon(Waehrungsbetrag andererBetrag) {
+        return new Prozentwert(this.betrag.divide(andererBetrag.betrag).multiply(new BigDecimal(100)));
+    }
 }

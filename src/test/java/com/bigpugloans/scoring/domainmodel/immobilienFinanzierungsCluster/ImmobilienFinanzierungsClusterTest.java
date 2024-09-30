@@ -13,7 +13,7 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.summeDarlehenHinzufuegen(new Waehrungsbetrag(200000));
         immobilienFinanzierungsCluster.beleihungswertHinzufuegen(new Waehrungsbetrag(150000));
         ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren();
-        assertTrue(ergebnis.koKriterien() == 1, "Summe der Darlehen > Beleihungswert sollte ein KO-Kriterium sein.");
+        assertTrue(ergebnis.koKriterien().anzahl() == 1, "Summe der Darlehen > Beleihungswert sollte ein KO-Kriterium sein.");
     }
 
     @Test
@@ -24,7 +24,7 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.marktwertHinzufuegen(new Waehrungsbetrag(210000));
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15000));
         ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren();
-        assertTrue(ergebnis.koKriterien() == 1, "Summe Darlehen + Eigenmittel != Marktwert + Kaufnebenkosten sollte ein KO-Kriterium sein.");
+        assertTrue(ergebnis.koKriterien().anzahl() == 1, "Summe Darlehen + Eigenmittel != Marktwert + Kaufnebenkosten sollte ein KO-Kriterium sein.");
     }
 
     @Test

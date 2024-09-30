@@ -1,32 +1,68 @@
 package com.bigpugloans.scoring.domainmodel.scoringErgebnis;
 
+import com.bigpugloans.scoring.domainmodel.ClusterGescored;
+import com.bigpugloans.scoring.domainmodel.KoKriterien;
 import com.bigpugloans.scoring.domainmodel.Punkte;
 import com.bigpugloans.scoring.domainmodel.ScoringFarbe;
 
 public class ScoringErgebnis {
-    private Punkte punkte;
-    private boolean koKriterium;
+    private ClusterGescored antragstellerClusterErgebnis;
+    private ClusterGescored auskunfteiClusterErgebnis;
+    private ClusterGescored immobilienFinanzierungsClusterErgebnis;
+    private ClusterGescored monatlicherHaushaltsueberschussClusterErgebnis;
+
+    private KoKriterien koKriterien;
+    private Punkte gesamtPunkte;
 
     public ScoringErgebnis() {
-        this.koKriterium = false;
+        this.gesamtPunkte = new Punkte(0);
+        this.koKriterien = new KoKriterien(0);
     }
 
-    public void setPunkte(Punkte punkte) {
-        this.punkte = punkte;
-    }
-
-    public void setKoKriterium(boolean koKriterium) {
-        this.koKriterium = koKriterium;
-    }
 
     public ScoringFarbe berechneErgebnis() {
-        if (koKriterium) {
+        if (koKriterien.anzahl() > 0) {
             return ScoringFarbe.ROT;
-        } else if (punkte.groesserAls(new Punkte(119))) {
-            return ScoringFarbe.GRUEN;
+        }
+
+        if(antragstellerClusterErgebnis != null
+                && auskunfteiClusterErgebnis !=null
+                && immobilienFinanzierungsClusterErgebnis !=null
+                && monatlicherHaushaltsueberschussClusterErgebnis !=null) {
+
+            if (gesamtPunkte.groesserAls(new Punkte(120))) {
+                return ScoringFarbe.GRUEN;
+            } else {
+                return ScoringFarbe.ROT;
+            }
         } else {
-            return ScoringFarbe.ROT;
+            throw new IllegalStateException("Es fehlen Cluster-Ergebnisse.");
         }
     }
 
+    public void auskunfteiErgebnisClusterHinzufuegen(ClusterGescored clusterGescored) {
+        this.auskunfteiClusterErgebnis = clusterGescored;
+        this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
+        this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
+    }
+
+
+    public void antragstellerClusterHinzufuegen(ClusterGescored clusterGescored) {
+        this.antragstellerClusterErgebnis = clusterGescored;
+        this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
+        this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
+    }
+
+    public void immobilienFinanzierungClusterHinzufuegen(ClusterGescored clusterGescored) {
+        this.immobilienFinanzierungsClusterErgebnis = clusterGescored;
+        this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
+        this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
+    }
+
+
+    public void monatlicheFinansituationClusterHinzufuegen(ClusterGescored clusterGescored) {
+        this.monatlicherHaushaltsueberschussClusterErgebnis = clusterGescored;
+        this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
+        this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
+    }
 }

@@ -9,4 +9,5 @@ public record ClusterGescored(Punkte punkte, KoKriterien koKriterien) {
         this(punkte, new KoKriterien(koKriterien));
     }
 
+
 }

@@ -77,4 +77,8 @@ public class ImmobilienFinanzierungsCluster {
     public void kaufnebenkostenHinzufuegen(Waehrungsbetrag kaufnebenkosten) {
         this.kaufnebenkosten = kaufnebenkosten;
     }
+
+    public void marktwertVerlgeichHinzufuegen(boolean marktwertDurchschnittlich) {
+        this.marktwertDurchschnittlich = marktwertDurchschnittlich;
+    }
 }

@@ -30,7 +30,7 @@ public class ScoringErgebnis {
                 && immobilienFinanzierungsClusterErgebnis !=null
                 && monatlicherHaushaltsueberschussClusterErgebnis !=null) {
 
-            if (gesamtPunkte.groesserAls(new Punkte(120))) {
+            if (gesamtPunkte.groesserAls(new Punkte(119))) {
                 return ScoringFarbe.GRUEN;
             } else {
                 return ScoringFarbe.ROT;

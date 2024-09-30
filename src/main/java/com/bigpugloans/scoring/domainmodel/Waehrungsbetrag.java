@@ -1,6 +1,8 @@
 package com.bigpugloans.scoring.domainmodel;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Objects;
 
 public class Waehrungsbetrag {
     private final BigDecimal betrag;
@@ -26,6 +28,27 @@ public class Waehrungsbetrag {
     }
 
     public Prozentwert anteilVon(Waehrungsbetrag andererBetrag) {
-        return new Prozentwert(this.betrag.divide(andererBetrag.betrag).multiply(new BigDecimal(100)));
+        BigDecimal divided = this.betrag.divide(andererBetrag.betrag, 2, RoundingMode.HALF_UP);
+        return new Prozentwert(divided.multiply(new BigDecimal(100)));
+    }
+
+    @Override
+    public String toString() {
+        return "Waehrungsbetrag{" +
+                "betrag=" + betrag +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Waehrungsbetrag that = (Waehrungsbetrag) o;
+        return Objects.equals(betrag, that.betrag);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(betrag);
     }
 }

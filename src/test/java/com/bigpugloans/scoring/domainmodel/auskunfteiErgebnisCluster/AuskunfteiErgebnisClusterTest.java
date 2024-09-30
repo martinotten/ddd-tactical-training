@@ -13,6 +13,7 @@ public class AuskunfteiErgebnisClusterTest {
     void negativMerkmalIstKoKriterium() {
         AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster();
         auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(1);
+        auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
         ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren();
         assertTrue(clusterGescored.koKriterien().anzahl() == 1, "Negativmerkmal sollte ein KO-Kriterium sein.");
     }
@@ -20,7 +21,8 @@ public class AuskunfteiErgebnisClusterTest {
     @Test
     void mehrAlsDreiWarnungenSindKoKriterium() {
         AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster();
-        auskunfteiErgebnisCluster.warnungenHinzufuegen(4); // Mehr als 3 Warnungen
+        auskunfteiErgebnisCluster.warnungenHinzufuegen(4);
+        auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));// Mehr als 3 Warnungen
         ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren();
         assertTrue(clusterGescored.koKriterien().anzahl() == 1, "Mehr als 3 Warnungen sollte ein KO-Kriterium sein.");
     }

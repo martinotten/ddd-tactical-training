@@ -11,6 +11,13 @@ public class AuskunfteiErgebnisCluster {
     private int anzahlWarnungen;
 
     private Prozentwert rueckzahlungswahrscheinlichkeit;
+
+    public AuskunfteiErgebnisCluster() {
+        this.anzahlNegativMerkmale = 0;
+        this.anzahlWarnungen = 0;
+        this.rueckzahlungswahrscheinlichkeit = new Prozentwert(0);
+    }
+
     private KoKriterien pruefeKoKriterium() {
         int anzahlKoKriterien = 0;
         if(anzahlNegativMerkmale > 0) {

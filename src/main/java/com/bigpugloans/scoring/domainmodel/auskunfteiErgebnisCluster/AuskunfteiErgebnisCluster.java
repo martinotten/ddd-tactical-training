@@ -10,12 +10,12 @@ public class AuskunfteiErgebnisCluster {
 
     private int anzahlWarnungen;
 
-    private Prozentwert rueckzahlungswahrscheinlichkeit;
+    private RueckzahlungsWahrscheinlichkeit rueckzahlungswahrscheinlichkeit;
 
     public AuskunfteiErgebnisCluster() {
         this.anzahlNegativMerkmale = 0;
         this.anzahlWarnungen = 0;
-        this.rueckzahlungswahrscheinlichkeit = new Prozentwert(0);
+        this.rueckzahlungswahrscheinlichkeit = new RueckzahlungsWahrscheinlichkeit(new Prozentwert(0));
     }
 
     private KoKriterien pruefeKoKriterium() {
@@ -26,14 +26,12 @@ public class AuskunfteiErgebnisCluster {
         if(anzahlWarnungen > 3) {
             anzahlKoKriterien++;
         }
-        if(rueckzahlungswahrscheinlichkeit.kleinerAls(new Prozentwert(60))) {
-            anzahlKoKriterien++;
-        }
+        anzahlKoKriterien += this.rueckzahlungswahrscheinlichkeit.bestimmeKoKriterien().anzahl();
         return new KoKriterien(anzahlKoKriterien);
     }
 
     private Punkte berechnePunkte() {
-        return new Punkte(rueckzahlungswahrscheinlichkeit.getWert().intValue());
+        return this.rueckzahlungswahrscheinlichkeit.berechnePunkte();
     }
 
     public ClusterGescored scoren() {
@@ -50,6 +48,6 @@ public class AuskunfteiErgebnisCluster {
     }
 
     public void rueckzahlungsWahrscheinlichkeitHinzufuegen(Prozentwert rueckzahlungsWahrscheinlichkeit) {
-        this.rueckzahlungswahrscheinlichkeit = rueckzahlungsWahrscheinlichkeit;
+        this.rueckzahlungswahrscheinlichkeit = new RueckzahlungsWahrscheinlichkeit(rueckzahlungsWahrscheinlichkeit);
     }
 }

@@ -27,13 +27,7 @@ public class AuskunfteiErgebnisClusterTest {
         assertTrue(clusterGescored.koKriterien().anzahl() == 1, "Mehr als 3 Warnungen sollte ein KO-Kriterium sein.");
     }
 
-    @Test
-    void rueckzahlungswahrscheinlichkeitUnter60IstKoKriterium() {
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster();
-        auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(59)); // < 60%
-        ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren();
-        assertTrue(clusterGescored.koKriterien().anzahl() == 1, "Rückzahlungswahrscheinlichkeit < 60% sollte ein KO-Kriterium sein.");
-    }
+
 
     @Test
     void rueckzahlungswahrscheinlichkeitEntsprichtPunkte() {

@@ -20,6 +20,7 @@ public class AntragstellerClusterTest {
     void bestandskundenMitGuthabenUeber10000Bekommen5PunkteMehr() {
         AntragstellerCluster antragstellerCluster = new AntragstellerCluster();
         antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(12000));
+        antragstellerCluster.wohnortHinzufuegen("Leipzig");
         ClusterGescored ergebnis = antragstellerCluster.scoren();
         assertEquals(new Punkte(5), ergebnis.punkte(), "Bestandskunden mit Guthaben > 10.000 EUR sollten 5 Punkte mehr bekommen.");
     }

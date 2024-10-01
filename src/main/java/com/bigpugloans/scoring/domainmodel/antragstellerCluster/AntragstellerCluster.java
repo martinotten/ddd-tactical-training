@@ -5,7 +5,7 @@ import com.bigpugloans.scoring.domainmodel.Punkte;
 import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
 
 public class AntragstellerCluster {
-    private String wohnort;
+    private Wohnort wohnort;
     private Waehrungsbetrag guthabenBeiMopsBank;
 
     public AntragstellerCluster() {
@@ -13,13 +13,15 @@ public class AntragstellerCluster {
     }
 
     public ClusterGescored scoren() {
+        if(wohnort == null) {
+            return new ClusterGescored();
+        }
+        if (guthabenBeiMopsBank == null) {
+            return new ClusterGescored();
+        }
 
         Punkte ergebnis = new Punkte(0);
-        if ("Hamburg".equals(wohnort)) {
-            ergebnis = ergebnis.plus(new Punkte(5));
-        } else if ("München".equals(wohnort)) {
-            ergebnis = ergebnis.plus(new Punkte(5));
-        }
+        ergebnis = ergebnis.plus(wohnort.berechnePunkte());
 
         if (guthabenBeiMopsBank.groesserAls(new Waehrungsbetrag(10000))) {
             ergebnis = ergebnis.plus(new Punkte(5));
@@ -29,7 +31,7 @@ public class AntragstellerCluster {
 
 
     public void wohnortHinzufuegen(String wohnort) {
-        this.wohnort = wohnort;
+        this.wohnort = new Wohnort(wohnort);
     }
 
 

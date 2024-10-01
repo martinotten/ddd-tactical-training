@@ -6,10 +6,10 @@ import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
 
 public class AntragstellerCluster {
     private Wohnort wohnort;
-    private Waehrungsbetrag guthabenBeiMopsBank;
+    private Guthaben guthabenBeiMopsBank;
 
     public AntragstellerCluster() {
-        this.guthabenBeiMopsBank = new Waehrungsbetrag(0);
+        this.guthabenBeiMopsBank = new Guthaben(0);
     }
 
     public ClusterGescored scoren() {
@@ -22,10 +22,8 @@ public class AntragstellerCluster {
 
         Punkte ergebnis = new Punkte(0);
         ergebnis = ergebnis.plus(wohnort.berechnePunkte());
+        ergebnis = ergebnis.plus(guthabenBeiMopsBank.berechnePunkte());
 
-        if (guthabenBeiMopsBank.groesserAls(new Waehrungsbetrag(10000))) {
-            ergebnis = ergebnis.plus(new Punkte(5));
-        }
         return new ClusterGescored(ergebnis);
     }
 
@@ -36,6 +34,6 @@ public class AntragstellerCluster {
 
 
     public void guthabenHinzufuegen(Waehrungsbetrag guthaben) {
-        this.guthabenBeiMopsBank = guthaben;
+        this.guthabenBeiMopsBank = new Guthaben(guthaben);
     }
 }

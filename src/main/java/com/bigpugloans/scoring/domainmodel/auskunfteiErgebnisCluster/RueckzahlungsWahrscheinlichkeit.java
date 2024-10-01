@@ -6,7 +6,7 @@ import com.bigpugloans.scoring.domainmodel.Punkte;
 
 import java.util.Objects;
 
-public class RueckzahlungsWahrscheinlichkeit {
+class RueckzahlungsWahrscheinlichkeit {
     private Prozentwert rueckzahlungsWahrscheinlichkeit;
 
     public RueckzahlungsWahrscheinlichkeit(Prozentwert rueckzahlungsWahrscheinlichkeit) {

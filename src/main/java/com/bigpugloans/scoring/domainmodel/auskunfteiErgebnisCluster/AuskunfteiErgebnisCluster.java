@@ -6,26 +6,26 @@ import com.bigpugloans.scoring.domainmodel.Prozentwert;
 import com.bigpugloans.scoring.domainmodel.Punkte;
 
 public class AuskunfteiErgebnisCluster {
-    private int anzahlNegativMerkmale;
+    private NegativMerkmal negativMerkmale;
 
     private int anzahlWarnungen;
 
     private RueckzahlungsWahrscheinlichkeit rueckzahlungswahrscheinlichkeit;
 
     public AuskunfteiErgebnisCluster() {
-        this.anzahlNegativMerkmale = 0;
+        this.negativMerkmale = new NegativMerkmal(0);
         this.anzahlWarnungen = 0;
         this.rueckzahlungswahrscheinlichkeit = new RueckzahlungsWahrscheinlichkeit(new Prozentwert(0));
     }
 
     private KoKriterien pruefeKoKriterium() {
         int anzahlKoKriterien = 0;
-        if(anzahlNegativMerkmale > 0) {
-            anzahlKoKriterien++;
-        }
+
         if(anzahlWarnungen > 3) {
             anzahlKoKriterien++;
         }
+
+        anzahlKoKriterien += this.negativMerkmale.bestimmeKoKriterien().anzahl();
         anzahlKoKriterien += this.rueckzahlungswahrscheinlichkeit.bestimmeKoKriterien().anzahl();
         return new KoKriterien(anzahlKoKriterien);
     }
@@ -39,7 +39,7 @@ public class AuskunfteiErgebnisCluster {
     }
 
     public void negativMerkmaleHinzufuegen(int anzahlNegativMerkmale) {
-        this.anzahlNegativMerkmale = anzahlNegativMerkmale;
+        this.negativMerkmale = new NegativMerkmal(anzahlNegativMerkmale);
     }
 
 

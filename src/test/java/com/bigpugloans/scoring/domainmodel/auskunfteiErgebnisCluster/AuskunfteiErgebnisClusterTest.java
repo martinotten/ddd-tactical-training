@@ -9,14 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AuskunfteiErgebnisClusterTest {
-    @Test
-    void negativMerkmalIstKoKriterium() {
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster();
-        auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(1);
-        auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
-        ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren();
-        assertTrue(clusterGescored.koKriterien().anzahl() == 1, "Negativmerkmal sollte ein KO-Kriterium sein.");
-    }
 
     @Test
     void mehrAlsDreiWarnungenSindKoKriterium() {

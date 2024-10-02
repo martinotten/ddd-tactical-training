@@ -1,7 +1,6 @@
 package com.bigpugloans.scoring.domainmodel.auskunfteiErgebnisCluster;
 
 import com.bigpugloans.scoring.domainmodel.Prozentwert;
-import com.bigpugloans.scoring.domainmodel.Punkte;
 import com.bigpugloans.scoring.domainmodel.ClusterGescored;
 import org.junit.jupiter.api.Test;
 

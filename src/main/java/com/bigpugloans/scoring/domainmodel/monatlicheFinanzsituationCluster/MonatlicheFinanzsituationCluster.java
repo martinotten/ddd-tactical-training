@@ -6,21 +6,21 @@ import com.bigpugloans.scoring.domainmodel.Punkte;
 import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
 
 public class MonatlicheFinanzsituationCluster {
-    private Waehrungsbetrag monatlicheEinnahmen;
-    private Waehrungsbetrag monatlicheAusgaben;
-    private Waehrungsbetrag monatlicheDarlehensBelastungen;
+    private Waehrungsbetrag einnahmen;
+    private Waehrungsbetrag ausgaben;
+    private Waehrungsbetrag neueDarlehensBelastungen;
 
     public MonatlicheFinanzsituationCluster() {
-        this.monatlicheEinnahmen = new Waehrungsbetrag(0);
-        this.monatlicheAusgaben = new Waehrungsbetrag(0);
-        this.monatlicheDarlehensBelastungen = new Waehrungsbetrag(0);
+        this.einnahmen = new Waehrungsbetrag(0);
+        this.ausgaben = new Waehrungsbetrag(0);
+        this.neueDarlehensBelastungen = new Waehrungsbetrag(0);
     }
 
 
     public KoKriterien pruefeKoKriterium() {
-        if(monatlicheEinnahmen
-                .minus(monatlicheAusgaben)
-                .minus(monatlicheDarlehensBelastungen)
+        if(einnahmen
+                .minus(ausgaben)
+                .minus(neueDarlehensBelastungen)
                 .kleinerAls(new Waehrungsbetrag(0))) {
             return new KoKriterien(1);
         } else {
@@ -29,7 +29,7 @@ public class MonatlicheFinanzsituationCluster {
     }
 
     public Punkte berechnePunkte() {
-        Waehrungsbetrag monatlicherUeberschussOhneTilgungen = monatlicheEinnahmen.minus(monatlicheAusgaben);
+        Waehrungsbetrag monatlicherUeberschussOhneTilgungen = einnahmen.minus(ausgaben);
         if(monatlicherUeberschussOhneTilgungen.groesserAls(new Waehrungsbetrag(1500))) {
             return new Punkte(15);
         } else {
@@ -42,14 +42,14 @@ public class MonatlicheFinanzsituationCluster {
     }
 
     public void monatlicheEinnahmenHinzufuegen(Waehrungsbetrag monatlicheEinnahmen) {
-        this.monatlicheEinnahmen = monatlicheEinnahmen;
+        this.einnahmen = monatlicheEinnahmen;
     }
 
     public void monatlicheAusgabenHinzufuegen(Waehrungsbetrag monatlicheAusgaben) {
-        this.monatlicheAusgaben = monatlicheAusgaben;
+        this.ausgaben = monatlicheAusgaben;
     }
 
     public void monatlicheDarlehensbelastungenHinzufuegen(Waehrungsbetrag monatlicheDarlehensBelastungen) {
-        this.monatlicheDarlehensBelastungen = monatlicheDarlehensBelastungen;
+        this.neueDarlehensBelastungen = monatlicheDarlehensBelastungen;
     }
 }

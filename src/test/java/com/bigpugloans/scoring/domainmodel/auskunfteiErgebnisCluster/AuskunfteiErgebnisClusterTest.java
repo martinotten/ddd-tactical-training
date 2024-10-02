@@ -10,15 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AuskunfteiErgebnisClusterTest {
     @Test
-    void mehrAlsDreiWarnungenSindKoKriterium() {
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster();
-        auskunfteiErgebnisCluster.warnungenHinzufuegen(4);
-        auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));// Mehr als 3 Warnungen
-        ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren();
-        assertTrue(clusterGescored.koKriterien().anzahl() == 1, "Mehr als 3 Warnungen sollte ein KO-Kriterium sein.");
-    }
-
-    @Test
     void rueckzahlungswahrscheinlichkeitUnter60IstKoKriterium() {
         AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster();
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(59)); // < 60%

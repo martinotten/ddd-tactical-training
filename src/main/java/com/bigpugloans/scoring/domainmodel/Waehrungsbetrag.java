@@ -12,22 +12,37 @@ public class Waehrungsbetrag {
     }
 
     public boolean groesserAls(Waehrungsbetrag andererBetrag) {
+        if(andererBetrag == null) {
+            andererBetrag = new Waehrungsbetrag(0);
+        }
         return betrag.compareTo(andererBetrag.betrag) > 0;
     }
 
     public boolean kleinerAls(Waehrungsbetrag andererBetrag) {
+        if(andererBetrag == null) {
+            andererBetrag = new Waehrungsbetrag(0);
+        }
         return betrag.compareTo(andererBetrag.betrag) < 0;
     }
 
     public Waehrungsbetrag plus(Waehrungsbetrag andererBetrag) {
+        if(andererBetrag == null) {
+            andererBetrag = new Waehrungsbetrag(0);
+        }
         return new Waehrungsbetrag(betrag.add(andererBetrag.betrag).intValue());
     }
 
     public Waehrungsbetrag minus(Waehrungsbetrag andererBetrag) {
+        if(andererBetrag == null) {
+            andererBetrag = new Waehrungsbetrag(0);
+        }
         return new Waehrungsbetrag(betrag.subtract(andererBetrag.betrag).intValue());
     }
 
     public Prozentwert anteilVon(Waehrungsbetrag andererBetrag) {
+        if(andererBetrag == null) {
+            andererBetrag = new Waehrungsbetrag(0);
+        }
         BigDecimal divided = this.betrag.divide(andererBetrag.betrag, 2, RoundingMode.HALF_UP);
         return new Prozentwert(divided.multiply(new BigDecimal(100)));
     }

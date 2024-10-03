@@ -3,22 +3,18 @@ package com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster;
 import com.bigpugloans.scoring.domainmodel.*;
 
 public class ImmobilienFinanzierungsCluster {
-    private Waehrungsbetrag summeDarlehen;
     private Waehrungsbetrag beleihungswert;
-    private Waehrungsbetrag eigenmittel;
-    private Waehrungsbetrag marktwertImmobilie;
+    private MarktwertVergleich marktwertVergleich;
+    private Waehrungsbetrag marktwert;
     private Waehrungsbetrag kaufnebenkosten;
 
-    
-    private boolean marktwertDurchschnittlich;
+    private Waehrungsbetrag summeDarlehen;
+
+    private Waehrungsbetrag eigenmittel;
 
 
     public ImmobilienFinanzierungsCluster() {
-        this.summeDarlehen = new Waehrungsbetrag(0);
-        this.beleihungswert = new Waehrungsbetrag(0);
-        this.eigenmittel = new Waehrungsbetrag(0);
-        this.marktwertImmobilie = new Waehrungsbetrag(0);
-        this.kaufnebenkosten = new Waehrungsbetrag(0);
+
     }
 
     private KoKriterien pruefeKoKriterium() {
@@ -27,8 +23,8 @@ public class ImmobilienFinanzierungsCluster {
             anzahlKoKriterien++;
         }
         
-        if(!summeDarlehen.plus(eigenmittel).equals(marktwertImmobilie.plus(kaufnebenkosten))) {
-        anzahlKoKriterien++;
+        if(!summeDarlehen.plus(eigenmittel).equals(marktwert.plus(kaufnebenkosten))) {
+            anzahlKoKriterien++;
         }
         return new KoKriterien(anzahlKoKriterien);
     }
@@ -44,14 +40,13 @@ public class ImmobilienFinanzierungsCluster {
             ergebnis = ergebnis.plus(new Punkte(15));
         }
 
-        if(marktwertDurchschnittlich) {
-            ergebnis = ergebnis.plus(new Punkte(15));
-        }
+
+        ergebnis = ergebnis.plus(marktwertVergleich.berechnePunkte(marktwert));
         return ergebnis;
     }
 
     private Prozentwert berechneEigenkapitalAnteil() {
-        return eigenmittel.anteilVon(marktwertImmobilie.plus(kaufnebenkosten));
+        return eigenmittel.anteilVon(marktwert.plus(kaufnebenkosten));
     }
 
     public ClusterGescored scoren() {
@@ -71,14 +66,14 @@ public class ImmobilienFinanzierungsCluster {
     }
 
     public void marktwertHinzufuegen(Waehrungsbetrag marktwert) {
-        this.marktwertImmobilie = marktwert;
+        this.marktwert = marktwert;
     }
 
     public void kaufnebenkostenHinzufuegen(Waehrungsbetrag kaufnebenkosten) {
         this.kaufnebenkosten = kaufnebenkosten;
     }
 
-    public void marktwertVerlgeichHinzufuegen(boolean marktwertDurchschnittlich) {
-        this.marktwertDurchschnittlich = marktwertDurchschnittlich;
+    public void marktwertVerlgeichHinzufuegen(Waehrungsbetrag minimalerMarktwert, Waehrungsbetrag maximalerMarktwert, Waehrungsbetrag durchschnittlicherMarktwertVon, Waehrungsbetrag durchschnittlicherMarktwertBis) {
+        this.marktwertVergleich = new MarktwertVergleich(minimalerMarktwert, maximalerMarktwert, durchschnittlicherMarktwertVon, durchschnittlicherMarktwertBis);
     }
 }

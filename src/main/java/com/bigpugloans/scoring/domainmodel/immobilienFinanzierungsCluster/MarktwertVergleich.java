@@ -25,6 +25,21 @@ class MarktwertVergleich {
             throw new IllegalArgumentException("Durchschnittlicher Marktwert bis darf nicht null sein.");
         }
 
+        if(minimalerMarktwert.groesserAls(maximalerMarktwert)) {
+            throw new IllegalArgumentException("Minimaler Marktwert darf nicht groesser als maximaler Marktwert sein.");
+        }
+
+        if(durchschnittlicherMarktwertVon.kleinerAls(minimalerMarktwert)) {
+            throw new IllegalArgumentException("Durchschnittlicher Marktwert von darf nicht kleiner als minimaler Marktwert sein.");
+        }
+
+        if(durchschnittlicherMarktwertBis.groesserAls(maximalerMarktwert)) {
+            throw new IllegalArgumentException("Durchschnittlicher Marktwert bis darf nicht groesser als maximaler Marktwert sein.");
+        }
+
+        if(durchschnittlicherMarktwertVon.groesserAls(durchschnittlicherMarktwertBis)) {
+            throw new IllegalArgumentException("Durchschnittlicher Marktwert von darf nicht groesser als durchschnittlicher Marktwert bis sein.");
+        }
         this.minimalerMarktwert = minimalerMarktwert;
         this.maximalerMarktwert = maximalerMarktwert;
         this.durchschnittlicherMarktwertVon = durchschnittlicherMarktwertVon;

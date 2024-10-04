@@ -12,6 +12,19 @@ class MarktwertVergleich {
     private Waehrungsbetrag durchschnittlicherMarktwertBis;
 
     public MarktwertVergleich(Waehrungsbetrag minimalerMarktwert, Waehrungsbetrag maximalerMarktwert, Waehrungsbetrag durchschnittlicherMarktwertVon, Waehrungsbetrag durchschnittlicherMarktwertBis) {
+        if(minimalerMarktwert == null) {
+            throw new IllegalArgumentException("Minimaler Marktwert darf nicht null sein.");
+        }
+        if(maximalerMarktwert == null) {
+            throw new IllegalArgumentException("Maximaler Marktwert darf nicht null sein.");
+        }
+        if(durchschnittlicherMarktwertVon == null) {
+            throw new IllegalArgumentException("Durchschnittlicher Marktwert von darf nicht null sein.");
+        }
+        if(durchschnittlicherMarktwertBis == null) {
+            throw new IllegalArgumentException("Durchschnittlicher Marktwert bis darf nicht null sein.");
+        }
+
         this.minimalerMarktwert = minimalerMarktwert;
         this.maximalerMarktwert = maximalerMarktwert;
         this.durchschnittlicherMarktwertVon = durchschnittlicherMarktwertVon;

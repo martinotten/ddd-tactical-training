@@ -1,21 +1,28 @@
 package com.bigpugloans.scoring.domainmodel.monatlicheFinanzsituationCluster;
 
-import com.bigpugloans.scoring.domainmodel.ClusterGescored;
-import com.bigpugloans.scoring.domainmodel.KoKriterien;
-import com.bigpugloans.scoring.domainmodel.Punkte;
-import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
+import com.bigpugloans.scoring.domainmodel.*;
+
+import java.util.Objects;
 
 public class MonatlicheFinanzsituationCluster {
+    private final Antragsnummer antragsnummer;
     private Waehrungsbetrag einnahmen;
     private Waehrungsbetrag ausgaben;
     private Waehrungsbetrag neueDarlehensBelastungen;
 
-    public MonatlicheFinanzsituationCluster() {
+    public MonatlicheFinanzsituationCluster(Antragsnummer antragsnummer) {
+        if(antragsnummer == null) {
+            throw new IllegalArgumentException("Antragsnummer darf nicht null sein.");
+        }
+        this.antragsnummer = antragsnummer;
         this.einnahmen = new Waehrungsbetrag(0);
         this.ausgaben = new Waehrungsbetrag(0);
         this.neueDarlehensBelastungen = new Waehrungsbetrag(0);
     }
 
+    public Antragsnummer antragsnummer() {
+        return antragsnummer;
+    }
 
     public KoKriterien pruefeKoKriterium() {
         if(einnahmen
@@ -51,5 +58,18 @@ public class MonatlicheFinanzsituationCluster {
 
     public void monatlicheDarlehensbelastungenHinzufuegen(Waehrungsbetrag monatlicheDarlehensBelastungen) {
         this.neueDarlehensBelastungen = monatlicheDarlehensBelastungen;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MonatlicheFinanzsituationCluster that = (MonatlicheFinanzsituationCluster) o;
+        return Objects.equals(antragsnummer, that.antragsnummer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(antragsnummer);
     }
 }

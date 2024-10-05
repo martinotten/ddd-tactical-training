@@ -1,21 +1,37 @@
 package com.bigpugloans.scoring.domainmodel.auskunfteiErgebnisCluster;
 
-import com.bigpugloans.scoring.domainmodel.ClusterGescored;
-import com.bigpugloans.scoring.domainmodel.KoKriterien;
-import com.bigpugloans.scoring.domainmodel.Prozentwert;
-import com.bigpugloans.scoring.domainmodel.Punkte;
+import com.bigpugloans.scoring.domainmodel.*;
+
+import java.util.Objects;
 
 public class AuskunfteiErgebnisCluster {
+    private final AntragstellerID antragstellerID;
+    private final Antragsnummer antragsnummer;
+
     private NegativMerkmal negativMerkmale;
-
     private Warnung warnungen;
-
     private RueckzahlungsWahrscheinlichkeit rueckzahlungswahrscheinlichkeit;
 
-    public AuskunfteiErgebnisCluster() {
+    public AuskunfteiErgebnisCluster(Antragsnummer antragsnummer, AntragstellerID antragstellerID) {
+        if(antragsnummer == null) {
+            throw new IllegalArgumentException("Antragsnummer darf nicht null sein.");
+        }
+        if(antragstellerID == null) {
+            throw new IllegalArgumentException("AntragstellerID darf nicht null sein.");
+        }
+        this.antragsnummer = antragsnummer;
+        this.antragstellerID = antragstellerID;
         this.negativMerkmale = new NegativMerkmal(0);
         this.warnungen = new Warnung(0);
         this.rueckzahlungswahrscheinlichkeit = new RueckzahlungsWahrscheinlichkeit(new Prozentwert(0));
+    }
+
+    public AntragstellerID antragstellerID() {
+        return antragstellerID;
+    }
+
+    public Antragsnummer antragsnummer() {
+        return antragsnummer;
     }
 
     private KoKriterien pruefeKoKriterium() {
@@ -46,5 +62,18 @@ public class AuskunfteiErgebnisCluster {
 
     public void rueckzahlungsWahrscheinlichkeitHinzufuegen(Prozentwert rueckzahlungsWahrscheinlichkeit) {
         this.rueckzahlungswahrscheinlichkeit = new RueckzahlungsWahrscheinlichkeit(rueckzahlungsWahrscheinlichkeit);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AuskunfteiErgebnisCluster that = (AuskunfteiErgebnisCluster) o;
+        return Objects.equals(antragstellerID, that.antragstellerID) && Objects.equals(antragsnummer, that.antragsnummer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(antragstellerID, antragsnummer);
     }
 }

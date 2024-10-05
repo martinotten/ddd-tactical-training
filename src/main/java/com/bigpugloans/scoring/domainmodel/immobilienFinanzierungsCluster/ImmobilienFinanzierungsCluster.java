@@ -2,19 +2,28 @@ package com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster;
 
 import com.bigpugloans.scoring.domainmodel.*;
 
+import java.util.Objects;
+
 public class ImmobilienFinanzierungsCluster {
+    private final Antragsnummer antragsnummer;
+
     private Waehrungsbetrag beleihungswert;
     private MarktwertVergleich marktwertVergleich;
     private Waehrungsbetrag marktwert;
     private Waehrungsbetrag kaufnebenkosten;
-
     private Waehrungsbetrag summeDarlehen;
-
     private Waehrungsbetrag eigenmittel;
 
 
-    public ImmobilienFinanzierungsCluster() {
+    public ImmobilienFinanzierungsCluster(Antragsnummer antragsnummer) {
+        if(antragsnummer == null) {
+            throw new IllegalArgumentException("Antragsnummer darf nicht null sein.");
+        }
+        this.antragsnummer = antragsnummer;
+    }
 
+    public Antragsnummer antragsnummer() {
+        return antragsnummer;
     }
 
     private KoKriterien pruefeKoKriterium() {
@@ -76,4 +85,19 @@ public class ImmobilienFinanzierungsCluster {
     public void marktwertVerlgeichHinzufuegen(Waehrungsbetrag minimalerMarktwert, Waehrungsbetrag maximalerMarktwert, Waehrungsbetrag durchschnittlicherMarktwertVon, Waehrungsbetrag durchschnittlicherMarktwertBis) {
         this.marktwertVergleich = new MarktwertVergleich(minimalerMarktwert, maximalerMarktwert, durchschnittlicherMarktwertVon, durchschnittlicherMarktwertBis);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ImmobilienFinanzierungsCluster that = (ImmobilienFinanzierungsCluster) o;
+        return Objects.equals(antragsnummer, that.antragsnummer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(antragsnummer);
+    }
 }
+
+

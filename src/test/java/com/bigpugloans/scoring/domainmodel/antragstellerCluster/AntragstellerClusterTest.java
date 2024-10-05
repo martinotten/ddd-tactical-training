@@ -17,6 +17,13 @@ public class AntragstellerClusterTest {
     }
 
     @Test
+    void antragstellerClusterOhneAntragsnummerWirftException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new AntragstellerCluster(null);
+        });
+    }
+
+    @Test
     void antragstellerAusMuenchenMitGuthaben12000Bekommen10Punkte() {
         AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new Antragsnummer("123"));
         antragstellerCluster.wohnortHinzufuegen("München");

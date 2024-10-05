@@ -6,13 +6,19 @@ import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AntragstellerClusterTest {
-
+    @Test
+    void antragstellerClusterOhneAntragsnummerWirftException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new AntragstellerCluster(null);
+        });
+    }
 
     @Test
     void antragstellerAusMuenchenMitGuthaben12000Bekommen10Punkte() {
-        AntragstellerCluster antragstellerCluster = new AntragstellerCluster();
+        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new Antragsnummer("123"));
         antragstellerCluster.wohnortHinzufuegen("München");
         antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(12000));
         ClusterGescored ergebnis = antragstellerCluster.scoren();
@@ -21,7 +27,7 @@ public class AntragstellerClusterTest {
 
     @Test
     void antragstellerAusMuenchenMitGuthabenVon9000Bekommen5Punkte() {
-        AntragstellerCluster antragstellerCluster = new AntragstellerCluster();
+        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new Antragsnummer("123"));
         antragstellerCluster.wohnortHinzufuegen("München");
         antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(9000));
         ClusterGescored ergebnis = antragstellerCluster.scoren();
@@ -30,7 +36,7 @@ public class AntragstellerClusterTest {
 
     @Test
     void antragstellerAusDortmundMitGuthaben12000Bekommen5Punkte() {
-        AntragstellerCluster antragstellerCluster = new AntragstellerCluster();
+        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new Antragsnummer("123"));
         antragstellerCluster.wohnortHinzufuegen("Dortmund");
         antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(12000));
         ClusterGescored ergebnis = antragstellerCluster.scoren();
@@ -38,7 +44,7 @@ public class AntragstellerClusterTest {
     }
     @Test
     void antragstellerAusDortmundMitGuthaben10000Bekommen0Punkte() {
-        AntragstellerCluster antragstellerCluster = new AntragstellerCluster();
+        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new Antragsnummer("123"));
         antragstellerCluster.wohnortHinzufuegen("Dortmund");
         antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(10000));
         ClusterGescored ergebnis = antragstellerCluster.scoren();

@@ -1,11 +1,12 @@
 package com.bigpugloans.scoring.domainmodel.scoringErgebnis;
 
-import com.bigpugloans.scoring.domainmodel.ClusterGescored;
-import com.bigpugloans.scoring.domainmodel.KoKriterien;
-import com.bigpugloans.scoring.domainmodel.Punkte;
-import com.bigpugloans.scoring.domainmodel.ScoringFarbe;
+import com.bigpugloans.scoring.domainmodel.*;
+
+import java.util.Objects;
 
 public class ScoringErgebnis {
+    private final Antragsnummer antragsnummer;
+
     private ClusterGescored antragstellerClusterErgebnis;
     private ClusterGescored auskunfteiClusterErgebnis;
     private ClusterGescored immobilienFinanzierungsClusterErgebnis;
@@ -14,11 +15,18 @@ public class ScoringErgebnis {
     private KoKriterien koKriterien;
     private Punkte gesamtPunkte;
 
-    public ScoringErgebnis() {
+    public ScoringErgebnis(Antragsnummer antragsnummer) {
+        if(antragsnummer == null) {
+            throw new IllegalArgumentException("Antragsnummer darf nicht null sein.");
+        }
+        this.antragsnummer = antragsnummer;
         this.gesamtPunkte = new Punkte(0);
         this.koKriterien = new KoKriterien(0);
     }
 
+    public Antragsnummer antragsnummer() {
+        return antragsnummer;
+    }
 
     public ScoringFarbe berechneErgebnis() {
         if (koKriterien.anzahl() > 0) {
@@ -64,5 +72,18 @@ public class ScoringErgebnis {
         this.monatlicherHaushaltsueberschussClusterErgebnis = clusterGescored;
         this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
         this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ScoringErgebnis that = (ScoringErgebnis) o;
+        return Objects.equals(antragsnummer, that.antragsnummer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(antragsnummer);
     }
 }

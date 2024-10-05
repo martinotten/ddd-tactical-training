@@ -8,7 +8,7 @@ import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
 import java.util.Objects;
 
 public class AntragstellerCluster {
-    private Antragsnummer antragsnummer;
+    private final Antragsnummer antragsnummer;
 
     private Wohnort wohnort;
     private Guthaben guthabenBeiMopsBank;

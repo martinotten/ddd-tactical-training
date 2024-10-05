@@ -18,6 +18,19 @@ public class AntragstellerClusterTest {
     }
 
     @Test
+    void antragstellerClusterMitGleichenAntragsnummernSindGleich() {
+        AntragstellerCluster antragstellerCluster1 = new AntragstellerCluster(new Antragsnummer("123"));
+        antragstellerCluster1.wohnortHinzufuegen("Stuttgart");
+        antragstellerCluster1.guthabenHinzufuegen(new Waehrungsbetrag(3000));
+
+        AntragstellerCluster antragstellerCluster2 = new AntragstellerCluster(new Antragsnummer("123"));
+        antragstellerCluster2.wohnortHinzufuegen("München");
+        antragstellerCluster2.guthabenHinzufuegen(new Waehrungsbetrag(10000));
+
+        assertEquals(antragstellerCluster1, antragstellerCluster2, "Beide AntragstellerCluster sollten gleich sein.");
+        assertEquals(antragstellerCluster1.hashCode(), antragstellerCluster2.hashCode(), "Beide Hashcodes sollten gleich sein.");
+    }
+    @Test
     void antragstellerAusMuenchenMitGuthaben12000Bekommen10Punkte() {
         AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new Antragsnummer("123"));
         antragstellerCluster.wohnortHinzufuegen("München");

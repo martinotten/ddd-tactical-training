@@ -5,10 +5,14 @@ import com.bigpugloans.scoring.domainmodel.ClusterGescored;
 import com.bigpugloans.scoring.domainmodel.Punkte;
 import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
 
+import java.util.Objects;
+
 public class AntragstellerCluster {
+    private Antragsnummer antragsnummer;
+
     private Wohnort wohnort;
     private Guthaben guthabenBeiMopsBank;
-    private Antragsnummer antragsnummer;
+
 
     public AntragstellerCluster(Antragsnummer antragsnummer) {
         if(antragsnummer == null) {
@@ -41,8 +45,20 @@ public class AntragstellerCluster {
         this.wohnort = new Wohnort(wohnort);
     }
 
-
     public void guthabenHinzufuegen(Waehrungsbetrag guthaben) {
         this.guthabenBeiMopsBank = new Guthaben(guthaben);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AntragstellerCluster that = (AntragstellerCluster) o;
+        return Objects.equals(antragsnummer, that.antragsnummer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(antragsnummer);
     }
 }

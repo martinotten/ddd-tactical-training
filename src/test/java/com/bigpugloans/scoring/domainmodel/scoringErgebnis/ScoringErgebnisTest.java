@@ -18,6 +18,35 @@ public class ScoringErgebnisTest {
     }
 
     @Test
+    void auskunfteiErgebnisClusterMitAndererAntragsnummerWirftException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("123"));
+            scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new Antragsnummer("456"), new Punkte(30), 0));
+        });
+    }
+
+    void antragstellerClusterMitAndererAntragsnummerWirftException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("123"));
+            scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("456"), new Punkte(30), 0));
+        });
+    }
+
+    void monatlicheFinansituationClusterMitAndererAntragsnummerWirftException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("123"));
+            scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new Antragsnummer("456"), new Punkte(30), 0));
+        });
+    }
+
+    void immobilienFinanzierungClusterMitAndererAntragsnummerWirftException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("123"));
+            scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new Antragsnummer("456"), new Punkte(30), 0));
+        });
+    }
+
+    @Test
     void scoringErgebnisseMitGleicherAntragsnummerSindGleich() {
         Antragsnummer antragsnummer = new Antragsnummer("123");
         ScoringErgebnis scoringErgebnis1 = new ScoringErgebnis(antragsnummer);

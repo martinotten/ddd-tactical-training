@@ -49,29 +49,61 @@ public class ScoringErgebnis {
     }
 
     public void auskunfteiErgebnisClusterHinzufuegen(ClusterGescored clusterGescored) {
-        this.auskunfteiClusterErgebnis = clusterGescored;
-        this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
-        this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
+        if(clusterGescored.antragsnummer().equals(this.antragsnummer)) {
+            this.auskunfteiClusterErgebnis = clusterGescored;
+            this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
+            this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
+        } else {
+            throw new IllegalArgumentException(String.format(
+                "Antragsnummer von ScoringErgebnis (%s) und ClusterGescored (%s) stimmt nicht überein.",
+                    this.antragsnummer.nummer(),
+                    clusterGescored.antragsnummer().nummer()
+            ));
+        }
     }
 
 
     public void antragstellerClusterHinzufuegen(ClusterGescored clusterGescored) {
-        this.antragstellerClusterErgebnis = clusterGescored;
-        this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
-        this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
+        if(clusterGescored.antragsnummer().equals(this.antragsnummer)) {
+            this.antragstellerClusterErgebnis = clusterGescored;
+            this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
+            this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
+        } else {
+            throw new IllegalArgumentException(String.format(
+                "Antragsnummer von ScoringErgebnis (%s) und ClusterGescored (%s) stimmt nicht überein.",
+                    this.antragsnummer.nummer(),
+                    clusterGescored.antragsnummer().nummer()
+            ));
+        }
     }
 
     public void immobilienFinanzierungClusterHinzufuegen(ClusterGescored clusterGescored) {
-        this.immobilienFinanzierungsClusterErgebnis = clusterGescored;
-        this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
-        this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
+        if (clusterGescored.antragsnummer().equals(this.antragsnummer)) {
+            this.immobilienFinanzierungsClusterErgebnis = clusterGescored;
+            this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
+            this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
+        } else {
+            throw new IllegalArgumentException(String.format(
+                "Antragsnummer von ScoringErgebnis (%s) und ClusterGescored (%s) stimmt nicht überein.",
+                    this.antragsnummer.nummer(),
+                    clusterGescored.antragsnummer().nummer()
+            ));
+        }
     }
 
 
     public void monatlicheFinansituationClusterHinzufuegen(ClusterGescored clusterGescored) {
-        this.monatlicherHaushaltsueberschussClusterErgebnis = clusterGescored;
-        this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
-        this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
+        if(clusterGescored.antragsnummer().equals(this.antragsnummer)) {
+            this.monatlicherHaushaltsueberschussClusterErgebnis = clusterGescored;
+            this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
+            this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
+        } else {
+            throw new IllegalArgumentException(String.format(
+                "Antragsnummer von ScoringErgebnis (%s) und ClusterGescored (%s) stimmt nicht überein.",
+                    this.antragsnummer.nummer(),
+                    clusterGescored.antragsnummer().nummer()
+            ));
+        }
     }
 
     @Override

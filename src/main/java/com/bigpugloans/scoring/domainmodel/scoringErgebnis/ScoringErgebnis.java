@@ -28,9 +28,9 @@ public class ScoringErgebnis {
         return antragsnummer;
     }
 
-    public ScoringFarbe berechneErgebnis() {
+    public AntragScoringEvent berechneErgebnis() {
         if (koKriterien.anzahl() > 0) {
-            return ScoringFarbe.ROT;
+            return new AntragErfolgreichGescored(antragsnummer, ScoringFarbe.ROT);
         }
 
         if(antragstellerClusterErgebnis != null
@@ -39,12 +39,12 @@ public class ScoringErgebnis {
                 && monatlicherHaushaltsueberschussClusterErgebnis !=null) {
 
             if (gesamtPunkte.groesserAls(new Punkte(119))) {
-                return ScoringFarbe.GRUEN;
+                return new AntragErfolgreichGescored(antragsnummer, ScoringFarbe.GRUEN);
             } else {
-                return ScoringFarbe.ROT;
+                return new AntragErfolgreichGescored(antragsnummer, ScoringFarbe.ROT);
             }
         } else {
-            throw new IllegalStateException("Es fehlen Cluster-Ergebnisse.");
+            return new AntragKonnteNichtGescoredWerden(antragsnummer, "Es fehlen Teilergebnisse der Cluster.");
         }
     }
 

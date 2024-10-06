@@ -64,7 +64,7 @@ public class AuskunfteiErgebnisClusterTest {
         AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new Antragsnummer("123"), antragstellerID);
         auskunfteiErgebnisCluster.warnungenHinzufuegen(3);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
-        ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren();
+        ClusterGescored clusterGescored = (ClusterGescored) auskunfteiErgebnisCluster.scoren();
         assertEquals(80, clusterGescored.punkte().getPunkte(), "3 Warnungen und 80% = 80 Punkte und kein KO");
         assertEquals(0, clusterGescored.koKriterien().anzahl(), "3 Warnungen und 80% = 80 Punkte und kein KO");
     }
@@ -81,7 +81,7 @@ public class AuskunfteiErgebnisClusterTest {
         auskunfteiErgebnisCluster.warnungenHinzufuegen(4);
         auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(2);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
-        ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren();
+        ClusterGescored clusterGescored = (ClusterGescored) auskunfteiErgebnisCluster.scoren();
         assertEquals(80, clusterGescored.punkte().getPunkte(), "4 Warnungen, 2 Negativ und 80% = 80 Punkte und 2 KO");
         assertEquals(2, clusterGescored.koKriterien().anzahl(), "4 Warnungen, 2 Negativ und 80% = 80 Punkte und 2 KO");
     }
@@ -97,7 +97,7 @@ public class AuskunfteiErgebnisClusterTest {
         AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new Antragsnummer("123"), antragstellerID);
         auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(1);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
-        ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren();
+        ClusterGescored clusterGescored = (ClusterGescored) auskunfteiErgebnisCluster.scoren();
         assertEquals(80, clusterGescored.punkte().getPunkte(), "0 Warnungen, 1 Negativ und 80% = 80 Punkte und 1 KO");
         assertEquals(1, clusterGescored.koKriterien().anzahl(), "0 Warnungen, 1 Negativ und 80% = 80 Punkte und 1 KO");
     }
@@ -112,7 +112,7 @@ public class AuskunfteiErgebnisClusterTest {
                 .build();
         AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new Antragsnummer("123"), antragstellerID);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(50));
-        ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren();
+        ClusterGescored clusterGescored = (ClusterGescored) auskunfteiErgebnisCluster.scoren();
         assertEquals(50, clusterGescored.punkte().getPunkte(), "0 Warnungen, 0 Negativ und 50% = 50 Punkte und 1 KO");
         assertEquals(1, clusterGescored.koKriterien().anzahl(), "0 Warnungen, 0 Negativ und 50% = 50 Punkte und 1 KO");
     }

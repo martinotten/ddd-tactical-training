@@ -44,8 +44,8 @@ public class MonatlicheFinanzsituationCluster {
         }
     }
 
-    public ClusterGescored scoren() {
-        return new ClusterGescored(berechnePunkte(), pruefeKoKriterium());
+    public ClusterScoringEvent scoren() {
+        return new ClusterGescored(this.antragsnummer, berechnePunkte(), pruefeKoKriterium());
     }
 
     public void monatlicheEinnahmenHinzufuegen(Waehrungsbetrag monatlicheEinnahmen) {

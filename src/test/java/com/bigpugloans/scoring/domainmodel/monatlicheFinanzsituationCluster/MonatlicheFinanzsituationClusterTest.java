@@ -38,7 +38,7 @@ public class MonatlicheFinanzsituationClusterTest {
         monatlicheFinanzsituationCluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(3000));
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(2500));
-        ClusterGescored ergebnis = monatlicheFinanzsituationCluster.scoren();
+        ClusterGescored ergebnis = (ClusterGescored) monatlicheFinanzsituationCluster.scoren();
         assertTrue(ergebnis.koKriterien().anzahl() == 1, "Monatliche Darlehensbelastungen > (Einnahmen - Ausgaben) sollte ein KO-Kriterium sein.");
     }
     @Test
@@ -47,7 +47,7 @@ public class MonatlicheFinanzsituationClusterTest {
         monatlicheFinanzsituationCluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(2600));
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(1000));
 
-        ClusterGescored ergebnis = monatlicheFinanzsituationCluster.scoren();
+        ClusterGescored ergebnis = (ClusterGescored) monatlicheFinanzsituationCluster.scoren();
         assertEquals(new Punkte(15), ergebnis.punkte(), "Ein monatlicher Haushaltsüberschuss ohne Tilgungen > 1.500 EUR sollte 15 Punkte geben.");
     }
 }

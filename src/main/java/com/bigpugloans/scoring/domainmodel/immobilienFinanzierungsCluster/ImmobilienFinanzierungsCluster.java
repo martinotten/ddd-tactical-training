@@ -58,8 +58,8 @@ public class ImmobilienFinanzierungsCluster {
         return eigenmittel.anteilVon(marktwert.plus(kaufnebenkosten));
     }
 
-    public ClusterGescored scoren() {
-        return new ClusterGescored(berechnePunkte(), pruefeKoKriterium());
+    public ClusterScoringEvent scoren() {
+        return new ClusterGescored(this.antragsnummer, berechnePunkte(), pruefeKoKriterium());
     }
 
     public void beleihungswertHinzufuegen(Waehrungsbetrag beleihungswert) {

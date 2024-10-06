@@ -47,8 +47,9 @@ public class AuskunfteiErgebnisCluster {
         return this.rueckzahlungswahrscheinlichkeit.berechnePunkte();
     }
 
-    public ClusterGescored scoren() {
-        return new ClusterGescored(berechnePunkte(), pruefeKoKriterium());
+    public ClusterScoringEvent scoren() {
+
+        return new ClusterGescored(this.antragsnummer, berechnePunkte(), pruefeKoKriterium());
     }
 
     public void negativMerkmaleHinzufuegen(int anzahlNegativMerkmale) {

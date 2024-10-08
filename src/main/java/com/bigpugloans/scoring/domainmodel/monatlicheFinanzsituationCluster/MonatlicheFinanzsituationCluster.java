@@ -15,9 +15,6 @@ public class MonatlicheFinanzsituationCluster {
             throw new IllegalArgumentException("Antragsnummer darf nicht null sein.");
         }
         this.antragsnummer = antragsnummer;
-        this.einnahmen = new Waehrungsbetrag(0);
-        this.ausgaben = new Waehrungsbetrag(0);
-        this.neueDarlehensBelastungen = new Waehrungsbetrag(0);
     }
 
     public Antragsnummer antragsnummer() {
@@ -45,6 +42,15 @@ public class MonatlicheFinanzsituationCluster {
     }
 
     public ClusterScoringEvent scoren() {
+        if(einnahmen == null) {
+            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Einnahmen fehlen.");
+        }
+        if(ausgaben == null) {
+            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Ausgaben fehlen.");
+        }
+        if(neueDarlehensBelastungen == null) {
+            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Neue Darlehensbelastungen fehlen.");
+        }
         return new ClusterGescored(this.antragsnummer, berechnePunkte(), pruefeKoKriterium());
     }
 

@@ -1,9 +1,6 @@
 package com.bigpugloans.scoring.domainmodel.auskunfteiErgebnisCluster;
 
-import com.bigpugloans.scoring.domainmodel.Antragsnummer;
-import com.bigpugloans.scoring.domainmodel.AntragstellerID;
-import com.bigpugloans.scoring.domainmodel.Prozentwert;
-import com.bigpugloans.scoring.domainmodel.ClusterGescored;
+import com.bigpugloans.scoring.domainmodel.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
@@ -31,7 +28,17 @@ public class AuskunfteiErgebnisClusterTest {
             new AuskunfteiErgebnisCluster(new Antragsnummer("123"), null);
         });
     }
-
+    @Test
+    void ohneRueckzahlungswahrscheinlichkeitKeinScoring() {
+        AntragstellerID antragstellerID = new AntragstellerID.Builder("Michael", "Ploed")
+                .postleitzahl("40789")
+                .stadt("Monheim")
+                .strasse("Krischerstrasse 100")
+                .geburtsdatum(new Date(1970, 1, 1))
+                .build();
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new Antragsnummer("123"), antragstellerID);
+        assertEquals(ClusterKonnteNochNichtGescoredWerden.class, auskunfteiErgebnisCluster.scoren().getClass());
+    }
     @Test
     void auskunfteiErgebnisClusterMitGleicherAntragsnummerUndAntragstellerIDsindGleich() {
         AntragstellerID antragstellerID = new AntragstellerID.Builder("Michael", "Ploed")

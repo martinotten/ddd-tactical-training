@@ -19,11 +19,10 @@ public class AuskunfteiErgebnisCluster {
         if(antragstellerID == null) {
             throw new IllegalArgumentException("AntragstellerID darf nicht null sein.");
         }
+        this.warnungen = new Warnung(0);
+        this.negativMerkmale = new NegativMerkmal(0);
         this.antragsnummer = antragsnummer;
         this.antragstellerID = antragstellerID;
-        this.negativMerkmale = new NegativMerkmal(0);
-        this.warnungen = new Warnung(0);
-        this.rueckzahlungswahrscheinlichkeit = new RueckzahlungsWahrscheinlichkeit(new Prozentwert(0));
     }
 
     public AntragstellerID antragstellerID() {
@@ -48,7 +47,9 @@ public class AuskunfteiErgebnisCluster {
     }
 
     public ClusterScoringEvent scoren() {
-
+        if(rueckzahlungswahrscheinlichkeit == null) {
+            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Die Rückzahlungswahrscheinlichkeit fehlt.");
+        }
         return new ClusterGescored(this.antragsnummer, berechnePunkte(), pruefeKoKriterium());
     }
 

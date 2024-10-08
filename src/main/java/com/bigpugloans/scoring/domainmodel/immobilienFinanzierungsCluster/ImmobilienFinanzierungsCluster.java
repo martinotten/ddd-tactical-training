@@ -59,6 +59,25 @@ public class ImmobilienFinanzierungsCluster {
     }
 
     public ClusterScoringEvent scoren() {
+        if(beleihungswert == null) {
+            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Der Beleihungswert fehlt.");
+        }
+        if(marktwert == null) {
+            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Der Marktwert fehlt.");
+        }
+        if(kaufnebenkosten == null) {
+            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Die Kaufnebenkosten fehlen.");
+        }
+        if (summeDarlehen == null) {
+            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Die Summe der Darlehen fehlt.");
+        }
+        if (eigenmittel == null) {
+            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Die Summe der Eigenmittel fehlt.");
+        }
+        if (marktwertVergleich == null) {
+            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Der Marktwertvergleich fehlt.");
+        }
+
         return new ClusterGescored(this.antragsnummer, berechnePunkte(), pruefeKoKriterium());
     }
 

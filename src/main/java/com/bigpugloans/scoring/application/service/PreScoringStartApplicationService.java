@@ -8,7 +8,7 @@ import com.bigpugloans.scoring.domainmodel.scoringErgebnis.ScoringErgebnis;
 public class PreScoringStartApplicationService implements PreScoringStart {
     private ScoringErgebnisRepository scoringErgebnisRepository;
     private AntragstellerClusterRepository antragstellerClusterRepository;
-    private MonatlicheFinanzsituationClusterRepository;
+    private MonatlicheFinanzsituationClusterRepository monatlicheFinanzsituationClusterRepository;
     private AuskunfteiErgebnisClusterRepository auskunfteiErgebnisClusterRepository;
     private ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository;
 

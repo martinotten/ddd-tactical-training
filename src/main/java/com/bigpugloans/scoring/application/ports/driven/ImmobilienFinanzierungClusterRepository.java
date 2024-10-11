@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.application.ports.driven;
 
-import com.bigpugloans.scoring.domainmodel.Antragsnummer;
-import com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
+import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 
 public interface ImmobilienFinanzierungClusterRepository {
     public void speichern(ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster);

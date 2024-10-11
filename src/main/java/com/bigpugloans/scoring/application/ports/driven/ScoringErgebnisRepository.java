@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.application.ports.driven;
 
-import com.bigpugloans.scoring.domainmodel.Antragsnummer;
-import com.bigpugloans.scoring.domainmodel.scoringErgebnis.ScoringErgebnis;
+import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
 
 public interface ScoringErgebnisRepository {
     public void speichern(ScoringErgebnis scoringErgebnis);

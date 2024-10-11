@@ -5,9 +5,9 @@ import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungCl
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisRepository;
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisVeroeffentlichen;
 import com.bigpugloans.scoring.application.ports.driving.VerarbeitungImmobilienBewertung;
-import com.bigpugloans.scoring.domainmodel.*;
-import com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
-import com.bigpugloans.scoring.domainmodel.scoringErgebnis.ScoringErgebnis;
+import com.bigpugloans.scoring.domain.model.*;
+import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
+import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
 
 public class VerarbeitungImmobilienBewertungApplicationService implements VerarbeitungImmobilienBewertung {
     private ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository;

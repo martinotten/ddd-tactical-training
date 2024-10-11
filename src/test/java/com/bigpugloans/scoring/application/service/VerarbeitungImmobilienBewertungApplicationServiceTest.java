@@ -2,12 +2,11 @@ package com.bigpugloans.scoring.application.service;
 
 import com.bigpugloans.scoring.application.model.ImmobilienBewertung;
 import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungClusterRepository;
-import com.bigpugloans.scoring.application.ports.driven.MonatlicheFinanzsituationClusterRepository;
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisRepository;
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisVeroeffentlichen;
-import com.bigpugloans.scoring.domainmodel.*;
-import com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
-import com.bigpugloans.scoring.domainmodel.scoringErgebnis.ScoringErgebnis;
+import com.bigpugloans.scoring.domain.model.*;
+import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
+import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.any;

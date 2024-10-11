@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.application.ports.driven;
 
-import com.bigpugloans.scoring.domainmodel.Antragsnummer;
-import com.bigpugloans.scoring.domainmodel.antragstellerCluster.AntragstellerCluster;
+import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 
 public interface AntragstellerClusterRepository {
     public void speichern(AntragstellerCluster antragstellerCluster);

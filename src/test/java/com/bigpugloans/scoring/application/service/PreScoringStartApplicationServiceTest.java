@@ -3,8 +3,8 @@ package com.bigpugloans.scoring.application.service;
 import com.bigpugloans.scoring.application.model.Antrag;
 import com.bigpugloans.scoring.application.model.AuskunfteiErgebnis;
 import com.bigpugloans.scoring.application.ports.driven.*;
-import com.bigpugloans.scoring.domainmodel.AntragErfolgreichGescored;
-import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
+import com.bigpugloans.scoring.domain.model.AntragErfolgreichGescored;
+import com.bigpugloans.scoring.domain.model.Waehrungsbetrag;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.any;

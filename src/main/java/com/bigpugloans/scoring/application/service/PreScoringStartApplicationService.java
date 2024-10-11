@@ -4,12 +4,12 @@ import com.bigpugloans.scoring.application.model.Antrag;
 import com.bigpugloans.scoring.application.model.AuskunfteiErgebnis;
 import com.bigpugloans.scoring.application.ports.driven.*;
 import com.bigpugloans.scoring.application.ports.driving.PreScoringStart;
-import com.bigpugloans.scoring.domainmodel.*;
-import com.bigpugloans.scoring.domainmodel.antragstellerCluster.AntragstellerCluster;
-import com.bigpugloans.scoring.domainmodel.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
-import com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
-import com.bigpugloans.scoring.domainmodel.monatlicheFinanzsituationCluster.MonatlicheFinanzsituationCluster;
-import com.bigpugloans.scoring.domainmodel.scoringErgebnis.ScoringErgebnis;
+import com.bigpugloans.scoring.domain.model.*;
+import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
+import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
+import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
+import com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster.MonatlicheFinanzsituationCluster;
+import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
 
 public class PreScoringStartApplicationService implements PreScoringStart {
     private ScoringErgebnisRepository scoringErgebnisRepository;

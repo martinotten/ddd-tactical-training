@@ -10,6 +10,7 @@ import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.Auskunftei
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster.MonatlicheFinanzsituationCluster;
 import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
+import com.bigpugloans.scoring.domain.service.ScoreAntragstellerClusterDomainService;
 
 public class PreScoringStartApplicationService implements PreScoringStart {
     private ScoringErgebnisRepository scoringErgebnisRepository;
@@ -48,10 +49,7 @@ public class PreScoringStartApplicationService implements PreScoringStart {
             scoringErgebnis.monatlicheFinansituationClusterHinzufuegen((ClusterGescored) monatlicheFinanzsituationClusterErgebnis);
         }
 
-        ClusterScoringEvent antragstellerClusterErgebnis = behandleAntragstellerCluster(antrag);
-        if(ClusterGescored.class.equals(antragstellerClusterErgebnis.getClass())) {
-            scoringErgebnis.antragstellerClusterHinzufuegen((ClusterGescored) antragstellerClusterErgebnis);
-        }
+        scoringErgebnis = behandleAntragstellerCluster(antrag, scoringErgebnis);
 
         ClusterScoringEvent immobilienFinanzierungClusterErgebnis = behandleImmobilienFinanzierungsCluster(antrag);
         if(ClusterGescored.class.equals(immobilienFinanzierungClusterErgebnis.getClass())) {
@@ -97,16 +95,20 @@ public class PreScoringStartApplicationService implements PreScoringStart {
 
         return immobilienFinanzierungsCluster.scoren();
     }
-    private ClusterScoringEvent behandleAntragstellerCluster(Antrag antrag) {
+    private ScoringErgebnis behandleAntragstellerCluster(Antrag antrag, ScoringErgebnis scoringErgebnis) {
         Antragsnummer antragsnummer = new Antragsnummer(antrag.antragsnummer());
-        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(antragsnummer);
+        AntragstellerCluster antragstellerCluster = antragstellerClusterRepository.lade(antragsnummer);
+        if(antragstellerCluster == null) {
+            antragstellerCluster = new AntragstellerCluster(antragsnummer);
+        }
         Waehrungsbetrag guthaben = leseKontoSaldo.leseKontoSaldo(antrag.kundennummer());
         antragstellerCluster.guthabenHinzufuegen(guthaben);
         antragstellerCluster.wohnortHinzufuegen(antrag.wohnort());
 
         antragstellerClusterRepository.speichern(antragstellerCluster);
+        ScoreAntragstellerClusterDomainService scoreAntragstellerClusterDomainService = new ScoreAntragstellerClusterDomainService();
+        return scoreAntragstellerClusterDomainService.scoreAntragstellerCluster(antragstellerCluster, scoringErgebnis);
 
-        return antragstellerCluster.scoren();
     }
 
     private ClusterScoringEvent behandleMonatlicheFinanzsituationCluster(Antrag antrag) {

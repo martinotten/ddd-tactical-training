@@ -107,6 +107,19 @@ public class ScoringErgebnis {
     }
 
     @Override
+    public String toString() {
+        return "ScoringErgebnis{" +
+                "antragsnummer=" + antragsnummer +
+                ", antragstellerClusterErgebnis=" + antragstellerClusterErgebnis +
+                ", auskunfteiClusterErgebnis=" + auskunfteiClusterErgebnis +
+                ", immobilienFinanzierungsClusterErgebnis=" + immobilienFinanzierungsClusterErgebnis +
+                ", monatlicherHaushaltsueberschussClusterErgebnis=" + monatlicherHaushaltsueberschussClusterErgebnis +
+                ", koKriterien=" + koKriterien +
+                ", gesamtPunkte=" + gesamtPunkte +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

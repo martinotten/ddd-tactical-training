@@ -39,25 +39,11 @@ public class PreScoringStartApplicationServiceTest {
         MonatlicheFinanzsituationClusterRepository monatlicheFinanzsituationClusterRepositoryMock = mock();
         ScoringErgebnisRepository scoringErgebnisRepositoryMock = mock();
 
-        LeseKontoSaldo leseKontoSaldoMock = mock();
-        //when(leseKontoSaldoMock.leseKontoSaldo(anyString())).thenReturn(new Waehrungsbetrag(8000));
-        when(leseKontoSaldoMock.leseKontoSaldo(anyString())).thenAnswer(invocation -> {
-            String kundennummer = invocation.getArgument(0);
-            System.out.println("lese Konto Saldo von Kundennummer " + kundennummer);
-            return new Waehrungsbetrag(8000);
-        });
+        LeseKontoSaldo leseKontoSaldoMock = leseKontoSaldoMock();
 
-        KonditionsAbfrage konditionsAbfrageMock = mock();
-        when(konditionsAbfrageMock.konditionsAbfrage(
-                antrag.vorname(), antrag.nachname(), antrag.strasse(), antrag.stadt(), antrag.postleitzahl(), antrag.geburtsdatum()))
-            .thenReturn(new AuskunfteiErgebnis(2, 0, 70));
+        KonditionsAbfrage konditionsAbfrageMock = konditionsAbfrageMock(antrag);
 
-        ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichenMock = mock();
-        doAnswer(invocation -> {
-            AntragErfolgreichGescored arg = invocation.getArgument(0);
-            System.out.println(arg);
-            return null;
-        }).when(scoringErgebnisVeroeffentlichenMock).preScoringErgebnisVeroeffentlichen(any(AntragErfolgreichGescored.class));
+        ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichenMock = scoringErgebnisVeroeffentlichenMock();
 
 
         PreScoringStartApplicationService service = new PreScoringStartApplicationService(
@@ -71,5 +57,34 @@ public class PreScoringStartApplicationServiceTest {
                 leseKontoSaldoMock
         );
         service.startePreScoring(antrag);
+    }
+
+    private static LeseKontoSaldo leseKontoSaldoMock() {
+        LeseKontoSaldo leseKontoSaldoMock = mock();
+        //when(leseKontoSaldoMock.leseKontoSaldo(anyString())).thenReturn(new Waehrungsbetrag(8000));
+        when(leseKontoSaldoMock.leseKontoSaldo(anyString())).thenAnswer(invocation -> {
+            String kundennummer = invocation.getArgument(0);
+            System.out.println("lese Konto Saldo von Kundennummer " + kundennummer);
+            return new Waehrungsbetrag(8000);
+        });
+        return leseKontoSaldoMock;
+    }
+
+    private static KonditionsAbfrage konditionsAbfrageMock(Antrag antrag) {
+        KonditionsAbfrage konditionsAbfrageMock = mock();
+        when(konditionsAbfrageMock.konditionsAbfrage(
+                antrag.vorname(), antrag.nachname(), antrag.strasse(), antrag.stadt(), antrag.postleitzahl(), antrag.geburtsdatum()))
+            .thenReturn(new AuskunfteiErgebnis(2, 0, 70));
+        return konditionsAbfrageMock;
+    }
+
+    private static ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichenMock() {
+        ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichenMock = mock();
+        doAnswer(invocation -> {
+            AntragErfolgreichGescored arg = invocation.getArgument(0);
+            System.out.println(arg);
+            return null;
+        }).when(scoringErgebnisVeroeffentlichenMock).preScoringErgebnisVeroeffentlichen(any(AntragErfolgreichGescored.class));
+        return scoringErgebnisVeroeffentlichenMock;
     }
 }

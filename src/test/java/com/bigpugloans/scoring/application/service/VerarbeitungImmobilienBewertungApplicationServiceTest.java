@@ -19,6 +19,8 @@ public class VerarbeitungImmobilienBewertungApplicationServiceTest {
         when(immobilienFinanzierungClusterRepositoryMock.lade(any()))
                 .thenReturn(new ImmobilienFinanzierungsCluster(new Antragsnummer("123")));
         ScoringErgebnisRepository scoringErgebnisRepositoryMock = mock();
+        when(scoringErgebnisRepositoryMock.lade(any()))
+                .thenReturn(new ScoringErgebnis(new Antragsnummer("123")));
         ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichenMock = mock();
         doAnswer(invocation -> {
             AntragErfolgreichGescored arg = invocation.getArgument(0);

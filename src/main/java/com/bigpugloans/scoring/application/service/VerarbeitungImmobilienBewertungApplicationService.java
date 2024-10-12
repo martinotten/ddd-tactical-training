@@ -8,6 +8,7 @@ import com.bigpugloans.scoring.application.ports.driving.VerarbeitungImmobilienB
 import com.bigpugloans.scoring.domain.model.*;
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
+import com.bigpugloans.scoring.domain.service.ScoreImmobilienFinanzierungsClusterDomainService;
 
 public class VerarbeitungImmobilienBewertungApplicationService implements VerarbeitungImmobilienBewertung {
     private ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository;
@@ -30,14 +31,14 @@ public class VerarbeitungImmobilienBewertungApplicationService implements Verarb
                 new Waehrungsbetrag(immobilienBewertung.maximalerMarktwert()),
                 new Waehrungsbetrag(immobilienBewertung.durchschnittlicherMarktwertVon()),
                 new Waehrungsbetrag(immobilienBewertung.durchschnittlicherMarktwertBis()));
-        ClusterScoringEvent immobilienFinanzierungsClusterErgebnis = immobilienFinanzierungsCluster.scoren();
-        if(ClusterGescored.class.equals(immobilienFinanzierungsClusterErgebnis.getClass())) {
-            ScoringErgebnis scoringErgebnis = scoringErgebnisRepository.lade(new Antragsnummer(immobilienBewertung.antragsnummer()));
-            scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen((ClusterGescored) immobilienFinanzierungsClusterErgebnis);
-            AntragScoringEvent antragScoringEvent = scoringErgebnis.berechneErgebnis();
-            if(AntragErfolgreichGescored.class.equals(antragScoringEvent.getClass())) {
-                scoringErgebnisVeroeffentlichen.preScoringErgebnisVeroeffentlichen((AntragErfolgreichGescored) antragScoringEvent);
-            }
+        ScoringErgebnis scoringErgebnis = scoringErgebnisRepository.lade(new Antragsnummer(immobilienBewertung.antragsnummer()));
+        ScoreImmobilienFinanzierungsClusterDomainService domainService = new ScoreImmobilienFinanzierungsClusterDomainService();
+        scoringErgebnis = domainService.scoreImmobilienFinanzierungsCluster(immobilienFinanzierungsCluster, scoringErgebnis);
+        scoringErgebnisRepository.speichern(scoringErgebnis);
+        AntragScoringEvent ergebnis = scoringErgebnis.berechneErgebnis();
+        if(AntragErfolgreichGescored.class.equals(ergebnis.getClass())) {
+            AntragErfolgreichGescored antragErfolgreichGescored = (AntragErfolgreichGescored) ergebnis;
+            scoringErgebnisVeroeffentlichen.preScoringErgebnisVeroeffentlichen(antragErfolgreichGescored);
         }
     }
 }

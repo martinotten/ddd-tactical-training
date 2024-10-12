@@ -11,6 +11,7 @@ import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.Immob
 import com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster.MonatlicheFinanzsituationCluster;
 import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
 import com.bigpugloans.scoring.domain.service.ScoreAntragstellerClusterDomainService;
+import com.bigpugloans.scoring.domain.service.ScoreAuskunfteiErgebnisClusterDomainService;
 
 public class PreScoringStartApplicationService implements PreScoringStart {
     private ScoringErgebnisRepository scoringErgebnisRepository;
@@ -39,10 +40,7 @@ public class PreScoringStartApplicationService implements PreScoringStart {
         Antragsnummer antragsnummer = new Antragsnummer(antrag.antragsnummer());
         ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
 
-        ClusterScoringEvent auskunfteiErgebnisClusterErgebnis = behandleAuskunfteiErgebnisCluster(antrag);
-        if(ClusterGescored.class.equals(auskunfteiErgebnisClusterErgebnis.getClass())) {
-            scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen((ClusterGescored) auskunfteiErgebnisClusterErgebnis);
-        }
+        scoringErgebnis = behandleAuskunfteiErgebnisCluster(antrag, scoringErgebnis);
 
         ClusterScoringEvent monatlicheFinanzsituationClusterErgebnis = behandleMonatlicheFinanzsituationCluster(antrag);
         if(ClusterGescored.class.equals(monatlicheFinanzsituationClusterErgebnis.getClass())) {
@@ -65,7 +63,7 @@ public class PreScoringStartApplicationService implements PreScoringStart {
 
     }
 
-    private ClusterScoringEvent behandleAuskunfteiErgebnisCluster(Antrag antrag) {
+    private ScoringErgebnis behandleAuskunfteiErgebnisCluster(Antrag antrag, ScoringErgebnis scoringErgebnis) {
         Antragsnummer antragsnummer = new Antragsnummer(antrag.antragsnummer());
         AntragstellerID antragstellerID = new AntragstellerID.Builder(antrag.vorname(), antrag.nachname())
                 .geburtsdatum(antrag.geburtsdatum())
@@ -78,9 +76,10 @@ public class PreScoringStartApplicationService implements PreScoringStart {
         auskunfteiErgebnisCluster.warnungenHinzufuegen(auskunfteiErgebnis.anzahlWarnungen());
         auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(auskunfteiErgebnis.anzahlNegativMerkmale());
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(auskunfteiErgebnis.rueckzahlungsWahrscheinlichkeit()));
-
         auskunfteiErgebnisClusterRepository.speichern(auskunfteiErgebnisCluster);
-        return auskunfteiErgebnisCluster.scoren();
+
+        ScoreAuskunfteiErgebnisClusterDomainService domainService = new ScoreAuskunfteiErgebnisClusterDomainService();
+        return domainService.scoreAuskunfteiErgebnisCluster(auskunfteiErgebnisCluster, scoringErgebnis);
     }
 
     private ClusterScoringEvent behandleImmobilienFinanzierungsCluster(Antrag antrag) {
@@ -106,8 +105,8 @@ public class PreScoringStartApplicationService implements PreScoringStart {
         antragstellerCluster.wohnortHinzufuegen(antrag.wohnort());
 
         antragstellerClusterRepository.speichern(antragstellerCluster);
-        ScoreAntragstellerClusterDomainService scoreAntragstellerClusterDomainService = new ScoreAntragstellerClusterDomainService();
-        return scoreAntragstellerClusterDomainService.scoreAntragstellerCluster(antragstellerCluster, scoringErgebnis);
+        ScoreAntragstellerClusterDomainService domainService = new ScoreAntragstellerClusterDomainService();
+        return domainService.scoreAntragstellerCluster(antragstellerCluster, scoringErgebnis);
 
     }
 

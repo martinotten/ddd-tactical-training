@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ScoreAntragstellerDomainServiceTest {
+public class ScoreAntragstellerClusterDomainServiceTest {
     @Test
     void testScoreAntragstellerClusterVollstaendigGruen() {
         AntragstellerCluster antragsterllerCluster = new AntragstellerCluster(new Antragsnummer("123"));

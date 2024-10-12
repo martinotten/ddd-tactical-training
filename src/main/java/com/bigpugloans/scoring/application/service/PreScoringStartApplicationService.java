@@ -13,6 +13,7 @@ import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
 import com.bigpugloans.scoring.domain.service.ScoreAntragstellerClusterDomainService;
 import com.bigpugloans.scoring.domain.service.ScoreAuskunfteiErgebnisClusterDomainService;
 import com.bigpugloans.scoring.domain.service.ScoreImmobilienFinanzierungsClusterDomainService;
+import com.bigpugloans.scoring.domain.service.ScoreMonatlicheFinanzsituationClusterDomainService;
 
 public class PreScoringStartApplicationService implements PreScoringStart {
     private ScoringErgebnisRepository scoringErgebnisRepository;
@@ -43,16 +44,14 @@ public class PreScoringStartApplicationService implements PreScoringStart {
 
         scoringErgebnis = behandleAuskunfteiErgebnisCluster(antrag, scoringErgebnis);
 
-        ClusterScoringEvent monatlicheFinanzsituationClusterErgebnis = behandleMonatlicheFinanzsituationCluster(antrag);
-        if(ClusterGescored.class.equals(monatlicheFinanzsituationClusterErgebnis.getClass())) {
-            scoringErgebnis.monatlicheFinansituationClusterHinzufuegen((ClusterGescored) monatlicheFinanzsituationClusterErgebnis);
-        }
+        scoringErgebnis = behandleMonatlicheFinanzsituationCluster(antrag, scoringErgebnis);
 
         scoringErgebnis = behandleAntragstellerCluster(antrag, scoringErgebnis);
 
         scoringErgebnis = behandleImmobilienFinanzierungsCluster(antrag, scoringErgebnis);
 
         scoringErgebnisRepository.speichern(scoringErgebnis);
+
         AntragScoringEvent ergebnis = scoringErgebnis.berechneErgebnis();
         if(AntragErfolgreichGescored.class.equals(ergebnis.getClass())) {
             AntragErfolgreichGescored antragErfolgreichGescored = (AntragErfolgreichGescored) ergebnis;
@@ -108,7 +107,7 @@ public class PreScoringStartApplicationService implements PreScoringStart {
 
     }
 
-    private ClusterScoringEvent behandleMonatlicheFinanzsituationCluster(Antrag antrag) {
+    private ScoringErgebnis behandleMonatlicheFinanzsituationCluster(Antrag antrag, ScoringErgebnis scoringErgebnis) {
         Antragsnummer antragsnummer = new Antragsnummer(antrag.antragsnummer());
         MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(antragsnummer);
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(antrag.monatlicheAusgaben()));
@@ -117,6 +116,7 @@ public class PreScoringStartApplicationService implements PreScoringStart {
 
         monatlicheFinanzsituationClusterRepository.speichern(monatlicheFinanzsituationCluster);
 
-        return monatlicheFinanzsituationCluster.scoren();
+        ScoreMonatlicheFinanzsituationClusterDomainService domainService = new ScoreMonatlicheFinanzsituationClusterDomainService();
+        return domainService.scoreMonatlicheFinanzsituationCluster(monatlicheFinanzsituationCluster, scoringErgebnis);
     }
 }

@@ -34,7 +34,7 @@ public class ScoreAuskunfteiErgebnisClusterDomainServiceTest {
     }
 
     @Test
-    void testScoreAntragstellerClusterVollstaendigROT() {
+    void testScoreAuskunfteiClusterVollstaendigROT() {
         final AntragstellerID antragstellerID = erzeugeAntragstellerID();
         final Antragsnummer antragsnummer = new Antragsnummer("123");
 
@@ -55,7 +55,7 @@ public class ScoreAuskunfteiErgebnisClusterDomainServiceTest {
     }
 
     @Test
-    void testScoreAntragstellerClusterNichtVollstaendig() {
+    void testScoreAuskunfteiClusterNichtVollstaendig() {
 
         final AntragstellerID antragstellerID = erzeugeAntragstellerID();
         final Antragsnummer antragsnummer = new Antragsnummer("123");

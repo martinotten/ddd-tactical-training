@@ -5,13 +5,16 @@ import com.bigpugloans.scoring.domain.model.Punkte;
 import java.util.Objects;
 
 class Wohnort {
-    private String wohnort;
+    private final String wohnort;
 
-    public Wohnort(String wohnort) {
+    Wohnort(String wohnort) {
+        if(wohnort == null) {
+            throw new IllegalArgumentException("Wohnort darf nicht null sein.");
+        }
         this.wohnort = wohnort;
     }
 
-    public Punkte berechnePunkte() {
+    Punkte berechnePunkte() {
         if ("Hamburg".equalsIgnoreCase(wohnort)) {
             return new Punkte(5);
         } else if ("München".equalsIgnoreCase(wohnort)) {
@@ -19,6 +22,10 @@ class Wohnort {
         } else {
             return new Punkte(0);
         }
+    }
+
+    String wohnort() {
+        return wohnort;
     }
 
     @Override

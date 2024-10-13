@@ -3,25 +3,34 @@ package com.bigpugloans.scoring.domain.model.antragstellerCluster;
 import com.bigpugloans.scoring.domain.model.Punkte;
 import com.bigpugloans.scoring.domain.model.Waehrungsbetrag;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 class Guthaben {
-    private Waehrungsbetrag guthaben;
+    private final Waehrungsbetrag guthaben;
 
-    public Guthaben(Waehrungsbetrag guthaben) {
+    Guthaben(Waehrungsbetrag guthaben) {
         this.guthaben = guthaben;
     }
 
-    public Guthaben(int guthaben) {
+    Guthaben(BigDecimal guthaben) {
         this.guthaben = new Waehrungsbetrag(guthaben);
     }
 
-    public Punkte berechnePunkte() {
+    Guthaben(int guthaben) {
+        this.guthaben = new Waehrungsbetrag(guthaben);
+    }
+
+    Punkte berechnePunkte() {
         if (guthaben.groesserAls(new Waehrungsbetrag(10000))) {
             return new Punkte(5);
         } else {
             return new Punkte(0);
         }
+    }
+
+    BigDecimal guthaben() {
+        return guthaben.betrag();
     }
 
     @Override

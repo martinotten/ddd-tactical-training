@@ -11,6 +11,14 @@ public class Waehrungsbetrag {
         this.betrag = new BigDecimal(betrag);
     }
 
+    public Waehrungsbetrag(BigDecimal betrag) {
+        this.betrag = betrag;
+    }
+
+    public BigDecimal betrag() {
+        return betrag;
+    }
+
     public boolean groesserAls(Waehrungsbetrag andererBetrag) {
         if(andererBetrag == null) {
             andererBetrag = new Waehrungsbetrag(0);

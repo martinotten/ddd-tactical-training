@@ -4,8 +4,14 @@ import com.bigpugloans.scoring.domain.model.Punkte;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class WohnortTest {
+    @Test
+    void wohnortNull() {
+        assertThrows(IllegalArgumentException.class, () -> new Wohnort(null));
+    }
+
     @Test
     void antragstellerAusMuenchenBekommen5Punkte() {
         Wohnort wohnort = new Wohnort("München");

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GuthabenTest {
+
     @Test
     void bestandskundenMitGuthabenUeber10000Bekommen5PunkteMehr() {
         assertEquals(new Punkte(5), new Guthaben(12000).berechnePunkte(), "Bestandskunden mit Guthaben 12.000 EUR sollten 5 Punkte mehr bekommen.");

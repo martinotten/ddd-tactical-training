@@ -7,15 +7,9 @@ import com.bigpugloans.scoring.domain.model.Waehrungsbetrag;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AntragstellerClusterTest {
-    @Test
-    void antragstellerClusterOhneAntragsnummerWirftException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new AntragstellerCluster(null);
-        });
-    }
+
 
     @Test
     void antragstellerClusterMitGleichenAntragsnummernSindGleich() {

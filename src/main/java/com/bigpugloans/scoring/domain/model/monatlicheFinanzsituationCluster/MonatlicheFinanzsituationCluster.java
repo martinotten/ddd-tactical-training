@@ -2,6 +2,7 @@ package com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster;
 
 import com.bigpugloans.scoring.domain.model.*;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class MonatlicheFinanzsituationCluster {
@@ -78,4 +79,39 @@ public class MonatlicheFinanzsituationCluster {
     public int hashCode() {
         return Objects.hashCode(antragsnummer);
     }
+
+    public static MonatlicheFinanzsituationCluster fromMemento(MonatlicheFinanzsituationClusterMemento memento) {
+        MonatlicheFinanzsituationCluster cluster = new MonatlicheFinanzsituationCluster(new Antragsnummer(memento.antragsnummer));
+        if(memento.einnahmen != null) {
+            cluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(memento.einnahmen));
+        }
+        if(memento.ausgaben != null) {
+            cluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(memento.ausgaben));
+        }
+        if(memento.neueDarlehensBelastungen != null) {
+            cluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(memento.neueDarlehensBelastungen));
+        }
+        return cluster;
+    }
+
+    public MonatlicheFinanzsituationClusterMemento memento() {
+        BigDecimal betragEinnahmen = null;
+        if (einnahmen != null) {
+            betragEinnahmen = einnahmen.betrag();
+        }
+
+        BigDecimal betragAusgaben = null;
+        if (ausgaben != null) {
+            betragAusgaben = ausgaben.betrag();
+        }
+
+        BigDecimal betragNeueDarlehensbelastungen = null;
+        if (neueDarlehensBelastungen != null) {
+            betragNeueDarlehensbelastungen = neueDarlehensBelastungen.betrag();
+        }
+        return new MonatlicheFinanzsituationClusterMemento(antragsnummer.nummer(), betragEinnahmen, betragAusgaben, betragNeueDarlehensbelastungen);
+    }
+
+    public record MonatlicheFinanzsituationClusterMemento(String antragsnummer, BigDecimal einnahmen, BigDecimal ausgaben, BigDecimal neueDarlehensBelastungen) {}
+
 }

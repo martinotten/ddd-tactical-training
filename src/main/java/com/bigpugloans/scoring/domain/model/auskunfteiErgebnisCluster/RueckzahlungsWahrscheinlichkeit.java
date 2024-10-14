@@ -9,15 +9,19 @@ import java.util.Objects;
 class RueckzahlungsWahrscheinlichkeit {
     private Prozentwert rueckzahlungsWahrscheinlichkeit;
 
-    public RueckzahlungsWahrscheinlichkeit(Prozentwert rueckzahlungsWahrscheinlichkeit) {
+    Prozentwert rueckzahlungsWahrscheinlichkeit() {
+        return rueckzahlungsWahrscheinlichkeit;
+    }
+
+    RueckzahlungsWahrscheinlichkeit(Prozentwert rueckzahlungsWahrscheinlichkeit) {
         this.rueckzahlungsWahrscheinlichkeit = rueckzahlungsWahrscheinlichkeit;
     }
 
-    public Punkte berechnePunkte() {
+    Punkte berechnePunkte() {
         return new Punkte(rueckzahlungsWahrscheinlichkeit.getWert().intValue());
     }
 
-    public KoKriterien bestimmeKoKriterien() {
+    KoKriterien bestimmeKoKriterien() {
         if(rueckzahlungsWahrscheinlichkeit.kleinerAls(new Prozentwert(60) )) {
             return new KoKriterien(1);
         } else {

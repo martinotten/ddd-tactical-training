@@ -7,11 +7,15 @@ import java.util.Objects;
 class NegativMerkmal {
     private final int anzahlNegativMerkmale;
 
-    public NegativMerkmal(int anzahlNegativMerkmale) {
+    int anzahl() {
+        return anzahlNegativMerkmale;
+    }
+
+    NegativMerkmal(int anzahlNegativMerkmale) {
         this.anzahlNegativMerkmale = anzahlNegativMerkmale;
     }
 
-    public KoKriterien bestimmeKoKriterien() {
+    KoKriterien bestimmeKoKriterien() {
         if(anzahlNegativMerkmale > 0) {
             return new KoKriterien(1);
         } else {

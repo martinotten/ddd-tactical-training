@@ -7,11 +7,14 @@ import java.util.Objects;
 class Warnung {
     private final int anzahlWarnungen;
 
-    public Warnung(int anzahlWarnungen) {
+    Warnung(int anzahlWarnungen) {
         this.anzahlWarnungen = anzahlWarnungen;
     }
 
-    public KoKriterien bestimmeKoKriterien() {
+    int anzahl() {
+        return anzahlWarnungen;
+    }
+    KoKriterien bestimmeKoKriterien() {
         if(anzahlWarnungen > 3) {
             return new KoKriterien(1);
         } else {

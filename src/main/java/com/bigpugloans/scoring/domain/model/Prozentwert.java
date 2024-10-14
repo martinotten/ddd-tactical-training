@@ -6,6 +6,9 @@ public class Prozentwert {
     private final BigDecimal wert;
 
     public Prozentwert(BigDecimal wert) {
+        if(wert == null) {
+            throw new IllegalArgumentException("Prozentwert darf nicht null sein");
+        }
         this.wert = wert;
     }
 

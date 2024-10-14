@@ -2,6 +2,7 @@ package com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster;
 
 import com.bigpugloans.scoring.domain.model.*;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class ImmobilienFinanzierungsCluster {
@@ -116,6 +117,144 @@ public class ImmobilienFinanzierungsCluster {
     @Override
     public int hashCode() {
         return Objects.hashCode(antragsnummer);
+    }
+
+    public ImmobilienFinanzierungsClusterMemento memento() {
+        ImmobilienFinanzierungsClusterMemento memento = new ImmobilienFinanzierungsClusterMemento(antragsnummer.nummer());
+        if(this.beleihungswert != null) {
+            memento.beleihungswert(beleihungswert.betrag());
+        }
+        if(this.marktwert != null) {
+            memento.marktwert(marktwert.betrag());
+        }
+        if(this.kaufnebenkosten != null) {
+            memento.kaufnebenkosten(kaufnebenkosten.betrag());
+        }
+        if(this.summeDarlehen != null) {
+            memento.summeDarlehen(summeDarlehen.betrag());
+        }
+        if(this.eigenmittel != null) {
+            memento.eigenmittel(eigenmittel.betrag());
+        }
+        if(this.marktwertVergleich != null) {
+            memento.minimalerMarktwert(marktwertVergleich.minimalerMarktwert().betrag());
+            memento.maximalerMarktwert(marktwertVergleich.maximalerMarktwert().betrag());
+            memento.durchschnittlicherMarktwertVon(marktwertVergleich.durchschnittlicherMarktwertVon().betrag());
+            memento.durchschnittlicherMarktwertBis(marktwertVergleich.durchschnittlicherMarktwertBis().betrag());
+        }
+        return memento;
+    }
+
+    public static ImmobilienFinanzierungsCluster fromMemento(ImmobilienFinanzierungsClusterMemento memento) {
+        Antragsnummer antragsnummer = new Antragsnummer(memento.antragsnummer);
+        ImmobilienFinanzierungsCluster cluster = new ImmobilienFinanzierungsCluster(antragsnummer);
+        if(memento.beleihungswert != null) {
+            cluster.beleihungswertHinzufuegen(new Waehrungsbetrag(memento.beleihungswert));
+        }
+        if(memento.marktwert != null) {
+            cluster.marktwertHinzufuegen(new Waehrungsbetrag(memento.marktwert));
+        }
+        if(memento.kaufnebenkosten != null) {
+            cluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(memento.kaufnebenkosten));
+        }
+        if(memento.summeDarlehen != null) {
+            cluster.summeDarlehenHinzufuegen(new Waehrungsbetrag(memento.summeDarlehen));
+        }
+        if(memento.eigenmittel != null) {
+            cluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(memento.eigenmittel));
+        }
+        if(memento.minimalerMarktwert != null && memento.maximalerMarktwert != null && memento.durchschnittlicherMarktwertVon != null && memento.durchschnittlicherMarktwertBis != null) {
+            cluster.marktwertVerlgeichHinzufuegen(new Waehrungsbetrag(memento.minimalerMarktwert), new Waehrungsbetrag(memento.maximalerMarktwert), new Waehrungsbetrag(memento.durchschnittlicherMarktwertVon), new Waehrungsbetrag(memento.durchschnittlicherMarktwertBis));
+        }
+        return cluster;
+    }
+
+    public static class ImmobilienFinanzierungsClusterMemento {
+        private String antragsnummer;
+        private BigDecimal beleihungswert;
+        private BigDecimal minimalerMarktwert;
+        private BigDecimal maximalerMarktwert;
+        private BigDecimal durchschnittlicherMarktwertVon;
+        private BigDecimal durchschnittlicherMarktwertBis;
+        private BigDecimal marktwert;
+        private BigDecimal kaufnebenkosten;
+        private BigDecimal summeDarlehen;
+        private BigDecimal eigenmittel;
+
+        public ImmobilienFinanzierungsClusterMemento() {
+        }
+
+        public ImmobilienFinanzierungsClusterMemento(String antragsnummer) {
+            this.antragsnummer = antragsnummer;
+        }
+
+        public String antragsnummer() {
+            return antragsnummer;
+        }
+        public void beleihungswert(BigDecimal beleihungswert) {
+            this.beleihungswert = beleihungswert;
+        }
+        public BigDecimal beleihungswert() {
+            return beleihungswert;
+        }
+
+        public void minimalerMarktwert(BigDecimal minimalerMarktwert) {
+            this.minimalerMarktwert = minimalerMarktwert;
+        }
+        public BigDecimal minimalerMarktwert() {
+            return minimalerMarktwert;
+        }
+
+        public void maximalerMarktwert(BigDecimal maximalerMarktwert) {
+            this.maximalerMarktwert = maximalerMarktwert;
+        }
+        public BigDecimal maximalerMarktwert() {
+            return maximalerMarktwert;
+        }
+
+        public void durchschnittlicherMarktwertVon(BigDecimal durchschnittlicherMarktwertVon) {
+            this.durchschnittlicherMarktwertVon = durchschnittlicherMarktwertVon;
+        }
+        public BigDecimal durchschnittlicherMarktwertVon() {
+            return durchschnittlicherMarktwertVon;
+        }
+
+        public void durchschnittlicherMarktwertBis(BigDecimal durchschnittlicherMarktwertBis) {
+            this.durchschnittlicherMarktwertBis = durchschnittlicherMarktwertBis;
+        }
+        public BigDecimal durchschnittlicherMarktwertBis() {
+            return durchschnittlicherMarktwertBis;
+        }
+
+        public void marktwert(BigDecimal marktwert) {
+            this.marktwert = marktwert;
+        }
+        public BigDecimal marktwert() {
+            return marktwert;
+        }
+
+        public void kaufnebenkosten(BigDecimal kaufnebenkosten) {
+            this.kaufnebenkosten = kaufnebenkosten;
+        }
+        public BigDecimal kaufnebenkosten() {
+            return kaufnebenkosten;
+        }
+
+        public void summeDarlehen(BigDecimal summeDarlehen) {
+            this.summeDarlehen = summeDarlehen;
+        }
+        public BigDecimal summeDarlehen() {
+            return summeDarlehen;
+        }
+
+        public void eigenmittel(BigDecimal eigenmittel) {
+            this.eigenmittel = eigenmittel;
+        }
+        public BigDecimal eigenmittel() {
+            return eigenmittel;
+        }
+
+
     }
 }
 

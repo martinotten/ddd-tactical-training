@@ -69,11 +69,28 @@ class MarktwertVergleich {
         return Objects.hash(minimalerMarktwert, maximalerMarktwert, durchschnittlicherMarktwertVon, durchschnittlicherMarktwertBis);
     }
 
-    public Punkte berechnePunkte(Waehrungsbetrag marktwert) {
+    Punkte berechnePunkte(Waehrungsbetrag marktwert) {
         if(marktwert.groesserAls(this.durchschnittlicherMarktwertVon) && marktwert.kleinerAls(this.durchschnittlicherMarktwertBis)) {
             return new Punkte(15);
         } else {
             return new Punkte(0);
         }
     }
+
+    Waehrungsbetrag minimalerMarktwert() {
+        return minimalerMarktwert;
+    }
+
+    Waehrungsbetrag maximalerMarktwert() {
+        return maximalerMarktwert;
+    }
+
+    Waehrungsbetrag durchschnittlicherMarktwertVon() {
+        return durchschnittlicherMarktwertVon;
+    }
+
+    Waehrungsbetrag durchschnittlicherMarktwertBis() {
+        return durchschnittlicherMarktwertBis;
+    }
+
 }

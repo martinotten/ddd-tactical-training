@@ -131,4 +131,25 @@ public class ScoringErgebnis {
     public int hashCode() {
         return Objects.hashCode(antragsnummer);
     }
+    public static ScoringErgebnis fromMemento(ScoringErgebnisMemento memento) {
+        Antragsnummer antragsnummer = new Antragsnummer(memento.antragsnummer());
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
+        scoringErgebnis.antragstellerClusterErgebnis = memento.antragstellerClusterErgebnis();
+        scoringErgebnis.auskunfteiClusterErgebnis = memento.auskunfteiClusterErgebnis();
+        scoringErgebnis.immobilienFinanzierungsClusterErgebnis = memento.immobilienFinanzierungsClusterErgebnis();
+        scoringErgebnis.monatlicherHaushaltsueberschussClusterErgebnis = memento.monatlicherHaushaltsueberschussClusterErgebnis();
+        scoringErgebnis.koKriterien = new KoKriterien(memento.koKriterien());
+        scoringErgebnis.gesamtPunkte = new Punkte(memento.gesamtPunkte());
+        return scoringErgebnis;
+    }
+    public ScoringErgebnisMemento memento() {
+        ClusterGescored antragstellerClusterErgebnis = this.antragstellerClusterErgebnis;
+        ClusterGescored auskunfteiClusterErgebnis = this.auskunfteiClusterErgebnis;
+        ClusterGescored immobilienFinanzierungsClusterErgebnis = this.immobilienFinanzierungsClusterErgebnis;
+        ClusterGescored monatlicherHaushaltsueberschussClusterErgebnis = this.monatlicherHaushaltsueberschussClusterErgebnis;
+        int koKriterien = this.koKriterien.anzahl();
+        int gesamtPunkte = this.gesamtPunkte.getPunkte();
+        return new ScoringErgebnisMemento(antragsnummer.nummer(), antragstellerClusterErgebnis, auskunfteiClusterErgebnis, immobilienFinanzierungsClusterErgebnis, monatlicherHaushaltsueberschussClusterErgebnis, koKriterien, gesamtPunkte);
+    }
+    public record ScoringErgebnisMemento (String antragsnummer, ClusterGescored antragstellerClusterErgebnis, ClusterGescored auskunfteiClusterErgebnis, ClusterGescored immobilienFinanzierungsClusterErgebnis, ClusterGescored monatlicherHaushaltsueberschussClusterErgebnis, int koKriterien, int gesamtPunkte) {}
 }

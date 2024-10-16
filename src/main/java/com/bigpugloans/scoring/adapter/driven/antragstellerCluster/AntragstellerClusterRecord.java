@@ -6,7 +6,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
 
-@Table("ANTRAGSTELLER_CLUSTER")
+@Table("scoring_antragsteller_cluster")
 public class AntragstellerClusterRecord {
     @Id
     private Long id;

@@ -8,4 +8,8 @@ public record ClusterGescored(Antragsnummer antragsnummer, Punkte punkte, KoKrit
     public ClusterGescored(Antragsnummer antragsnummer, Punkte punkte, int koKriterien) {
         this(antragsnummer, punkte, new KoKriterien(koKriterien));
     }
+
+    public ClusterGescored(Antragsnummer antragsnummer, int punkte, int koKriterien) {
+        this(antragsnummer, new Punkte(punkte), new KoKriterien(koKriterien));
+    }
 }

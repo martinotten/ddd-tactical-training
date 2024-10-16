@@ -51,7 +51,7 @@ public class ScoringErgebnisMementoTest {
         assertEquals(3, memento.monatlicherHaushaltsueberschussClusterErgebnis().koKriterien().anzahl());
 
         assertEquals(30, memento.immobilienFinanzierungsClusterErgebnis().punkte().getPunkte());
-        assertEquals(4, memento.antragstellerClusterErgebnis().koKriterien().anzahl());
+        assertEquals(1, memento.antragstellerClusterErgebnis().koKriterien().anzahl());
         assertEquals(150, memento.gesamtPunkte());
         assertEquals(10, memento.koKriterien());
     }

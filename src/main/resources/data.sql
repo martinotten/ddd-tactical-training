@@ -1,0 +1,1 @@
+INSERT INTO antragsteller_cluster (antragsnummer, wohnort, guthaben, version) VALUES ('123', 'München', 1000.00, 1);

@@ -5,8 +5,11 @@ import com.bigpugloans.scoring.domain.model.Antragsnummer;
 import com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster.MonatlicheFinanzsituationCluster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class MonatlicheFinanzsituationClusterJDBCRepository implements MonatlicheFinanzsituationClusterRepository {
     private MonatlicheFinanzsituationClusterSpringDataRepository dao;
 

@@ -5,8 +5,11 @@ import com.bigpugloans.scoring.domain.model.Antragsnummer;
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class ImmobilienFinanzierungsClusterJDBCRepository implements ImmobilienFinanzierungClusterRepository {
     private ImmobilienFinanzierungsClusterSpringDataRepository dao;
 

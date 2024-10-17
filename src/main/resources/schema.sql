@@ -6,6 +6,17 @@ CREATE TABLE SCORING_MONATLICHE_FINANZSITUATION_CLUSTER (
     neue_darlehens_belastungen DECIMAL(19, 2),
     version BIGINT
 );
+
+CREATE TABLE SCORING_AUSKUNFTEI_ERGEBNIS_CLUSTER (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    antragsteller_id varchar(255) NOT NULL,
+    antragsnummer VARCHAR(255) NOT NULL,
+    anzahl_warnungen INTEGER,
+    anzahl_negativ_merkmale INTEGER,
+    rueckzahlungs_wahrscheinlichkeit DECIMAL(19, 2),
+    version BIGINT
+);
+
 CREATE TABLE scoring_antragsteller_cluster (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     antragsnummer VARCHAR(255) NOT NULL,

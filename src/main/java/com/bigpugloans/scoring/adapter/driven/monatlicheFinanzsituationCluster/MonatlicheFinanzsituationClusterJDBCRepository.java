@@ -28,7 +28,13 @@ public class MonatlicheFinanzsituationClusterJDBCRepository implements Monatlich
 
     @Override
     public MonatlicheFinanzsituationCluster lade(Antragsnummer antragsnummer) {
+        if(antragsnummer == null) {
+            throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
+        }
         MonatlicheFinanzsituationClusterRecord record = dao.findByAntragsnummer(antragsnummer.nummer());
+        if(record == null) {
+            return null;
+        }
         return MonatlicheFinanzsituationCluster.fromMemento(record.getMemento());
     }
 }

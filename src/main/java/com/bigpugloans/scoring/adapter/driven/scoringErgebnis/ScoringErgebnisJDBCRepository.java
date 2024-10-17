@@ -50,6 +50,9 @@ public class ScoringErgebnisJDBCRepository implements ScoringErgebnisRepository 
 
     @Override
     public ScoringErgebnis lade(Antragsnummer antragsnummer) {
+        if(antragsnummer == null) {
+            throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
+        }
         ScoringErgebnisRecord record = dao.findByAntragsnummer(antragsnummer.nummer());
         if(record == null) {
             return null;

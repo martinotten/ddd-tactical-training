@@ -28,6 +28,9 @@ public class ImmobilienFinanzierungsClusterJDBCRepository implements ImmobilienF
 
     @Override
     public ImmobilienFinanzierungsCluster lade(Antragsnummer antragsnummer) {
+        if(antragsnummer == null) {
+            throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
+        }
         ImmobilienFinanzierungsClusterRecord record = dao.findByAntragsnummer(antragsnummer.nummer());
         if(record == null) {
             return null;

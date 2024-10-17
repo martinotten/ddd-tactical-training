@@ -1,3 +1,3 @@
 INSERT INTO scoring_antragsteller_cluster (antragsnummer, wohnort, guthaben, version) VALUES ('123', 'München', 1000.00, 1);
-
+INSERT INTO scoring_monatliche_finanzsituation_cluster (antragsnummer, einnahmen, ausgaben, neue_darlehens_belastungen, version) VALUES ('123', 2000.00, 1000.00, 500.00, 1);
 INSERT INTO scoring_scoring_ergebnis (antragsnummer, auskunftei_punkte, auskunftei_ko_kriterien, antragsteller_punkte, antragsteller_ko_kriterien, monatliche_finanzsituation_punkte, monatliche_finanzsituation_ko_kriterien, immobilien_finanzierung_punkte, immobilien_finanzierung_ko_kriterien, gesamt_punkte, gesamt_ko_kriterien, version) VALUES ('123', 10, 0, 20, 0, 30, 0, 40, 0, 100, 0, 1);

@@ -1,3 +1,11 @@
+CREATE TABLE SCORING_MONATLICHE_FINANZSITUATION_CLUSTER (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    antragsnummer VARCHAR(255) NOT NULL,
+    einnahmen DECIMAL(19, 2),
+    ausgaben DECIMAL(19, 2),
+    neue_darlehens_belastungen DECIMAL(19, 2),
+    version BIGINT
+);
 CREATE TABLE scoring_antragsteller_cluster (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     antragsnummer VARCHAR(255) NOT NULL,

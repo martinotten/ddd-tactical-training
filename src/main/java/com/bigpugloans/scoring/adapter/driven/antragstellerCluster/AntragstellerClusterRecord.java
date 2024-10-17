@@ -1,7 +1,9 @@
 package com.bigpugloans.scoring.adapter.driven.antragstellerCluster;
 
+import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
+import org.springframework.data.relational.core.mapping.Embedded;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
@@ -13,9 +15,8 @@ public class AntragstellerClusterRecord {
 
     private String antragsnummer;
 
-    private String wohnort;
-
-    private BigDecimal guthaben;
+    @Embedded(onEmpty = Embedded.OnEmpty.USE_NULL)
+    private AntragstellerCluster.AntragstellerClusterMemento memento;
 
     @Version
     private int version;
@@ -36,20 +37,12 @@ public class AntragstellerClusterRecord {
         this.antragsnummer = antragsnummer;
     }
 
-    public String getWohnort() {
-        return wohnort;
+    public AntragstellerCluster.AntragstellerClusterMemento getMemento() {
+        return memento;
     }
 
-    public void setWohnort(String wohnort) {
-        this.wohnort = wohnort;
-    }
-
-    public BigDecimal getGuthaben() {
-        return guthaben;
-    }
-
-    public void setGuthaben(BigDecimal guthaben) {
-        this.guthaben = guthaben;
+    public void setMemento(AntragstellerCluster.AntragstellerClusterMemento memento) {
+        this.memento = memento;
     }
 
     public int getVersion() {

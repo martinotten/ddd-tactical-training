@@ -26,8 +26,7 @@ public class AntragstellerClusterJDBCRespository implements AntragstellerCluster
             record = new AntragstellerClusterRecord();
             record.setAntragsnummer(memento.antragsnummer());
         }
-        record.setWohnort(memento.wohnort());
-        record.setGuthaben(memento.guthaben());
+        record.setMemento(memento);
         dao.save(record);
     }
 
@@ -41,10 +40,7 @@ public class AntragstellerClusterJDBCRespository implements AntragstellerCluster
         if(record == null) {
             return null;
         } else {
-            return AntragstellerCluster.fromMemento(new AntragstellerCluster.AntragstellerClusterMemento(
-                    record.getAntragsnummer(),
-                    record.getWohnort(),
-                    record.getGuthaben()));
+            return AntragstellerCluster.fromMemento(record.getMemento());
         }
     }
 }

@@ -1,10 +1,9 @@
 package com.bigpugloans.scoring.adapter.driven.auskunfteiErgebnisCluster;
 
-import com.bigpugloans.scoring.adapter.driven.antragstellerCluster.AntragstellerClusterJDBCRespository;
+import com.bigpugloans.scoring.application.ports.driven.AuskunfteiErgebnisClusterRepository;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;
 import com.bigpugloans.scoring.domain.model.AntragstellerID;
 import com.bigpugloans.scoring.domain.model.Prozentwert;
-import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 public class AuskunfteiErgebnisClusterRepositoryTest {
     @Autowired
-    private AuskunfteiErgebnisClusterJDBCRepository repo;
+    private AuskunfteiErgebnisClusterRepository repo;
 
     @Test
     void testLadeCluster() {

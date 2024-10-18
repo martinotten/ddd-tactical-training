@@ -1,5 +1,6 @@
 package com.bigpugloans.scoring.adapter.driven.antragstellerCluster;
 
+import com.bigpugloans.scoring.application.ports.driven.AntragstellerClusterRepository;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 public class AntragstellerClusterRepositoryTest {
     @Autowired
-    private AntragstellerClusterJDBCRespository repo;
+    private AntragstellerClusterRepository repo;
 
     @Test
     void testLadeAntragstellerCluster() {

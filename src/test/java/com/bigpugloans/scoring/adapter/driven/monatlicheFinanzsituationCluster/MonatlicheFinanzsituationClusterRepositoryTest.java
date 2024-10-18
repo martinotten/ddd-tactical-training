@@ -1,16 +1,14 @@
 package com.bigpugloans.scoring.adapter.driven.monatlicheFinanzsituationCluster;
 
+import com.bigpugloans.scoring.application.ports.driven.MonatlicheFinanzsituationClusterRepository;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;
 import com.bigpugloans.scoring.domain.model.Waehrungsbetrag;
-import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 import com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster.MonatlicheFinanzsituationCluster;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 public class MonatlicheFinanzsituationClusterRepositoryTest {
     @Autowired
-    private MonatlicheFinanzsituationClusterJDBCRepository repo;
+    private MonatlicheFinanzsituationClusterRepository repo;
 
     @Test
     void testLadeCluster() {

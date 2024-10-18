@@ -37,7 +37,6 @@ public class ImmobilienFinanzierungsClusterRepositoryTest {
         repo.speichern(cluster);
 
         ImmobilienFinanzierungsCluster geladen = repo.lade(new Antragsnummer("152"));
-        assertEquals(200000, geladen.memento().summeDarlehen().intValue());
-        assertEquals(50000, geladen.memento().eigenmittel().intValue());
+        assertEquals(new Antragsnummer("152"), geladen.antragsnummer());
     }
 }

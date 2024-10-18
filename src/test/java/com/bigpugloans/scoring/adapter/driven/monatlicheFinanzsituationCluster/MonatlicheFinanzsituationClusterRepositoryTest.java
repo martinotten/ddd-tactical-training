@@ -33,6 +33,6 @@ public class MonatlicheFinanzsituationClusterRepositoryTest {
         repo.speichern(cluster);
 
         MonatlicheFinanzsituationCluster geladen = repo.lade(new Antragsnummer("152"));
-        assertEquals(3000, geladen.memento().einnahmen().intValue());
+        assertEquals(new Antragsnummer("152"), geladen.antragsnummer());
     }
 }

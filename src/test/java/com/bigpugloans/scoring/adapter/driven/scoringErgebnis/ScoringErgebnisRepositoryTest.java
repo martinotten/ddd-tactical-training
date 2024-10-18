@@ -1,10 +1,7 @@
 package com.bigpugloans.scoring.adapter.driven.scoringErgebnis;
 
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisRepository;
-import com.bigpugloans.scoring.domain.model.AntragErfolgreichGescored;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
-import com.bigpugloans.scoring.domain.model.ClusterGescored;
-import com.bigpugloans.scoring.domain.model.ScoringFarbe;
+import com.bigpugloans.scoring.domain.model.*;
 import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +26,7 @@ public class ScoringErgebnisRepositoryTest {
     @Test
     void testSpeichereAntragstellerCluster() {
         ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("152"));
-        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("152"), 100, 1));
+        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("152"), new Punkte(100), new KoKriterien(1)));
         repo.speichern(scoringErgebnis);
 
         ScoringErgebnis geladen = repo.lade(new Antragsnummer("152"));

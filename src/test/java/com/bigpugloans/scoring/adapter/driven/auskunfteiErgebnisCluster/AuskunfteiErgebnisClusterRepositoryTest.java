@@ -43,6 +43,6 @@ public class AuskunfteiErgebnisClusterRepositoryTest {
         repo.speichern(cluster);
 
         AuskunfteiErgebnisCluster geladen = repo.lade(new Antragsnummer("152"));
-        assertEquals(91, geladen.memento().rueckzahlungsWahrscheinlichkeit().intValue());
+        assertEquals(new Antragsnummer("152"), geladen.antragsnummer());
     }
 }

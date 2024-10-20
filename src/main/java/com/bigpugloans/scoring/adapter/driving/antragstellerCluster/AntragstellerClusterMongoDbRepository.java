@@ -21,8 +21,11 @@ public class AntragstellerClusterMongoDbRepository implements AntragstellerClust
         if(antragstellerCluster == null) {
             throw new IllegalArgumentException("AntragstellerCluster darf nicht null sein");
         }
-        AntragstellerClusterDocument document = new AntragstellerClusterDocument();
-        document.setAntragsnummer(antragstellerCluster.antragsnummer().nummer());
+        AntragstellerClusterDocument document = dao.findByAntragsnummer(antragstellerCluster.antragsnummer().nummer());
+        if(document == null) {
+            document = new AntragstellerClusterDocument();
+            document.setAntragsnummer(antragstellerCluster.antragsnummer().nummer());
+        }
         document.setAntragstellerCluster(antragstellerCluster);
         dao.save(document);
     }

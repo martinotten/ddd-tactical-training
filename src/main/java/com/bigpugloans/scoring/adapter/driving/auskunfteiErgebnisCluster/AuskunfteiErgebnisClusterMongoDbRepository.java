@@ -20,10 +20,14 @@ public class AuskunfteiErgebnisClusterMongoDbRepository implements AuskunfteiErg
         if(auskunfteiErgebnisCluster == null) {
             throw new IllegalArgumentException("AuskunfteiErgebnisCluster darf nicht null sein");
         }
-        AuskunfteiErgebnisClusterDocument clusterEntity = new AuskunfteiErgebnisClusterDocument();
-        clusterEntity.setAntragsnummer(auskunfteiErgebnisCluster.antragsnummer().nummer());
-        clusterEntity.setAuskunfteiErgebnisCluster(auskunfteiErgebnisCluster);
-        dao.save(clusterEntity);
+        AuskunfteiErgebnisClusterDocument document = dao.findByAntragsnummer(auskunfteiErgebnisCluster.antragsnummer().nummer());
+        if(document == null) {
+            document = new AuskunfteiErgebnisClusterDocument();
+            document.setAntragsnummer(auskunfteiErgebnisCluster.antragsnummer().nummer());
+        }
+
+        document.setAuskunfteiErgebnisCluster(auskunfteiErgebnisCluster);
+        dao.save(document);
 
     }
 

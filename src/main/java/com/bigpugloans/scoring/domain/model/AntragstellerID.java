@@ -7,6 +7,8 @@ import java.util.Objects;
 public class AntragstellerID {
     private String antragstellerID;
 
+    private AntragstellerID() {
+    }
     public AntragstellerID(String antragstellerID) {
         if (antragstellerID == null) {
             throw new IllegalArgumentException("antragstellerID darf nicht null sein.");

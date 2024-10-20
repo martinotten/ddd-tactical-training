@@ -1,4 +1,4 @@
-package com.bigpugloans.scoring.adapter.driving.immobilienFinanzierungsCluster;
+package com.bigpugloans.scoring.adapter.driven.immobilienFinanzierungsCluster;
 
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import org.springframework.data.annotation.Id;

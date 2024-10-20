@@ -1,4 +1,4 @@
-package com.bigpugloans.scoring.adapter.driving.scoringErgebnis;
+package com.bigpugloans.scoring.adapter.driven.scoringErgebnis;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

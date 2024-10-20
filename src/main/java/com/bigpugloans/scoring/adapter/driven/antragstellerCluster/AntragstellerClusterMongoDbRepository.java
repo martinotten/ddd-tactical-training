@@ -1,6 +1,5 @@
-package com.bigpugloans.scoring.adapter.driving.antragstellerCluster;
+package com.bigpugloans.scoring.adapter.driven.antragstellerCluster;
 
-import com.bigpugloans.scoring.adapter.driving.auskunfteiErgebnisCluster.AuskunfteiErgebnisClusterDocument;
 import com.bigpugloans.scoring.application.ports.driven.AntragstellerClusterRepository;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;

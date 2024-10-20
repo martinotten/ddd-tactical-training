@@ -1,4 +1,4 @@
-package com.bigpugloans.scoring.adapter.driving.auskunfteiErgebnisCluster;
+package com.bigpugloans.scoring.adapter.driven.auskunfteiErgebnisCluster;
 
 import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
 import org.springframework.data.annotation.Id;

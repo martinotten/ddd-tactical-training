@@ -1,4 +1,4 @@
-package com.bigpugloans.scoring.adapter.driving.monatlicheFinanzsituationCluster;
+package com.bigpugloans.scoring.adapter.driven.monatlicheFinanzsituationCluster;
 
 import com.bigpugloans.scoring.application.ports.driven.MonatlicheFinanzsituationClusterRepository;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;

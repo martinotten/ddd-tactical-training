@@ -1,4 +1,4 @@
-package com.bigpugloans.scoring.adapter.driving.immobilienFinanzierungsCluster;
+package com.bigpugloans.scoring.adapter.driven.immobilienFinanzierungsCluster;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

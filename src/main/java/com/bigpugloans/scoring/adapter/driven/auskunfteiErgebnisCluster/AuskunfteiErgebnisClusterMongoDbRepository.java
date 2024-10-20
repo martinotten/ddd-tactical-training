@@ -1,4 +1,4 @@
-package com.bigpugloans.scoring.adapter.driving.auskunfteiErgebnisCluster;
+package com.bigpugloans.scoring.adapter.driven.auskunfteiErgebnisCluster;
 
 import com.bigpugloans.scoring.application.ports.driven.AuskunfteiErgebnisClusterRepository;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;

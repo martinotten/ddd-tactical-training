@@ -1,4 +1,4 @@
-package com.bigpugloans.scoring.adapter.driving.antragstellerCluster;
+package com.bigpugloans.scoring.adapter.driven.antragstellerCluster;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

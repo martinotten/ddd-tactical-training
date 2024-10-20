@@ -1,19 +1,19 @@
-package com.bigpugloans.scoring.adapter.driving.antragstellerCluster;
+package com.bigpugloans.scoring.adapter.driven.scoringErgebnis;
 
-import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
+import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "antragstellerCluster")
-public class AntragstellerClusterDocument {
+@Document(collection = "scoringErgebnis")
+public class ScoringErgebnisDocument {
     @Id
     private String id;
 
     @Indexed(unique = true)
     private String antragsnummer;
 
-    private AntragstellerCluster antragstellerCluster;
+    private ScoringErgebnis scoringErgebnis;
 
     public String getId() {
         return id;
@@ -31,11 +31,11 @@ public class AntragstellerClusterDocument {
         this.antragsnummer = antragsnummer;
     }
 
-    public AntragstellerCluster getAntragstellerCluster() {
-        return antragstellerCluster;
+    public ScoringErgebnis getScoringErgebnis() {
+        return scoringErgebnis;
     }
 
-    public void setAntragstellerCluster(AntragstellerCluster antragstellerCluster) {
-        this.antragstellerCluster = antragstellerCluster;
+    public void setScoringErgebnis(ScoringErgebnis scoringErgebnis) {
+        this.scoringErgebnis = scoringErgebnis;
     }
 }

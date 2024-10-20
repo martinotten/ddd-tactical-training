@@ -1,4 +1,4 @@
-package com.bigpugloans.scoring.adapter.driving.auskunfteiErgebnisCluster;
+package com.bigpugloans.scoring.adapter.driven.auskunfteiErgebnisCluster;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

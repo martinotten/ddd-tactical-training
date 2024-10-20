@@ -1,6 +1,5 @@
-package com.bigpugloans.scoring.adapter.driving.scoringErgebnis;
+package com.bigpugloans.scoring.adapter.driven.scoringErgebnis;
 
-import com.bigpugloans.scoring.adapter.driving.immobilienFinanzierungsCluster.ImmobilienFinanzierungsClusterDocument;
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisRepository;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;
 import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;

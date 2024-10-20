@@ -7,6 +7,8 @@ import java.util.Objects;
 class Wohnort {
     private String wohnort;
 
+    private Wohnort() {}
+
     public Wohnort(String wohnort) {
         this.wohnort = wohnort;
     }

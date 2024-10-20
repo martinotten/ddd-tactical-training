@@ -8,6 +8,9 @@ import java.util.Objects;
 class Guthaben {
     private Waehrungsbetrag guthaben;
 
+    private Guthaben() {
+    }
+
     public Guthaben(Waehrungsbetrag guthaben) {
         this.guthaben = guthaben;
     }

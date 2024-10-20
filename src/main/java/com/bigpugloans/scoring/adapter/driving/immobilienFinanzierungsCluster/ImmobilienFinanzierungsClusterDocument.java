@@ -2,6 +2,7 @@ package com.bigpugloans.scoring.adapter.driving.immobilienFinanzierungsCluster;
 
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "immobilienFinanzierungsCluster")
@@ -9,6 +10,7 @@ public class ImmobilienFinanzierungsClusterDocument {
     @Id
     private String id;
 
+    @Indexed(unique = true)
     private String antragsnummer;
 
     private ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster;

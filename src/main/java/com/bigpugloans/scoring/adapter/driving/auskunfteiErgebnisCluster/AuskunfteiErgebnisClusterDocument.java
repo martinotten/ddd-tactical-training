@@ -2,6 +2,7 @@ package com.bigpugloans.scoring.adapter.driving.auskunfteiErgebnisCluster;
 
 import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "auskunfteiErgebnisCluster")
@@ -9,6 +10,7 @@ public class AuskunfteiErgebnisClusterDocument {
     @Id
     private String id;
 
+    @Indexed(unique = true)
     private String antragsnummer;
 
     private AuskunfteiErgebnisCluster auskunfteiErgebnisCluster;

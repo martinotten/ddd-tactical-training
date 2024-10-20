@@ -2,6 +2,7 @@ package com.bigpugloans.scoring.adapter.driving.antragstellerCluster;
 
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "antragstellerCluster")
@@ -9,6 +10,7 @@ public class AntragstellerClusterDocument {
     @Id
     private String id;
 
+    @Indexed(unique = true)
     private String antragsnummer;
 
     private AntragstellerCluster antragstellerCluster;

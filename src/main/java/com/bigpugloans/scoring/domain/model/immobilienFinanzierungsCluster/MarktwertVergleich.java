@@ -11,6 +11,8 @@ class MarktwertVergleich {
     private Waehrungsbetrag durchschnittlicherMarktwertVon;
     private Waehrungsbetrag durchschnittlicherMarktwertBis;
 
+    private MarktwertVergleich() {}
+
     public MarktwertVergleich(Waehrungsbetrag minimalerMarktwert, Waehrungsbetrag maximalerMarktwert, Waehrungsbetrag durchschnittlicherMarktwertVon, Waehrungsbetrag durchschnittlicherMarktwertBis) {
         if(minimalerMarktwert == null) {
             throw new IllegalArgumentException("Minimaler Marktwert darf nicht null sein.");

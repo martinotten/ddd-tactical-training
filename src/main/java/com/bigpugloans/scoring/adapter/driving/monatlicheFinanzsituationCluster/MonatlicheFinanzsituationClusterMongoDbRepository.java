@@ -20,9 +20,9 @@ public class MonatlicheFinanzsituationClusterMongoDbRepository implements Monatl
         if(monatlicheFinanzsituationCluster == null) {
             throw new IllegalArgumentException("MonatlicheFinanzsituationCluster darf nicht null sein");
         }
-        MonatlichFinanzsituationClusterDocument document = dao.findByAntragsnummer(monatlicheFinanzsituationCluster.antragsnummer().nummer());
+        MonatlicheFinanzsituationClusterDocument document = dao.findByAntragsnummer(monatlicheFinanzsituationCluster.antragsnummer().nummer());
         if(document == null) {
-            document = new MonatlichFinanzsituationClusterDocument();
+            document = new MonatlicheFinanzsituationClusterDocument();
             document.setAntragsnummer(monatlicheFinanzsituationCluster.antragsnummer().nummer());
         }
         document.setMonatlicheFinanzsituationCluster(monatlicheFinanzsituationCluster);
@@ -34,7 +34,7 @@ public class MonatlicheFinanzsituationClusterMongoDbRepository implements Monatl
         if(antragsnummer == null) {
             throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
         }
-        MonatlichFinanzsituationClusterDocument document = dao.findByAntragsnummer(antragsnummer.nummer());
+        MonatlicheFinanzsituationClusterDocument document = dao.findByAntragsnummer(antragsnummer.nummer());
         if(document == null) {
             return null;
         } else {

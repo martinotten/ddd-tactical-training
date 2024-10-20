@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "monatlichFinanzsituationCluster")
-public class MonatlichFinanzsituationClusterDocument {
+public class MonatlicheFinanzsituationClusterDocument {
     @Id
     private String id;
 

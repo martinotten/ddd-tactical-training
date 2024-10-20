@@ -7,16 +7,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AuskunfteiErgebnisClusterJPARepository implements AuskunfteiErgebnisClusterRepository {
+public class AuskunfteiErgebnisClusterMongoDbRepository implements AuskunfteiErgebnisClusterRepository {
     private AuskunfteiErgebnisClusterSpringDataRepository dao;
 
     @Autowired
-    public AuskunfteiErgebnisClusterJPARepository(AuskunfteiErgebnisClusterSpringDataRepository dao) {
+    public AuskunfteiErgebnisClusterMongoDbRepository(AuskunfteiErgebnisClusterSpringDataRepository dao) {
         this.dao = dao;
     }
 
     @Override
     public void speichern(AuskunfteiErgebnisCluster auskunfteiErgebnisCluster) {
+        if(auskunfteiErgebnisCluster == null) {
+            throw new IllegalArgumentException("AuskunfteiErgebnisCluster darf nicht null sein");
+        }
+        AuskunfteiErgebnisClusterDocument clusterEntity = new AuskunfteiErgebnisClusterDocument();
+        clusterEntity.setAntragsnummer(auskunfteiErgebnisCluster.antragsnummer().nummer());
+        clusterEntity.setAuskunfteiErgebnisCluster(auskunfteiErgebnisCluster);
+        dao.save(clusterEntity);
 
     }
 
@@ -25,7 +32,10 @@ public class AuskunfteiErgebnisClusterJPARepository implements AuskunfteiErgebni
         if(antragsnummer == null) {
             throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
         }
-        AuskunfteiErgebnisClusterEntity clusterEntity = dao.findByAntragsnummer(antragsnummer.nummer());
+        AuskunfteiErgebnisClusterDocument clusterEntity = dao.findByAntragsnummer(antragsnummer.nummer());
+        if(clusterEntity == null) {
+            return null;
+        }
         return clusterEntity.getAuskunfteiErgebnisCluster();
     }
 }

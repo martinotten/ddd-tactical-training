@@ -1,9 +1,9 @@
 package com.bigpugloans.scoring.adapter.driving.auskunfteiErgebnisCluster;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AuskunfteiErgebnisClusterSpringDataRepository extends JpaRepository<AuskunfteiErgebnisClusterEntity, Long> {
-    public AuskunfteiErgebnisClusterEntity findByAntragsnummer(String antragsnummer);
+public interface AuskunfteiErgebnisClusterSpringDataRepository extends MongoRepository<AuskunfteiErgebnisClusterDocument, Long> {
+    public AuskunfteiErgebnisClusterDocument findByAntragsnummer(String antragsnummer);
 }

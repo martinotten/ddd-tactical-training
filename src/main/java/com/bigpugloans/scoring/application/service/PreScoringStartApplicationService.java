@@ -14,7 +14,10 @@ import com.bigpugloans.scoring.domain.service.ScoreAntragstellerClusterDomainSer
 import com.bigpugloans.scoring.domain.service.ScoreAuskunfteiErgebnisClusterDomainService;
 import com.bigpugloans.scoring.domain.service.ScoreImmobilienFinanzierungsClusterDomainService;
 import com.bigpugloans.scoring.domain.service.ScoreMonatlicheFinanzsituationClusterDomainService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PreScoringStartApplicationService implements PreScoringStart {
     private ScoringErgebnisRepository scoringErgebnisRepository;
     private AntragstellerClusterRepository antragstellerClusterRepository;
@@ -26,6 +29,7 @@ public class PreScoringStartApplicationService implements PreScoringStart {
     private KonditionsAbfrage konditionsAbfrage;
     private LeseKontoSaldo leseKontoSaldo;
 
+    @Autowired
     public PreScoringStartApplicationService(ScoringErgebnisRepository scoringErgebnisRepository, AntragstellerClusterRepository antragstellerClusterRepository, MonatlicheFinanzsituationClusterRepository monatlicheFinanzsituationClusterRepository, AuskunfteiErgebnisClusterRepository auskunfteiErgebnisClusterRepository, ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository, ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichen, KonditionsAbfrage konditionsAbfrage, LeseKontoSaldo leseKontoSaldo) {
         this.scoringErgebnisRepository = scoringErgebnisRepository;
         this.antragstellerClusterRepository = antragstellerClusterRepository;

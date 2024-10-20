@@ -9,13 +9,17 @@ import com.bigpugloans.scoring.domain.model.*;
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
 import com.bigpugloans.scoring.domain.service.ScoreImmobilienFinanzierungsClusterDomainService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class VerarbeitungImmobilienBewertungApplicationService implements VerarbeitungImmobilienBewertung {
     private ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository;
     private ScoringErgebnisRepository scoringErgebnisRepository;
 
     private ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichen;
 
+    @Autowired
     public VerarbeitungImmobilienBewertungApplicationService(ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository, ScoringErgebnisRepository scoringErgebnisRepository, ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichen) {
         this.immobilienFinanzierungClusterRepository = immobilienFinanzierungClusterRepository;
         this.scoringErgebnisRepository = scoringErgebnisRepository;
@@ -35,6 +39,7 @@ public class VerarbeitungImmobilienBewertungApplicationService implements Verarb
         ScoreImmobilienFinanzierungsClusterDomainService domainService = new ScoreImmobilienFinanzierungsClusterDomainService();
         scoringErgebnis = domainService.scoreImmobilienFinanzierungsCluster(immobilienFinanzierungsCluster, scoringErgebnis);
         scoringErgebnisRepository.speichern(scoringErgebnis);
+
         AntragScoringEvent ergebnis = scoringErgebnis.berechneErgebnis();
         if(AntragErfolgreichGescored.class.equals(ergebnis.getClass())) {
             AntragErfolgreichGescored antragErfolgreichGescored = (AntragErfolgreichGescored) ergebnis;

@@ -2,7 +2,7 @@ package com.bigpugloans.scoring.application.model;
 
 import java.util.Date;
 
-public record Antrag(
+public record ScoringDatenAusAntrag(
         String antragsnummer,
         String kundennummer,
         int monatlicheAusgaben,

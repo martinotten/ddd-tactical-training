@@ -1,6 +1,6 @@
 package com.bigpugloans.scoring.application.service;
 
-import com.bigpugloans.scoring.application.model.Antrag;
+import com.bigpugloans.scoring.application.model.ScoringDatenAusAntrag;
 import com.bigpugloans.scoring.application.model.AuskunfteiErgebnis;
 import com.bigpugloans.scoring.application.ports.driven.*;
 import com.bigpugloans.scoring.application.ports.driving.PreScoringStart;
@@ -42,7 +42,7 @@ public class PreScoringStartApplicationService implements PreScoringStart {
     }
 
     @Override
-    public void startePreScoring(Antrag antrag) {
+    public void startePreScoring(ScoringDatenAusAntrag antrag) {
         Antragsnummer antragsnummer = new Antragsnummer(antrag.antragsnummer());
         ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
 
@@ -64,7 +64,7 @@ public class PreScoringStartApplicationService implements PreScoringStart {
 
     }
 
-    private ScoringErgebnis behandleAuskunfteiErgebnisCluster(Antrag antrag, ScoringErgebnis scoringErgebnis) {
+    private ScoringErgebnis behandleAuskunfteiErgebnisCluster(ScoringDatenAusAntrag antrag, ScoringErgebnis scoringErgebnis) {
         Antragsnummer antragsnummer = new Antragsnummer(antrag.antragsnummer());
         AntragstellerID antragstellerID = new AntragstellerID.Builder(antrag.vorname(), antrag.nachname())
                 .geburtsdatum(antrag.geburtsdatum())
@@ -83,7 +83,7 @@ public class PreScoringStartApplicationService implements PreScoringStart {
         return domainService.scoreAuskunfteiErgebnisCluster(auskunfteiErgebnisCluster, scoringErgebnis);
     }
 
-    private ScoringErgebnis behandleImmobilienFinanzierungsCluster(Antrag antrag, ScoringErgebnis scoringErgebnis) {
+    private ScoringErgebnis behandleImmobilienFinanzierungsCluster(ScoringDatenAusAntrag antrag, ScoringErgebnis scoringErgebnis) {
         Antragsnummer antragsnummer = new Antragsnummer(antrag.antragsnummer());
         ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster(antragsnummer);
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(antrag.kaufnebenkosten()));
@@ -95,7 +95,7 @@ public class PreScoringStartApplicationService implements PreScoringStart {
         ScoreImmobilienFinanzierungsClusterDomainService domainService = new ScoreImmobilienFinanzierungsClusterDomainService();
         return domainService.scoreImmobilienFinanzierungsCluster(immobilienFinanzierungsCluster, scoringErgebnis);
     }
-    private ScoringErgebnis behandleAntragstellerCluster(Antrag antrag, ScoringErgebnis scoringErgebnis) {
+    private ScoringErgebnis behandleAntragstellerCluster(ScoringDatenAusAntrag antrag, ScoringErgebnis scoringErgebnis) {
         Antragsnummer antragsnummer = new Antragsnummer(antrag.antragsnummer());
         AntragstellerCluster antragstellerCluster = antragstellerClusterRepository.lade(antragsnummer);
         if(antragstellerCluster == null) {
@@ -111,7 +111,7 @@ public class PreScoringStartApplicationService implements PreScoringStart {
 
     }
 
-    private ScoringErgebnis behandleMonatlicheFinanzsituationCluster(Antrag antrag, ScoringErgebnis scoringErgebnis) {
+    private ScoringErgebnis behandleMonatlicheFinanzsituationCluster(ScoringDatenAusAntrag antrag, ScoringErgebnis scoringErgebnis) {
         Antragsnummer antragsnummer = new Antragsnummer(antrag.antragsnummer());
         MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(antragsnummer);
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(antrag.monatlicheAusgaben()));

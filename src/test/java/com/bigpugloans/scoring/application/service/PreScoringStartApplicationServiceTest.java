@@ -1,6 +1,6 @@
 package com.bigpugloans.scoring.application.service;
 
-import com.bigpugloans.scoring.application.model.Antrag;
+import com.bigpugloans.scoring.application.model.ScoringDatenAusAntrag;
 import com.bigpugloans.scoring.application.model.AuskunfteiErgebnis;
 import com.bigpugloans.scoring.application.ports.driven.*;
 import com.bigpugloans.scoring.domain.model.AntragErfolgreichGescored;
@@ -15,7 +15,7 @@ public class PreScoringStartApplicationServiceTest {
     @Test
     void testStartPreScoring() {
 
-        Antrag antrag = new Antrag(
+        ScoringDatenAusAntrag antrag = new ScoringDatenAusAntrag(
                 "123",
                 "789",
                 1000,
@@ -70,7 +70,7 @@ public class PreScoringStartApplicationServiceTest {
         return leseKontoSaldoMock;
     }
 
-    private static KonditionsAbfrage konditionsAbfrageMock(Antrag antrag) {
+    private static KonditionsAbfrage konditionsAbfrageMock(ScoringDatenAusAntrag antrag) {
         KonditionsAbfrage konditionsAbfrageMock = mock();
         when(konditionsAbfrageMock.konditionsAbfrage(
                 antrag.vorname(), antrag.nachname(), antrag.strasse(), antrag.stadt(), antrag.postleitzahl(), antrag.geburtsdatum()))

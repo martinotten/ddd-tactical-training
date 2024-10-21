@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.application.ports.driving;
 
-import com.bigpugloans.scoring.application.model.Antrag;
+import com.bigpugloans.scoring.application.model.ScoringDatenAusAntrag;
 
 public interface PreScoringStart {
-    public void startePreScoring(Antrag antrag);
+    public void startePreScoring(ScoringDatenAusAntrag antrag);
 }

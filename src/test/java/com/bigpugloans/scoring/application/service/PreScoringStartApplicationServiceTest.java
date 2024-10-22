@@ -7,6 +7,8 @@ import com.bigpugloans.scoring.domain.model.AntragErfolgreichGescored;
 import com.bigpugloans.scoring.domain.model.Waehrungsbetrag;
 import org.junit.jupiter.api.Test;
 
+import java.util.Date;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -15,24 +17,9 @@ public class PreScoringStartApplicationServiceTest {
     @Test
     void testStartPreScoring() {
 
-        ScoringDatenAusAntrag antrag = new ScoringDatenAusAntrag(
-                "123",
-                "789",
-                1000,
-                2000,
-                500,
-                "Hamburg",
-                1000,
-                100000,
-                100000,
-                10000,
-                "Max",
-                "Mustermann",
-                "Musterstrasse",
-                "Musterstadt",
-                "1234",
-                new java.util.Date()
-        );
+
+        ScoringDatenAusAntrag antrag = erstelleAntrag();
+
         AntragstellerClusterRepository antragstellerClusterRepositoryMock = mock();
         AuskunfteiErgebnisClusterRepository auskunfteiErgebnisClusterRepositoryMock = mock();
         ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepositoryMock = mock();
@@ -57,6 +44,70 @@ public class PreScoringStartApplicationServiceTest {
                 leseKontoSaldoMock
         );
         service.startePreScoring(antrag);
+    }
+
+    private ScoringDatenAusAntrag erstelleAntrag() {
+        String antragsnummer = "123";
+        String kundennummer = "456";
+        int ausgabenPrivateKrankenversicherung = 0;
+        int ausgabenMonatlicheBelastungKredite = 100;
+        int ausgabenLebenshaltungsKosten = 400;
+        int ausgabenMiete = 800;
+        boolean mieteEntfaelltKuenftig = false;
+        int gehalt = 3500;
+        int mietEinnahmenFinanzierungsobjekt = 0;
+        int mietEinnahmenWeitereObjekte = 0;
+        int weitereEinkuenfte = 300;
+        int summeDarlehen1 = 300000;
+        int monatlicheDarlehensbelastungen1 = 600;
+        int monatlicheDarlehensbelastungen2 = 0;
+        int summeDarlehen2 = 0;
+        int monatlicheDarlehensbelastungen3 = 0;
+        int summeDarlehen3 = 0;
+        int monatlicheDarlehensbelastungen4 = 0;
+        int summeDarlehen4 = 0;
+        int kaufnebenkosten = 20000;
+        int kaufpreisOderBaukosten = 330000;
+        int kostenGrundstueck = 100000;
+
+        int summeEigenmittel = 150000;
+        String vorname = "Michael";
+        String nachname = "Plöd";
+        String strasse = "Musterstraße 1";
+        String stadt = "Hamburg";
+        String plz = "20257";
+        Date geburtsdatum = new Date();
+        return new ScoringDatenAusAntrag(
+                antragsnummer,
+                kundennummer,
+                ausgabenPrivateKrankenversicherung,
+                ausgabenMonatlicheBelastungKredite,
+                ausgabenLebenshaltungsKosten,
+                ausgabenMiete,
+                mieteEntfaelltKuenftig,
+                gehalt,
+                mietEinnahmenFinanzierungsobjekt,
+                mietEinnahmenWeitereObjekte,
+                weitereEinkuenfte,
+                monatlicheDarlehensbelastungen1,
+                monatlicheDarlehensbelastungen2,
+                monatlicheDarlehensbelastungen3,
+                monatlicheDarlehensbelastungen4,
+                kaufnebenkosten,
+                kaufpreisOderBaukosten,
+                kostenGrundstueck,
+                summeDarlehen1,
+                summeDarlehen2,
+                summeDarlehen3,
+                summeDarlehen4,
+                summeEigenmittel,
+                vorname,
+                nachname,
+                strasse,
+                stadt,
+                plz,
+                geburtsdatum
+        );
     }
 
     private static LeseKontoSaldo leseKontoSaldoMock() {

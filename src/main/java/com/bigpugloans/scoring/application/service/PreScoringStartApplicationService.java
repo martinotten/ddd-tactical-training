@@ -87,8 +87,8 @@ public class PreScoringStartApplicationService implements PreScoringStart {
         Antragsnummer antragsnummer = new Antragsnummer(antrag.antragsnummer());
         ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster(antragsnummer);
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(antrag.kaufnebenkosten()));
-        immobilienFinanzierungsCluster.marktwertHinzufuegen(new Waehrungsbetrag(antrag.marktwert()));
-        immobilienFinanzierungsCluster.summeDarlehenHinzufuegen(new Waehrungsbetrag(antrag.summeDarlehen()));
+        immobilienFinanzierungsCluster.marktwertHinzufuegen(new Waehrungsbetrag(antrag.kaufpreisOderBaukosten() + antrag.kostenGrundstueck()));
+        immobilienFinanzierungsCluster.summeDarlehenHinzufuegen(new Waehrungsbetrag(antrag.summeDarlehen1() + antrag.summeDarlehen2() + antrag.summeDarlehen3() + antrag.summeDarlehen4()));
         immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(antrag.summeEigenmittel()));
 
         immobilienFinanzierungClusterRepository.speichern(immobilienFinanzierungsCluster);
@@ -103,7 +103,7 @@ public class PreScoringStartApplicationService implements PreScoringStart {
         }
         Waehrungsbetrag guthaben = leseKontoSaldo.leseKontoSaldo(antrag.kundennummer());
         antragstellerCluster.guthabenHinzufuegen(guthaben);
-        antragstellerCluster.wohnortHinzufuegen(antrag.wohnort());
+        antragstellerCluster.wohnortHinzufuegen(antrag.stadt());
 
         antragstellerClusterRepository.speichern(antragstellerCluster);
         ScoreAntragstellerClusterDomainService domainService = new ScoreAntragstellerClusterDomainService();
@@ -114,13 +114,31 @@ public class PreScoringStartApplicationService implements PreScoringStart {
     private ScoringErgebnis behandleMonatlicheFinanzsituationCluster(ScoringDatenAusAntrag antrag, ScoringErgebnis scoringErgebnis) {
         Antragsnummer antragsnummer = new Antragsnummer(antrag.antragsnummer());
         MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(antragsnummer);
-        monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(antrag.monatlicheAusgaben()));
-        monatlicheFinanzsituationCluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(antrag.monatlicheEinnahmen()));
-        monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(antrag.monatlicheDarlehensbelastungen()));
+        monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(berechneMonatlicheAusgaben(antrag));
+        monatlicheFinanzsituationCluster.monatlicheEinnahmenHinzufuegen(berechneMonatlicheEinnahmen(antrag));
+        monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(berechneMonatlicheDarlehensbelastungen(antrag));
 
         monatlicheFinanzsituationClusterRepository.speichern(monatlicheFinanzsituationCluster);
 
         ScoreMonatlicheFinanzsituationClusterDomainService domainService = new ScoreMonatlicheFinanzsituationClusterDomainService();
         return domainService.scoreMonatlicheFinanzsituationCluster(monatlicheFinanzsituationCluster, scoringErgebnis);
+    }
+
+    private static Waehrungsbetrag berechneMonatlicheDarlehensbelastungen(ScoringDatenAusAntrag antrag) {
+        int monatlicheDarlehensbelastungen = antrag.monatlicheDarlehensbelastungen1() + antrag.monatlicheDarlehensbelastungen2() + antrag.monatlicheDarlehensbelastungen3() + antrag.monatlicheDarlehensbelastungen4();
+        return new Waehrungsbetrag(monatlicheDarlehensbelastungen);
+    }
+
+    private static Waehrungsbetrag berechneMonatlicheEinnahmen(ScoringDatenAusAntrag antrag) {
+        int monatlicheEinnahmen = antrag.gehalt() + antrag.mietEinnahmenFinanzierungsobjekt() + antrag.mietEinnahmenWeitereObjekte() + antrag.weitereEinkuenfte();
+        return new Waehrungsbetrag(monatlicheEinnahmen);
+    }
+
+    private static Waehrungsbetrag berechneMonatlicheAusgaben(ScoringDatenAusAntrag antrag) {
+        int monatlicheAusgaben = antrag.ausgabenPrivateKrankenversicherung() + antrag.ausgabenMonatlicheBelastungKredite() + antrag.ausgabenLebenshaltungsKosten();
+        if(!antrag.mieteEntfaelltKuenftig()) {
+            monatlicheAusgaben += antrag.ausgabenMiete();
+        }
+        return new Waehrungsbetrag(monatlicheAusgaben);
     }
 }

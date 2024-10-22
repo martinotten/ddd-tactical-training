@@ -14,11 +14,16 @@ import com.bigpugloans.scoring.domain.service.ScoreAntragstellerClusterDomainSer
 import com.bigpugloans.scoring.domain.service.ScoreAuskunfteiErgebnisClusterDomainService;
 import com.bigpugloans.scoring.domain.service.ScoreImmobilienFinanzierungsClusterDomainService;
 import com.bigpugloans.scoring.domain.service.ScoreMonatlicheFinanzsituationClusterDomainService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PreScoringStartApplicationService implements PreScoringStart {
+
+    private static final Logger log = LoggerFactory.getLogger(PreScoringStartApplicationService.class);
+
     private ScoringErgebnisRepository scoringErgebnisRepository;
     private AntragstellerClusterRepository antragstellerClusterRepository;
     private MonatlicheFinanzsituationClusterRepository monatlicheFinanzsituationClusterRepository;
@@ -47,16 +52,21 @@ public class PreScoringStartApplicationService implements PreScoringStart {
         ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
 
         scoringErgebnis = behandleAuskunfteiErgebnisCluster(antrag, scoringErgebnis);
+        log.info("ScoringErgebnis nach AuskunfteiErgebnisCluster: " + scoringErgebnis);
 
         scoringErgebnis = behandleMonatlicheFinanzsituationCluster(antrag, scoringErgebnis);
+        log.info("ScoringErgebnis nach MonatlicheFinanzsituationCluster: " + scoringErgebnis);
 
         scoringErgebnis = behandleAntragstellerCluster(antrag, scoringErgebnis);
+        log.info("ScoringErgebnis nach AntragstellerCluster: " + scoringErgebnis);
 
         scoringErgebnis = behandleImmobilienFinanzierungsCluster(antrag, scoringErgebnis);
+        log.info("ScoringErgebnis nach ImmobilienFinanzierungsCluster: " + scoringErgebnis);
 
         scoringErgebnisRepository.speichern(scoringErgebnis);
 
         AntragScoringEvent ergebnis = scoringErgebnis.berechneErgebnis();
+        log.info("Aktuelles Ergebnis nach Pre Scoring Start: " + ergebnis);
         if(AntragErfolgreichGescored.class.equals(ergebnis.getClass())) {
             AntragErfolgreichGescored antragErfolgreichGescored = (AntragErfolgreichGescored) ergebnis;
             scoringErgebnisVeroeffentlichen.preScoringErgebnisVeroeffentlichen(antragErfolgreichGescored);

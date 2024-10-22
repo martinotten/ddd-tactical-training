@@ -4,6 +4,7 @@ import com.bigpugloans.events.antrag.Antrag;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 public class AntragEingereicht implements Serializable {
     private String antragsnummer;
@@ -32,5 +33,27 @@ public class AntragEingereicht implements Serializable {
 
     public void setAntrag(Antrag antrag) {
         this.antrag = antrag;
+    }
+
+    @Override
+    public String toString() {
+        return "AntragEingereicht{" +
+                "antragsnummer='" + antragsnummer + '\'' +
+                ", timestamp=" + timestamp +
+                ", antrag=" + antrag +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AntragEingereicht that = (AntragEingereicht) o;
+        return Objects.equals(antragsnummer, that.antragsnummer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(antragsnummer);
     }
 }

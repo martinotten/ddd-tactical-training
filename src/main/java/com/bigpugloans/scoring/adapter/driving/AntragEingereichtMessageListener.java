@@ -13,6 +13,10 @@ import java.util.Date;
 public class AntragEingereichtMessageListener {
     private PreScoringStart preScoringStart;
 
+    public AntragEingereichtMessageListener(PreScoringStart preScoringStart) {
+        this.preScoringStart = preScoringStart;
+    }
+
     @EventListener
     public void onAntragEingereicht(AntragEingereicht event) {
         System.out.println("Antrag eingereicht: " + event);

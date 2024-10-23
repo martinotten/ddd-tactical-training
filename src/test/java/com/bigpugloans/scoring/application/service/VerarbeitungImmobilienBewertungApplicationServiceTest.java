@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.application.service;
 
 import com.bigpugloans.scoring.application.model.ImmobilienBewertung;
-import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungClusterRepository;
+import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungsClusterRepository;
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisRepository;
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisVeroeffentlichen;
 import com.bigpugloans.scoring.domain.model.*;
@@ -15,7 +15,7 @@ import static org.mockito.Mockito.*;
 public class VerarbeitungImmobilienBewertungApplicationServiceTest {
     @Test
     void testVerarbeiteImmobilienBewertung() {
-        ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepositoryMock = mock();
+        ImmobilienFinanzierungsClusterRepository immobilienFinanzierungClusterRepositoryMock = mock();
         when(immobilienFinanzierungClusterRepositoryMock.lade(any()))
                 .thenReturn(new ImmobilienFinanzierungsCluster(new Antragsnummer("123")));
         ScoringErgebnisRepository scoringErgebnisRepositoryMock = mock();
@@ -35,7 +35,7 @@ public class VerarbeitungImmobilienBewertungApplicationServiceTest {
 
     @Test
     void testVerarbeiteImmobilienBewertungMitFertigemScoring() {
-        ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepositoryMock = mock();
+        ImmobilienFinanzierungsClusterRepository immobilienFinanzierungClusterRepositoryMock = mock();
         doAnswer(invocation -> {
             Antragsnummer antragsnummer = invocation.getArgument(0);
             System.out.println("Lade ImmobilienFinanzierungsCluster für Antragsnummer " + antragsnummer);

@@ -35,7 +35,7 @@ public class PreScoringStartApplicationServiceTest {
         );
         AntragstellerClusterRepository antragstellerClusterRepositoryMock = mock();
         AuskunfteiErgebnisClusterRepository auskunfteiErgebnisClusterRepositoryMock = mock();
-        ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepositoryMock = mock();
+        ImmobilienFinanzierungsClusterRepository immobilienFinanzierungClusterRepositoryMock = mock();
         MonatlicheFinanzsituationClusterRepository monatlicheFinanzsituationClusterRepositoryMock = mock();
         ScoringErgebnisRepository scoringErgebnisRepositoryMock = mock();
 

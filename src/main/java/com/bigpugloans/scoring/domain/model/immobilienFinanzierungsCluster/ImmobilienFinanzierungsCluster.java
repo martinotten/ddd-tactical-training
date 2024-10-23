@@ -1,20 +1,52 @@
 package com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster;
 
 import com.bigpugloans.scoring.domain.model.*;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
+@Entity
 public class ImmobilienFinanzierungsCluster {
-    private final Antragsnummer antragsnummer;
+    @Id
+    @GeneratedValue
+    private Long id;
 
+    @Embedded
+    private Antragsnummer antragsnummer;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "betrag", column = @Column(name = "beleihungswert"))
+    })
     private Waehrungsbetrag beleihungswert;
+
+    @Embedded
     private MarktwertVergleich marktwertVergleich;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "betrag", column = @Column(name = "marktwert"))
+    })
     private Waehrungsbetrag marktwert;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "betrag", column = @Column(name = "kaufnebenkosten"))
+    })
     private Waehrungsbetrag kaufnebenkosten;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "betrag", column = @Column(name = "summeDarlehen"))
+    })
     private Waehrungsbetrag summeDarlehen;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "betrag", column = @Column(name = "eigenmittel"))
+    })
     private Waehrungsbetrag eigenmittel;
 
-
+    private ImmobilienFinanzierungsCluster() {}
     public ImmobilienFinanzierungsCluster(Antragsnummer antragsnummer) {
         if(antragsnummer == null) {
             throw new IllegalArgumentException("Antragsnummer darf nicht null sein.");

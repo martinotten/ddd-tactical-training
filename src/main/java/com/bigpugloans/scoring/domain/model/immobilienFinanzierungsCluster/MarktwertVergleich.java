@@ -2,14 +2,37 @@ package com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster;
 
 import com.bigpugloans.scoring.domain.model.Punkte;
 import com.bigpugloans.scoring.domain.model.Waehrungsbetrag;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
+@Embeddable
 class MarktwertVergleich {
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "betrag", column = @Column(name = "minimalerMarktwert"))
+    })
     private Waehrungsbetrag minimalerMarktwert;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "betrag", column = @Column(name = "maximalerMarktwert"))
+    })
     private Waehrungsbetrag maximalerMarktwert;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "betrag", column = @Column(name = "durchschnittlicherMarktwertVon"))
+    })
     private Waehrungsbetrag durchschnittlicherMarktwertVon;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "betrag", column = @Column(name = "durchschnittlicherMarktwertBis"))
+    })
     private Waehrungsbetrag durchschnittlicherMarktwertBis;
+
+    private MarktwertVergleich() {}
 
     public MarktwertVergleich(Waehrungsbetrag minimalerMarktwert, Waehrungsbetrag maximalerMarktwert, Waehrungsbetrag durchschnittlicherMarktwertVon, Waehrungsbetrag durchschnittlicherMarktwertBis) {
         if(minimalerMarktwert == null) {

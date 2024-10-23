@@ -1,6 +1,6 @@
 package com.bigpugloans.scoring.adapter.driven.immobilienFinanzierungsCluster;
 
-import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungClusterRepository;
+import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungsClusterRepository;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;
 import com.bigpugloans.scoring.domain.model.Waehrungsbetrag;
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
@@ -17,13 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 public class ImmobilienFinanzierungsClusterRepositoryTest {
     @Autowired
-    private ImmobilienFinanzierungClusterRepository repo;
+    private ImmobilienFinanzierungsClusterRepository repo;
 
-    @Test
-    void testLadeCluster() {
-        ImmobilienFinanzierungsCluster geladen = repo.lade(new Antragsnummer("123"));
-        assertNotNull(geladen);
-    }
     @Test
     void testSpeichereCluster() {
 

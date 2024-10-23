@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.application.service;
 
 import com.bigpugloans.scoring.application.model.ImmobilienBewertung;
-import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungClusterRepository;
+import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungsClusterRepository;
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisRepository;
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisVeroeffentlichen;
 import com.bigpugloans.scoring.application.ports.driving.VerarbeitungImmobilienBewertung;
@@ -11,12 +11,12 @@ import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
 import com.bigpugloans.scoring.domain.service.ScoreImmobilienFinanzierungsClusterDomainService;
 
 public class VerarbeitungImmobilienBewertungApplicationService implements VerarbeitungImmobilienBewertung {
-    private ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository;
+    private ImmobilienFinanzierungsClusterRepository immobilienFinanzierungClusterRepository;
     private ScoringErgebnisRepository scoringErgebnisRepository;
 
     private ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichen;
 
-    public VerarbeitungImmobilienBewertungApplicationService(ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository, ScoringErgebnisRepository scoringErgebnisRepository, ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichen) {
+    public VerarbeitungImmobilienBewertungApplicationService(ImmobilienFinanzierungsClusterRepository immobilienFinanzierungClusterRepository, ScoringErgebnisRepository scoringErgebnisRepository, ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichen) {
         this.immobilienFinanzierungClusterRepository = immobilienFinanzierungClusterRepository;
         this.scoringErgebnisRepository = scoringErgebnisRepository;
         this.scoringErgebnisVeroeffentlichen = scoringErgebnisVeroeffentlichen;

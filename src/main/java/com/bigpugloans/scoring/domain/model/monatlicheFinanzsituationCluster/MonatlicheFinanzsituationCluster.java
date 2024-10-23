@@ -1,14 +1,42 @@
 package com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster;
 
 import com.bigpugloans.scoring.domain.model.*;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
+@Entity
 public class MonatlicheFinanzsituationCluster {
-    private final Antragsnummer antragsnummer;
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    @Embedded
+    private Antragsnummer antragsnummer;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "betrag", column = @Column(name = "einnahmen")
+            )
+    })
     private Waehrungsbetrag einnahmen;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "betrag", column = @Column(name = "ausgaben")
+            )
+    })
     private Waehrungsbetrag ausgaben;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "betrag", column = @Column(name = "neueDarlehensBelastungen")
+            )
+    })
     private Waehrungsbetrag neueDarlehensBelastungen;
+
+    private MonatlicheFinanzsituationCluster() {
+    }
 
     public MonatlicheFinanzsituationCluster(Antragsnummer antragsnummer) {
         if(antragsnummer == null) {

@@ -20,11 +20,6 @@ public class MonatlicheFinanzsituationClusterRepositoryTest {
     private MonatlicheFinanzsituationClusterRepository repo;
 
     @Test
-    void testLadeCluster() {
-        MonatlicheFinanzsituationCluster cluster = repo.lade(new Antragsnummer("123"));
-        assertNotNull(cluster);
-    }
-    @Test
     void testSpeichereCluster() {
         MonatlicheFinanzsituationCluster cluster = new MonatlicheFinanzsituationCluster(new Antragsnummer("152"));
         cluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(3000));

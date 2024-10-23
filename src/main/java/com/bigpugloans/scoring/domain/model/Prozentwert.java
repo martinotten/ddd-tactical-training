@@ -1,10 +1,14 @@
 package com.bigpugloans.scoring.domain.model;
 
+import jakarta.persistence.Embeddable;
+
 import java.math.BigDecimal;
 
+@Embeddable
 public class Prozentwert {
-    private final BigDecimal wert;
+    private BigDecimal wert;
 
+    private Prozentwert() {}
     public Prozentwert(BigDecimal wert) {
         this.wert = wert;
     }

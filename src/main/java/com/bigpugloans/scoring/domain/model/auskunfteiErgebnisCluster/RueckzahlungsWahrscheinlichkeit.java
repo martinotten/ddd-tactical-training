@@ -3,12 +3,15 @@ package com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster;
 import com.bigpugloans.scoring.domain.model.KoKriterien;
 import com.bigpugloans.scoring.domain.model.Prozentwert;
 import com.bigpugloans.scoring.domain.model.Punkte;
+import jakarta.persistence.Embeddable;
 
 import java.util.Objects;
 
+@Embeddable
 class RueckzahlungsWahrscheinlichkeit {
     private Prozentwert rueckzahlungsWahrscheinlichkeit;
 
+    private RueckzahlungsWahrscheinlichkeit() {}
     public RueckzahlungsWahrscheinlichkeit(Prozentwert rueckzahlungsWahrscheinlichkeit) {
         this.rueckzahlungsWahrscheinlichkeit = rueckzahlungsWahrscheinlichkeit;
     }

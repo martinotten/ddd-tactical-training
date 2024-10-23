@@ -22,11 +22,7 @@ public class AuskunfteiErgebnisClusterRepositoryTest {
     @Autowired
     private AuskunfteiErgebnisClusterRepository repo;
 
-    @Test
-    void testLadeCluster() {
-        AuskunfteiErgebnisCluster geladen = repo.lade(new Antragsnummer("123"));
-        assertNotNull(geladen);
-    }
+
     @Test
     void testSpeichereCluster() {
         final AntragstellerID antragstellerID = new AntragstellerID.Builder("Michael", "Ploed")

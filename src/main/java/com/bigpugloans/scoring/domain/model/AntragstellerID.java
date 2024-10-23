@@ -1,11 +1,17 @@
 package com.bigpugloans.scoring.domain.model;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Objects;
 
+@Embeddable
 public class AntragstellerID {
     private String antragstellerID;
+
+    private AntragstellerID() {}
 
     public AntragstellerID(String antragstellerID) {
         if (antragstellerID == null) {

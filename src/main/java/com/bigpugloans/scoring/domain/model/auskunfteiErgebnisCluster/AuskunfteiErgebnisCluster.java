@@ -1,16 +1,32 @@
 package com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster;
 
 import com.bigpugloans.scoring.domain.model.*;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
+@Entity
 public class AuskunfteiErgebnisCluster {
-    private final AntragstellerID antragstellerID;
-    private final Antragsnummer antragsnummer;
+    @Id
+    @GeneratedValue
+    private Long id;
 
+    @Embedded
+    private AntragstellerID antragstellerID;
+
+    @Embedded
+    private Antragsnummer antragsnummer;
+
+    @Embedded
     private NegativMerkmal negativMerkmale;
+
+    @Embedded
     private Warnung warnungen;
+
+    @Embedded
     private RueckzahlungsWahrscheinlichkeit rueckzahlungswahrscheinlichkeit;
+
+    private AuskunfteiErgebnisCluster() {}
 
     public AuskunfteiErgebnisCluster(Antragsnummer antragsnummer, AntragstellerID antragstellerID) {
         if(antragsnummer == null) {

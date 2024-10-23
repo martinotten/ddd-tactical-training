@@ -1,11 +1,15 @@
 package com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster;
 
 import com.bigpugloans.scoring.domain.model.KoKriterien;
+import jakarta.persistence.Embeddable;
 
 import java.util.Objects;
 
+@Embeddable
 class NegativMerkmal {
-    private final int anzahlNegativMerkmale;
+    private int anzahlNegativMerkmale;
+
+    private NegativMerkmal() {}
 
     public NegativMerkmal(int anzahlNegativMerkmale) {
         this.anzahlNegativMerkmale = anzahlNegativMerkmale;

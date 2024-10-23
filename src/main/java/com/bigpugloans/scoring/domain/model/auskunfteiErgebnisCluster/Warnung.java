@@ -1,11 +1,15 @@
 package com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster;
 
 import com.bigpugloans.scoring.domain.model.KoKriterien;
+import jakarta.persistence.Embeddable;
 
 import java.util.Objects;
 
+@Embeddable
 class Warnung {
-    private final int anzahlWarnungen;
+    private int anzahlWarnungen;
+
+    private Warnung() {}
 
     public Warnung(int anzahlWarnungen) {
         this.anzahlWarnungen = anzahlWarnungen;

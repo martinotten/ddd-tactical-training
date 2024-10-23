@@ -1,5 +1,8 @@
 package com.bigpugloans.scoring.domain.model;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
 public record ClusterGescored(Antragsnummer antragsnummer, Punkte punkte, KoKriterien koKriterien) implements ClusterScoringEvent {
     public ClusterGescored(Antragsnummer antragsnummer, Punkte punkte) {
         this(antragsnummer, punkte, new KoKriterien(0));

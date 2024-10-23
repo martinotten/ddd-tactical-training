@@ -1,20 +1,59 @@
 package com.bigpugloans.scoring.domain.model.scoringErgebnis;
 
 import com.bigpugloans.scoring.domain.model.*;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
+@Entity
 public class ScoringErgebnis {
-    private final Antragsnummer antragsnummer;
+    @Id
+    @GeneratedValue
+    private Long id;
 
+    @Embedded
+    private Antragsnummer antragsnummer;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "antragsnummer.antragsnummer", column = @Column(name = "antragsteller_antragsnummer")),
+            @AttributeOverride(name = "punkte.punkte", column = @Column(name = "antragsteller_punkte")),
+            @AttributeOverride(name = "koKriterien.anzahl", column = @Column(name = "antragsteller_koKriterien"))
+    })
     private ClusterGescored antragstellerClusterErgebnis;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "antragsnummer.antragsnummer", column = @Column(name = "auskunftei_antragsnummer")),
+            @AttributeOverride(name = "punkte.punkte", column = @Column(name = "auskunftei_punkte")),
+            @AttributeOverride(name = "koKriterien.anzahl", column = @Column(name = "auskunftei_koKriterien"))
+    })
     private ClusterGescored auskunfteiClusterErgebnis;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "antragsnummer.antragsnummer", column = @Column(name = "immobilien_finanzierung_antragsnummer")),
+            @AttributeOverride(name = "punkte.punkte", column = @Column(name = "immobilien_finanzierung_punkte")),
+            @AttributeOverride(name = "koKriterien.anzahl", column = @Column(name = "immobilien_finanzierung_koKriterien"))
+    })
     private ClusterGescored immobilienFinanzierungsClusterErgebnis;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "antragsnummer.antragsnummer", column = @Column(name = "monatlicher_haushaltsueberschuss_antragsnummer")),
+            @AttributeOverride(name = "punkte.punkte", column = @Column(name = "monatlicher_haushaltsueberschuss_punkte")),
+            @AttributeOverride(name = "koKriterien.anzahl", column = @Column(name = "monatlicher_haushaltsueberschuss_koKriterien"))
+    })
     private ClusterGescored monatlicherHaushaltsueberschussClusterErgebnis;
 
+    @Embedded
     private KoKriterien koKriterien;
+
+    @Embedded
     private Punkte gesamtPunkte;
 
+    private ScoringErgebnis() {
+    }
     public ScoringErgebnis(Antragsnummer antragsnummer) {
         if(antragsnummer == null) {
             throw new IllegalArgumentException("Antragsnummer darf nicht null sein.");

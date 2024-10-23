@@ -1,10 +1,15 @@
 package com.bigpugloans.scoring.domain.model;
 
+import jakarta.persistence.Embeddable;
+
 import java.util.Objects;
 
+@Embeddable
 public class Punkte {
-    private final int punkte;
+    private int punkte;
 
+    private Punkte() {
+    }
     public Punkte(int punkte) {
         this.punkte = punkte;
     }

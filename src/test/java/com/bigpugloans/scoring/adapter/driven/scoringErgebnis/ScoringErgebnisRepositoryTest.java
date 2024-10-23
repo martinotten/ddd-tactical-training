@@ -18,12 +18,6 @@ public class ScoringErgebnisRepositoryTest {
     private ScoringErgebnisRepository repo;
 
     @Test
-    void testLadeScoringErgebnis() {
-        ScoringErgebnis geladen = repo.lade(new Antragsnummer("123"));
-        System.out.println(geladen);
-    }
-
-    @Test
     void testSpeichereAntragstellerCluster() {
         ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("152"));
         scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("152"), new Punkte(100), new KoKriterien(1)));

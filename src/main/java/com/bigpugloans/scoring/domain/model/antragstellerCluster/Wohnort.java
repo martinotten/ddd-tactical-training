@@ -1,12 +1,16 @@
 package com.bigpugloans.scoring.domain.model.antragstellerCluster;
 
 import com.bigpugloans.scoring.domain.model.Punkte;
+import jakarta.persistence.Embeddable;
 
 import java.util.Objects;
 
+@Embeddable
 class Wohnort {
     private String wohnort;
 
+    private Wohnort() {
+    }
     public Wohnort(String wohnort) {
         this.wohnort = wohnort;
     }

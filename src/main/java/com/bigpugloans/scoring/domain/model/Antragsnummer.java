@@ -1,10 +1,15 @@
 package com.bigpugloans.scoring.domain.model;
 
+import jakarta.persistence.Embeddable;
+
 import java.util.Objects;
 
+@Embeddable
 public class Antragsnummer {
     private String antragsnummer;
 
+    private Antragsnummer() {
+    }
     public Antragsnummer(String antragsnummer) {
         if(antragsnummer == null) {
             throw new IllegalArgumentException("Antragsnummer darf nicht null sein.");

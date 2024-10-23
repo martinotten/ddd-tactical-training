@@ -1,15 +1,30 @@
 package com.bigpugloans.scoring.domain.model.antragstellerCluster;
 
 import com.bigpugloans.scoring.domain.model.*;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 
 import java.util.Objects;
 
+@Entity
 public class AntragstellerCluster {
-    private final Antragsnummer antragsnummer;
+    @Id
+    @GeneratedValue
+    private Long id;
 
+    @Embedded
+    private Antragsnummer antragsnummer;
+
+    @Embedded
     private Wohnort wohnort;
+
+    @Embedded
     private Guthaben guthabenBeiMopsBank;
 
+    private AntragstellerCluster() {
+    }
 
     public AntragstellerCluster(Antragsnummer antragsnummer) {
         if(antragsnummer == null) {

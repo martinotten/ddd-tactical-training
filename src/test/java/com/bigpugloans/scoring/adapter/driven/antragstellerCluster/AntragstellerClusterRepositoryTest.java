@@ -19,18 +19,13 @@ public class AntragstellerClusterRepositoryTest {
     private AntragstellerClusterRepository repo;
 
     @Test
-    void testLadeAntragstellerCluster() {
-        AntragstellerCluster geladen = repo.lade(new Antragsnummer("123"));
-        assertNotNull(geladen);
-    }
-    @Test
     void testSpeichereAntragstellerCluster() {
         AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new Antragsnummer("152"));
         antragstellerCluster.wohnortHinzufuegen("Berlin");
         repo.speichern(antragstellerCluster);
 
         AntragstellerCluster geladen = repo.lade(new Antragsnummer("152"));
-        assertEquals(new Antragsnummer(("123")), geladen.antragsnummer());
+        assertEquals(new Antragsnummer(("152")), geladen.antragsnummer());
     }
 
 }

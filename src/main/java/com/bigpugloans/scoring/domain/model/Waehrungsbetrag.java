@@ -1,12 +1,18 @@
 package com.bigpugloans.scoring.domain.model;
 
+import jakarta.persistence.Embeddable;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
 
+@Embeddable
 public class Waehrungsbetrag {
-    private final BigDecimal betrag;
+    private BigDecimal betrag;
 
+    private Waehrungsbetrag() {
+
+    }
     public Waehrungsbetrag(int betrag) {
         this.betrag = new BigDecimal(betrag);
     }

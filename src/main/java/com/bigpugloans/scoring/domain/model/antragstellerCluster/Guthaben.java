@@ -2,12 +2,18 @@ package com.bigpugloans.scoring.domain.model.antragstellerCluster;
 
 import com.bigpugloans.scoring.domain.model.Punkte;
 import com.bigpugloans.scoring.domain.model.Waehrungsbetrag;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 
 import java.util.Objects;
 
+@Embeddable
 class Guthaben {
+    @Embedded
     private Waehrungsbetrag guthaben;
 
+    private Guthaben() {
+    }
     public Guthaben(Waehrungsbetrag guthaben) {
         this.guthaben = guthaben;
     }

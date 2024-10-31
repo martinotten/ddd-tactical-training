@@ -1,10 +1,17 @@
 package com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster;
 
 import com.bigpugloans.scoring.domain.model.*;
+import org.jmolecules.architecture.onion.classical.DomainModelRing;
+import org.jmolecules.ddd.annotation.AggregateRoot;
+import org.jmolecules.ddd.annotation.Identity;
+import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.Objects;
 
+@DomainModelRing
+@AggregateRoot
 public class AuskunfteiErgebnisCluster {
+    @Identity
     private final AntragstellerID antragstellerID;
     private final Antragsnummer antragsnummer;
 

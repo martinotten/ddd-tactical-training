@@ -1,9 +1,11 @@
 package com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster;
 
 import com.bigpugloans.scoring.domain.model.KoKriterien;
+import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.Objects;
 
+@ValueObject
 class Warnung {
     private final int anzahlWarnungen;
 

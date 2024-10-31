@@ -3,6 +3,8 @@ package com.bigpugloans.scoring.adapter.driven.backends;
 import com.bigpugloans.scoring.application.model.AuskunfteiErgebnis;
 import com.bigpugloans.scoring.application.ports.driven.LeseKontoSaldo;
 import com.bigpugloans.scoring.domain.model.Waehrungsbetrag;
+import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
+import org.jmolecules.architecture.onion.classical.InfrastructureRing;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -11,6 +13,8 @@ import java.util.List;
 import java.util.Random;
 
 @Component
+@InfrastructureRing
+@SecondaryAdapter
 public class LeseKontoSaldoAdapter implements LeseKontoSaldo {
     private HashSet<Waehrungsbetrag> kontoSalden = new HashSet<>();
 

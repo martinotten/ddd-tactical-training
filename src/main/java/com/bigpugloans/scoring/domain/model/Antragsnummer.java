@@ -1,7 +1,10 @@
 package com.bigpugloans.scoring.domain.model;
 
+import org.jmolecules.architecture.onion.classical.DomainModelRing;
+
 import java.util.Objects;
 
+@DomainModelRing
 public class Antragsnummer {
     private String antragsnummer;
 

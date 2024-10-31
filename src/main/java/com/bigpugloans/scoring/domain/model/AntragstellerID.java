@@ -1,9 +1,12 @@
 package com.bigpugloans.scoring.domain.model;
+import org.jmolecules.architecture.onion.classical.DomainModelRing;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Objects;
 
+@DomainModelRing
 public class AntragstellerID {
     private String antragstellerID;
 

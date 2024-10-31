@@ -14,12 +14,15 @@ import com.bigpugloans.scoring.domain.service.ScoreAntragstellerClusterDomainSer
 import com.bigpugloans.scoring.domain.service.ScoreAuskunfteiErgebnisClusterDomainService;
 import com.bigpugloans.scoring.domain.service.ScoreImmobilienFinanzierungsClusterDomainService;
 import com.bigpugloans.scoring.domain.service.ScoreMonatlicheFinanzsituationClusterDomainService;
+import org.jmolecules.architecture.onion.classical.ApplicationServiceRing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@org.jmolecules.ddd.annotation.Service
+@ApplicationServiceRing
 public class PreScoringStartApplicationService implements PreScoringStart {
 
     private static final Logger log = LoggerFactory.getLogger(PreScoringStartApplicationService.class);

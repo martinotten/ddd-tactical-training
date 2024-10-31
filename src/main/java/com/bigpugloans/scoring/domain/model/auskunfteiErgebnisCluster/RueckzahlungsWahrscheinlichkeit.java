@@ -3,9 +3,11 @@ package com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster;
 import com.bigpugloans.scoring.domain.model.KoKriterien;
 import com.bigpugloans.scoring.domain.model.Prozentwert;
 import com.bigpugloans.scoring.domain.model.Punkte;
+import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.Objects;
 
+@ValueObject
 class RueckzahlungsWahrscheinlichkeit {
     private Prozentwert rueckzahlungsWahrscheinlichkeit;
 

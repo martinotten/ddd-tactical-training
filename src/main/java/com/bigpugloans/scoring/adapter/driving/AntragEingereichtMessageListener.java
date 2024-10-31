@@ -4,12 +4,16 @@ import com.bigpugloans.events.AntragEingereicht;
 import com.bigpugloans.events.antrag.Antrag;
 import com.bigpugloans.scoring.application.model.ScoringDatenAusAntrag;
 import com.bigpugloans.scoring.application.ports.driving.PreScoringStart;
+import org.jmolecules.architecture.hexagonal.PrimaryAdapter;
+import org.jmolecules.architecture.onion.classical.InfrastructureRing;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Component
+@InfrastructureRing
+@PrimaryAdapter
 public class AntragEingereichtMessageListener {
     private PreScoringStart preScoringStart;
 

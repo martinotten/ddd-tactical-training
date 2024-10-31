@@ -1,10 +1,17 @@
 package com.bigpugloans.scoring.domain.model.antragstellerCluster;
 
 import com.bigpugloans.scoring.domain.model.*;
+import org.jmolecules.architecture.onion.classical.DomainModelRing;
+import org.jmolecules.ddd.annotation.AggregateRoot;
+import org.jmolecules.ddd.annotation.Identity;
 
 import java.util.Objects;
 
+
+@DomainModelRing
+@AggregateRoot
 public class AntragstellerCluster {
+    @Identity
     private final Antragsnummer antragsnummer;
 
     private Wohnort wohnort;

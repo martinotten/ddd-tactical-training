@@ -1,7 +1,10 @@
 package com.bigpugloans.scoring.domain.model;
 
+import org.jmolecules.architecture.onion.classical.DomainModelRing;
+
 import java.math.BigDecimal;
 
+@DomainModelRing
 public class Prozentwert {
     private BigDecimal wert;
 

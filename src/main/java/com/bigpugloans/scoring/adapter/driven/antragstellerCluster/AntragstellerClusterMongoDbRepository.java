@@ -3,10 +3,15 @@ package com.bigpugloans.scoring.adapter.driven.antragstellerCluster;
 import com.bigpugloans.scoring.application.ports.driven.AntragstellerClusterRepository;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
+import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
+import org.jmolecules.architecture.onion.classical.InfrastructureRing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@InfrastructureRing
+@org.jmolecules.ddd.annotation.Repository
+@SecondaryAdapter
 public class AntragstellerClusterMongoDbRepository implements AntragstellerClusterRepository {
     private AntragstellerClusterSpringDataRepository dao;
 

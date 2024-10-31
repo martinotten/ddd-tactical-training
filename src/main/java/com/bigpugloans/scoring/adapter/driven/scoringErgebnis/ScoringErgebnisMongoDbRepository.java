@@ -3,10 +3,15 @@ package com.bigpugloans.scoring.adapter.driven.scoringErgebnis;
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisRepository;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;
 import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
+import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
+import org.jmolecules.architecture.onion.classical.InfrastructureRing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@InfrastructureRing
+@org.jmolecules.ddd.annotation.Repository
+@SecondaryAdapter
 public class ScoringErgebnisMongoDbRepository implements ScoringErgebnisRepository {
     private ScoringErgebnisSpringDataRepository dao;
 

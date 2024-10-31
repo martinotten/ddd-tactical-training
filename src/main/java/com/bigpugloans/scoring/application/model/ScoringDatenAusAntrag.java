@@ -1,7 +1,10 @@
 package com.bigpugloans.scoring.application.model;
 
+import org.jmolecules.architecture.onion.classical.ApplicationServiceRing;
+
 import java.util.Date;
 
+@ApplicationServiceRing
 public record ScoringDatenAusAntrag(
         String antragsnummer,
         String kundennummer,

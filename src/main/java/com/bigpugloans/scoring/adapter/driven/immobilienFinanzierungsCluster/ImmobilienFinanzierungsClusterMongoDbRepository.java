@@ -3,10 +3,15 @@ package com.bigpugloans.scoring.adapter.driven.immobilienFinanzierungsCluster;
 import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungClusterRepository;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
+import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
+import org.jmolecules.architecture.onion.classical.InfrastructureRing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@InfrastructureRing
+@org.jmolecules.ddd.annotation.Repository
+@SecondaryAdapter
 public class ImmobilienFinanzierungsClusterMongoDbRepository implements ImmobilienFinanzierungClusterRepository {
     private ImmobilienFinanzierungsClusterSpringDataRepository dao;
 

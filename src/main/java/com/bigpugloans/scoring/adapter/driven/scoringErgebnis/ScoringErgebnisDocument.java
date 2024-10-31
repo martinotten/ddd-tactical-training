@@ -1,11 +1,13 @@
 package com.bigpugloans.scoring.adapter.driven.scoringErgebnis;
 
 import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
+import org.jmolecules.architecture.onion.classical.InfrastructureRing;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "scoringErgebnis")
+@InfrastructureRing
 public class ScoringErgebnisDocument {
     @Id
     private String id;

@@ -1,10 +1,16 @@
 package com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster;
 
 import com.bigpugloans.scoring.domain.model.*;
+import org.jmolecules.architecture.onion.classical.DomainModelRing;
+import org.jmolecules.ddd.annotation.AggregateRoot;
+import org.jmolecules.ddd.annotation.Identity;
 
 import java.util.Objects;
 
+@DomainModelRing
+@AggregateRoot
 public class MonatlicheFinanzsituationCluster {
+    @Identity
     private final Antragsnummer antragsnummer;
     private Waehrungsbetrag einnahmen;
     private Waehrungsbetrag ausgaben;

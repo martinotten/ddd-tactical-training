@@ -1,9 +1,13 @@
 package com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster;
 
 import com.bigpugloans.scoring.domain.model.KoKriterien;
+import org.jmolecules.architecture.onion.classical.DomainModelRing;
+import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.Objects;
 
+@DomainModelRing
+@ValueObject
 class NegativMerkmal {
     private final int anzahlNegativMerkmale;
 

@@ -4,7 +4,9 @@ import com.bigpugloans.scoring.domain.model.ClusterGescored;
 import com.bigpugloans.scoring.domain.model.ClusterScoringEvent;
 import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
 import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
+import org.jmolecules.architecture.onion.classical.DomainServiceRing;
 
+@DomainServiceRing
 public class ScoreAuskunfteiErgebnisClusterDomainService {
     public ScoringErgebnis scoreAuskunfteiErgebnisCluster(AuskunfteiErgebnisCluster auskunfteiErgebnisCluster, ScoringErgebnis scoringErgebnis) {
         ClusterScoringEvent auskunfteiErgebnisClusterErgebnis = auskunfteiErgebnisCluster.scoren();

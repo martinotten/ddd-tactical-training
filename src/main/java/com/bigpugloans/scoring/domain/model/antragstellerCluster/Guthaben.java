@@ -2,9 +2,13 @@ package com.bigpugloans.scoring.domain.model.antragstellerCluster;
 
 import com.bigpugloans.scoring.domain.model.Punkte;
 import com.bigpugloans.scoring.domain.model.Waehrungsbetrag;
+import org.jmolecules.architecture.onion.classical.DomainModelRing;
+import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.Objects;
 
+@DomainModelRing
+@ValueObject
 class Guthaben {
     private Waehrungsbetrag guthaben;
 

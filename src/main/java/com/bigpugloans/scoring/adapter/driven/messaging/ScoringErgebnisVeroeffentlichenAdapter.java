@@ -5,11 +5,16 @@ import com.bigpugloans.events.PreScoringRot;
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisVeroeffentlichen;
 import com.bigpugloans.scoring.domain.model.AntragErfolgreichGescored;
 import com.bigpugloans.scoring.domain.model.ScoringFarbe;
+import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
+import org.jmolecules.architecture.onion.classical.InfrastructureRing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 @Component
+@InfrastructureRing
+@org.jmolecules.ddd.annotation.Repository
+@SecondaryAdapter
 public class ScoringErgebnisVeroeffentlichenAdapter implements ScoringErgebnisVeroeffentlichen {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;

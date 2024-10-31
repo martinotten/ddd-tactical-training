@@ -1,9 +1,12 @@
 package com.bigpugloans.scoring.domain.model;
 
+import org.jmolecules.architecture.onion.classical.DomainModelRing;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
 
+@DomainModelRing
 public class Waehrungsbetrag {
     private BigDecimal betrag;
 

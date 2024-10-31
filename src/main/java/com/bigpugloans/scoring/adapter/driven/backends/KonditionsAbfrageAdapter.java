@@ -2,11 +2,15 @@ package com.bigpugloans.scoring.adapter.driven.backends;
 
 import com.bigpugloans.scoring.application.model.AuskunfteiErgebnis;
 import com.bigpugloans.scoring.application.ports.driven.KonditionsAbfrage;
+import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
+import org.jmolecules.architecture.onion.classical.InfrastructureRing;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 @Component
+@InfrastructureRing
+@SecondaryAdapter
 public class KonditionsAbfrageAdapter implements KonditionsAbfrage {
     private HashSet<AuskunfteiErgebnis> auskunfteiErgebnisse = new HashSet<>();
 

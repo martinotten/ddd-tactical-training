@@ -1,9 +1,13 @@
 package com.bigpugloans.scoring.domain.model.antragstellerCluster;
 
 import com.bigpugloans.scoring.domain.model.Punkte;
+import org.jmolecules.architecture.onion.classical.DomainModelRing;
+import org.jmolecules.ddd.annotation.ValueObject;
 
 import java.util.Objects;
 
+@DomainModelRing
+@ValueObject
 class Wohnort {
     private String wohnort;
 

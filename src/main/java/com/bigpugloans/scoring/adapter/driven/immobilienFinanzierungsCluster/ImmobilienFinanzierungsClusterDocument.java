@@ -1,11 +1,13 @@
 package com.bigpugloans.scoring.adapter.driven.immobilienFinanzierungsCluster;
 
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
+import org.jmolecules.architecture.onion.classical.InfrastructureRing;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "immobilienFinanzierungsCluster")
+@InfrastructureRing
 public class ImmobilienFinanzierungsClusterDocument {
     @Id
     private String id;

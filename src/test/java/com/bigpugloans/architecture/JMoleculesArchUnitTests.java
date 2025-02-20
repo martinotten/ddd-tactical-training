@@ -8,7 +8,7 @@ import org.jmolecules.archunit.*;
 public class JMoleculesArchUnitTests {
 
     @ArchTest ArchRule dddRules = JMoleculesDddRules.all();
-    @ArchTest ArchRule hexagonalRules = JMoleculesArchitectureRules.ensureOnionClassical();
-    @ArchTest ArchRule onionRules = JMoleculesArchitectureRules.ensureHexagonal();
+    @ArchTest ArchRule hexagonalRules = JMoleculesArchitectureRules.ensureHexagonal();
+    @ArchTest ArchRule onionRules = JMoleculesArchitectureRules.ensureOnionClassical();
 
 }

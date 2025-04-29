@@ -7,19 +7,12 @@ public class Finanzierung {
     private Waehrungsbetrag marktwertImmobilie;
     private Waehrungsbetrag kaufnebenkosten;
 
-    private Prozentwert eigenkapitalanteil;
-
     public Finanzierung() {
         this.summeDarlehen = new Waehrungsbetrag(0);
         this.beleihungswert = new Waehrungsbetrag(0);
         this.eigenmittel = new Waehrungsbetrag(0);
         this.marktwertImmobilie = new Waehrungsbetrag(0);
         this.kaufnebenkosten = new Waehrungsbetrag(0);
-        this.eigenkapitalanteil = new Prozentwert(0);
-    }
-
-    public void setEigenkapitalanteil(Prozentwert eigenkapitalanteil) {
-        this.eigenkapitalanteil = eigenkapitalanteil;
     }
 
     public void setSummeDarlehen(Waehrungsbetrag summeDarlehen) {
@@ -42,19 +35,8 @@ public class Finanzierung {
         this.kaufnebenkosten = kaufnebenkosten;
     }
 
-    public boolean pruefeKoKriterium() {
+    public boolean koKriteriumIstErfuellt() {
         return summeDarlehen.groesserAls(beleihungswert) || !summeDarlehen.plus(eigenmittel).equals(marktwertImmobilie.plus(kaufnebenkosten));
     }
-
-    public Punkte berechnePunkte() {
-        if (eigenkapitalanteil.zwischen(new Prozentwert(15), new Prozentwert(20))) {
-            return new Punkte(5);
-        } else if (eigenkapitalanteil.zwischen(new Prozentwert(20), new Prozentwert(30))) {
-            return new Punkte(10);
-        } else if (eigenkapitalanteil.groesserAls(new Prozentwert(30))) {
-            return new Punkte(15);
-        } else {
-            return new Punkte(0);
-        }
-    }
 }
+

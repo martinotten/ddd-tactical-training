@@ -1,9 +1,9 @@
 package com.bigpugloans.scoring.domainmodel;
 
-public class Kunde {
-    private Waehrungsbetrag guthabenBeiMopsBank;
+public class Guthaben {
+    private final Waehrungsbetrag guthabenBeiMopsBank;
 
-    public void setGuthabenBeiMopsBank(Waehrungsbetrag guthabenBeiMopsBank) {
+    public Guthaben(Waehrungsbetrag guthabenBeiMopsBank) {
         this.guthabenBeiMopsBank = guthabenBeiMopsBank;
     }
 
@@ -14,6 +14,4 @@ public class Kunde {
             return new Punkte(0);
         }
     }
-
-
 }

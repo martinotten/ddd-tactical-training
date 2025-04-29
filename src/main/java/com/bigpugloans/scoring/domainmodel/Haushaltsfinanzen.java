@@ -1,6 +1,6 @@
 package com.bigpugloans.scoring.domainmodel;
 
-public class Haushalt {
+public class Haushaltsfinanzen {
     private Waehrungsbetrag monatlicheEinnahmen;
     private Waehrungsbetrag monatlicheAusgaben;
     private Waehrungsbetrag monatlicheDarlehensBelastungen;
@@ -8,7 +8,7 @@ public class Haushalt {
     private Waehrungsbetrag monatlicheSparen;
     private Waehrungsbetrag monatlicherUeberschussOhneTilgungen;
 
-    public Haushalt() {
+    public Haushaltsfinanzen() {
         this.monatlicheEinnahmen = new Waehrungsbetrag(0);
         this.monatlicheAusgaben = new Waehrungsbetrag(0);
         this.monatlicheDarlehensBelastungen = new Waehrungsbetrag(0);
@@ -45,7 +45,7 @@ public class Haushalt {
         this.monatlicheSparen = monatlicheSparen;
     }
 
-    public boolean pruefeKoKriterium() {
+    public boolean koKriteriumIstErfuellt() {
         return monatlicheEinnahmen.minus(monatlicheAusgaben).minus(monatlicheDarlehensBelastungen).minus(monatlicheRate).minus(monatlicheSparen).kleinerAls(new Waehrungsbetrag(0));
     }
 

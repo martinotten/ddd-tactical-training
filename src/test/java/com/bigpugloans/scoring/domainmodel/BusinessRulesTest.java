@@ -45,7 +45,7 @@ public class BusinessRulesTest {
 
     @Test
     void monatlicheDarlehensbelastungGroesserEinnahmenMinusAusgabenIstKoKriterium() {
-        Haushalt haushalt = new Haushalt();
+        Haushaltsfinanzen haushalt = new Haushaltsfinanzen();
         haushalt.setMonatlicheEinnahmen(new Waehrungsbetrag(3000));
         haushalt.setMonatlicheAusgaben(new Waehrungsbetrag(1000));
         haushalt.setMonatlicheDarlehensbelastungen(new Waehrungsbetrag(2500));
@@ -105,8 +105,9 @@ public class BusinessRulesTest {
 
     @Test
     void monatlicherHaushaltsueberschussOhneTilgungenUeber1500Gibt15Punkte() {
-        MonatlicherUeberschussOhneTilgungen haushaltsueberschuss = new MonatlicherUeberschussOhneTilgungen(new Waehrungsbetrag(1600));
-        Punkte punkte = haushaltsueberschuss.berechnePunkte();
+        Haushaltsfinanzen haushaltsfinanzen = new Haushaltsfinanzen();
+        haushaltsfinanzen.setMonatlicherUeberschussOhneTilgungen(new Waehrungsbetrag(1600));
+        Punkte punkte = haushaltsfinanzen.berechnePunkte();
         assertEquals(new Punkte(15), punkte, "Ein monatlicher Haushaltsüberschuss ohne Tilgungen > 1.500 EUR sollte 15 Punkte geben.");
     }
 

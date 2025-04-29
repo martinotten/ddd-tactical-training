@@ -1,12 +1,17 @@
 package com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster;
 
+import com.bigpugloans.scoring.domainmodel.Eigenkapitalanteil;
+import com.bigpugloans.scoring.domainmodel.Prozentwert;
+import com.bigpugloans.scoring.domainmodel.Punkte;
+import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
+
 public class ImmobilienFinanzierungsCluster {
     private Waehrungsbetrag summeDarlehen;
     private Waehrungsbetrag beleihungswert;
     private Waehrungsbetrag eigenmittel;
     private Waehrungsbetrag marktwertImmobilie;
     private Waehrungsbetrag kaufnebenkosten;
-    private Prozentwert eigenkapitalanteil;
+    private Eigenkapitalanteil eigenkapitalanteil;
     private boolean marktwertDurchschnittlich;
 
     public ImmobilienFinanzierungsCluster() {
@@ -15,7 +20,7 @@ public class ImmobilienFinanzierungsCluster {
         this.eigenmittel = new Waehrungsbetrag(0);
         this.marktwertImmobilie = new Waehrungsbetrag(0);
         this.kaufnebenkosten = new Waehrungsbetrag(0);
-        this.eigenkapitalanteil = new Prozentwert(0);
+        this.eigenkapitalanteil = new Eigenkapitalanteil(new Prozentwert(0));
     }
 
     public void setSummeDarlehen(Waehrungsbetrag summeDarlehen) {
@@ -47,13 +52,17 @@ public class ImmobilienFinanzierungsCluster {
     }
 
     public Punkte berechnePunkte() {
-        Punkte ergebnis = new Punkte(0);
-        if (eigenkapitalanteil.zwischen(new Prozentwert(15), new Prozentwert(20))) {
-            ergebnis = ergebnis.plus(new Punkte(5));
-        } else if (eigenkapitalanteil.zwischen(new Prozentwert(20), new Prozentwert(30))) {
-            ergebnis = ergebnis.plus(new Punkte(10));
-        } else if (eigenkapitalanteil.groesserAls(new Prozentwert(30))) {
-            ergebnis = ergebnis.plus(new Punkte(15));
-        }
+        int punkteEigenkapital = eigenkapitalanteil.berechnePunkte().getPunkte();
+        int ergebnis = punkteEigenkapital + (marktwertDurchschnittlich ? 10 : 0);
+
+        return new Punkte(ergebnis);
+    }
+
+    public void setEigenkapitalanteil(Prozentwert eigenkapitalanteil) {
+        this.eigenkapitalanteil = new Eigenkapitalanteil(eigenkapitalanteil);
+    }
+
+    public void setMarktwertDurchschnittlich(boolean durchschnittlicherMarktwert) {
+        this.marktwertDurchschnittlich = durchschnittlicherMarktwert;
     }
 }

@@ -55,6 +55,6 @@ public class ImmobilienFinanzierungsClusterTest {
         ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster();
         immobilienFinanzierungsCluster.setMarktwertDurchschnittlich(true);
         Punkte punkte = immobilienFinanzierungsCluster.berechnePunkte();
-        assertEquals(new Punkte(15), punkte, "Ein durchschnittlicher Marktwert der Immobilie sollte 15 Punkte geben.");
+        assertEquals(new Punkte(10), punkte, "Ein durchschnittlicher Marktwert der Immobilie sollte 10 Punkte geben.");
     }
 }

@@ -1,8 +1,5 @@
 package com.bigpugloans.scoring.domainmodel;
 
-import com.bigpugloans.scoring.domainmodel.Punkte;
-import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
-
 public class MonatlicheFinanzsituationCluster {
     private Waehrungsbetrag monatlicheEinnahmen;
     private Waehrungsbetrag monatlicheAusgaben;

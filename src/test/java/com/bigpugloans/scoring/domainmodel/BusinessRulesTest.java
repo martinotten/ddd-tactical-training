@@ -7,22 +7,22 @@ public class BusinessRulesTest {
     @Test
     void negativMerkmalIstKoKriterium() {
         AuskunfteiErgebnis ergebnis = new AuskunfteiErgebnis();
-        ergebnis.setNegativMerkmal(true);
-        assertTrue(ergebnis.pruefeKoKriterium(), "Negativmerkmal sollte ein KO-Kriterium sein.");
+        ergebnis.hatMindestensEinNegativmerkmal();
+        assertTrue(ergebnis.koKriteriumIstErfuellt(), "Negativmerkmal sollte ein KO-Kriterium sein.");
     }
 
     @Test
     void mehrAlsDreiWarnungenSindKoKriterium() {
         AuskunfteiErgebnis ergebnis = new AuskunfteiErgebnis();
-        ergebnis.setWarnungen(4); // Mehr als 3 Warnungen
-        assertTrue(ergebnis.pruefeKoKriterium(), "Mehr als drei Warnungen sollten ein KO-Kriterium sein.");
+        ergebnis.hatWarnungen(4); // Mehr als 3 Warnungen
+        assertTrue(ergebnis.koKriteriumIstErfuellt(), "Mehr als drei Warnungen sollten ein KO-Kriterium sein.");
     }
 
     @Test
     void rueckzahlungswahrscheinlichkeitUnter60IstKoKriterium() {
         AuskunfteiErgebnis ergebnis = new AuskunfteiErgebnis();
         ergebnis.setRueckzahlungswahrscheinlichkeit(new Prozentwert(59)); // < 60%
-        assertTrue(ergebnis.pruefeKoKriterium(), "Rückzahlungswahrscheinlichkeit < 60 sollte ein KO-Kriterium sein.");
+        assertTrue(ergebnis.koKriteriumIstErfuellt(), "Rückzahlungswahrscheinlichkeit < 60 sollte ein KO-Kriterium sein.");
     }
 
     @Test
@@ -30,7 +30,7 @@ public class BusinessRulesTest {
         Finanzierung finanzierung = new Finanzierung();
         finanzierung.setSummeDarlehen(new Waehrungsbetrag(200000));
         finanzierung.setBeleihungswert(new Waehrungsbetrag(150000));
-        assertTrue(finanzierung.pruefeKoKriterium(), "Summe der Darlehen > Beleihungswert sollte ein KO-Kriterium sein.");
+        assertTrue(finanzierung.koKriteriumIstErfuellt(), "Summe der Darlehen > Beleihungswert sollte ein KO-Kriterium sein.");
     }
 
     @Test
@@ -40,7 +40,7 @@ public class BusinessRulesTest {
         finanzierung.setEigenmittel(new Waehrungsbetrag(30000));
         finanzierung.setMarktwertImmobilie(new Waehrungsbetrag(210000));
         finanzierung.setKaufnebenkosten(new Waehrungsbetrag(15000));
-        assertTrue(finanzierung.pruefeKoKriterium(), "Summe Darlehen + Eigenmittel != Marktwert + Kaufnebenkosten sollte ein KO-Kriterium sein.");
+        assertTrue(finanzierung.koKriteriumIstErfuellt(), "Summe Darlehen + Eigenmittel != Marktwert + Kaufnebenkosten sollte ein KO-Kriterium sein.");
     }
 
     @Test
@@ -49,22 +49,20 @@ public class BusinessRulesTest {
         haushalt.setMonatlicheEinnahmen(new Waehrungsbetrag(3000));
         haushalt.setMonatlicheAusgaben(new Waehrungsbetrag(1000));
         haushalt.setMonatlicheDarlehensbelastungen(new Waehrungsbetrag(2500));
-        assertTrue(haushalt.pruefeKoKriterium(), "Monatliche Darlehensbelastungen > (Einnahmen - Ausgaben) sollte ein KO-Kriterium sein.");
+        assertTrue(haushalt.koKriteriumIstErfuellt(), "Monatliche Darlehensbelastungen > (Einnahmen - Ausgaben) sollte ein KO-Kriterium sein.");
     }
 
     @Test
     void antragstellerAusMuenchenUndHamburgBekommen5PunkteMehr() {
-        Antragsteller antragsteller = new Antragsteller();
-        antragsteller.setWohnort("München");
-        Punkte punkte = antragsteller.berechnePunkte();
+        Wohnort wohnortDesAntragstellers = new Wohnort("München");
+        Punkte punkte = wohnortDesAntragstellers.berechnePunkte();
         assertEquals(new Punkte(5), punkte, "Antragsteller aus München sollten 5 Punkte mehr bekommen.");
     }
 
     @Test
     void bestandskundenMitGuthabenUeber10000Bekommen5PunkteMehr() {
-        Kunde kunde = new Kunde();
-        kunde.setGuthabenBeiMopsBank(new Waehrungsbetrag(12000));
-        Punkte punkte = kunde.berechnePunkte();
+        Guthaben guthabenDesKunden = new Guthaben(new Waehrungsbetrag(12000));
+        Punkte punkte = guthabenDesKunden.berechnePunkte();
         assertEquals(new Punkte(5), punkte, "Bestandskunden mit Guthaben > 10.000 EUR sollten 5 Punkte mehr bekommen.");
     }
 
@@ -78,25 +76,22 @@ public class BusinessRulesTest {
 
     @Test
     void eigenkapitalanteil15Bis20ProzentGibt5Punkte() {
-        Finanzierung finanzierung = new Finanzierung();
-        finanzierung.setEigenkapitalanteil(new Prozentwert(18));
-        Punkte punkte = finanzierung.berechnePunkte();
+        Eigenkapitalanteil eigenkapitalanteil = new Eigenkapitalanteil(new Prozentwert(18));
+        Punkte punkte = eigenkapitalanteil.berechnePunkte();
         assertEquals(new Punkte(5), punkte, "Ein Eigenkapitalanteil von 15-20% sollte 5 Punkte geben.");
     }
 
     @Test
     void eigenkapitalanteilUeber20ProzentGibt10Punkte() {
-        Finanzierung finanzierung = new Finanzierung();
-        finanzierung.setEigenkapitalanteil(new Prozentwert(25));
-        Punkte punkte = finanzierung.berechnePunkte();
+        Eigenkapitalanteil eigenkapitalanteil = new Eigenkapitalanteil(new Prozentwert(25));
+        Punkte punkte = eigenkapitalanteil.berechnePunkte();
         assertEquals(new Punkte(10), punkte, "Ein Eigenkapitalanteil > 20% sollte 10 Punkte geben.");
     }
 
     @Test
     void eigenkapitalanteilUeber30ProzentGibt15Punkte() {
-        Finanzierung finanzierung = new Finanzierung();
-        finanzierung.setEigenkapitalanteil(new Prozentwert(35));
-        Punkte punkte = finanzierung.berechnePunkte();
+        Eigenkapitalanteil eigenkapitalanteil = new Eigenkapitalanteil(new Prozentwert(35));
+        Punkte punkte = eigenkapitalanteil.berechnePunkte();
         assertEquals(new Punkte(15), punkte, "Ein Eigenkapitalanteil > 30% sollte 15 Punkte geben.");
     }
 
@@ -110,9 +105,8 @@ public class BusinessRulesTest {
 
     @Test
     void monatlicherHaushaltsueberschussOhneTilgungenUeber1500Gibt15Punkte() {
-        Haushalt haushalt = new Haushalt();
-        haushalt.setMonatlicherUeberschussOhneTilgungen(new Waehrungsbetrag(1600));
-        Punkte punkte = haushalt.berechnePunkte();
+        MonatlicherUeberschussOhneTilgungen haushaltsueberschuss = new MonatlicherUeberschussOhneTilgungen(new Waehrungsbetrag(1600));
+        Punkte punkte = haushaltsueberschuss.berechnePunkte();
         assertEquals(new Punkte(15), punkte, "Ein monatlicher Haushaltsüberschuss ohne Tilgungen > 1.500 EUR sollte 15 Punkte geben.");
     }
 

@@ -16,11 +16,25 @@ public class MonatlicheFinanzsituationClusterTest {
         monatlicheFinanzsituationCluster.setMonatlicheDarlehensbelastungen(new Waehrungsbetrag(2500));
         assertTrue(monatlicheFinanzsituationCluster.pruefeKoKriterium(), "Monatliche Darlehensbelastungen > (Einnahmen - Ausgaben) sollte ein KO-Kriterium sein.");
     }
+
     @Test
     void monatlicherHaushaltsueberschussOhneTilgungenUeber1500Gibt15Punkte() {
-        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster();
-        monatlicheFinanzsituationCluster.setMonatlicherUeberschussOhneTilgungen(new Waehrungsbetrag(1600));
-        Punkte punkte = monatlicheFinanzsituationCluster.berechnePunkte();
-        assertEquals(new Punkte(15), punkte, "Ein monatlicher Haushaltsüberschuss ohne Tilgungen > 1.500 EUR sollte 15 Punkte geben.");
+        MonatlicheFinanzsituationCluster cluster = new MonatlicheFinanzsituationCluster();
+        cluster.setMonatlicherUeberschussOhneTilgungen(new Waehrungsbetrag(1501));
+        assertEquals(new Punkte(15), cluster.berechnePunkte());
+    }
+
+    @Test
+    void monatlicherHaushaltsueberschussOhneTilgungenGleich1500Gibt0Punkte() {
+        MonatlicheFinanzsituationCluster cluster = new MonatlicheFinanzsituationCluster();
+        cluster.setMonatlicherUeberschussOhneTilgungen(new Waehrungsbetrag(1500));
+        assertEquals(new Punkte(0), cluster.berechnePunkte());
+    }
+
+    @Test
+    void monatlicherHaushaltsueberschussOhneTilgungenUnter1500Gibt0Punkte() {
+        MonatlicheFinanzsituationCluster cluster = new MonatlicheFinanzsituationCluster();
+        cluster.setMonatlicherUeberschussOhneTilgungen(new Waehrungsbetrag(1499));
+        assertEquals(new Punkte(0), cluster.berechnePunkte());
     }
 }

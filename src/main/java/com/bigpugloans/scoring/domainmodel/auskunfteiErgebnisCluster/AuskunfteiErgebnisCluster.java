@@ -10,7 +10,7 @@ public class AuskunfteiErgebnisCluster {
 
     private Prozentwert rueckzahlungswahrscheinlichkeit;
 
-    public void setWarnungen(int warnungen) {
+    public void hatWarnungen(int warnungen) {
         this.warnungen = warnungen;
     }
 
@@ -18,11 +18,11 @@ public class AuskunfteiErgebnisCluster {
         this.rueckzahlungswahrscheinlichkeit = rueckzahlungswahrscheinlichkeit;
     }
 
-    public void setNegativMerkmal(boolean negativMerkmal) {
-        this.negativMerkmal = negativMerkmal;
+    public void hatMindestensEinNegativmerkmal() {
+        this.negativMerkmal = true;
     }
 
-    public boolean pruefeKoKriterium() {
+    public boolean koKriteriumIstErfuellt() {
         return negativMerkmal || warnungen > 3 || rueckzahlungswahrscheinlichkeit.kleinerAls(new Prozentwert(60));
     }
 

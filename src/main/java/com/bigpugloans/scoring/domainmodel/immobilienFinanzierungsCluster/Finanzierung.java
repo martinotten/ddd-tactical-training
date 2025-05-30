@@ -1,19 +1,13 @@
 package com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster;
 
-import com.bigpugloans.scoring.domainmodel.Prozentwert;
-import com.bigpugloans.scoring.domainmodel.Punkte;
-import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
-
 public class ImmobilienFinanzierungsCluster {
     private Waehrungsbetrag summeDarlehen;
     private Waehrungsbetrag beleihungswert;
     private Waehrungsbetrag eigenmittel;
     private Waehrungsbetrag marktwertImmobilie;
     private Waehrungsbetrag kaufnebenkosten;
-
     private Prozentwert eigenkapitalanteil;
     private boolean marktwertDurchschnittlich;
-
 
     public ImmobilienFinanzierungsCluster() {
         this.summeDarlehen = new Waehrungsbetrag(0);
@@ -22,12 +16,6 @@ public class ImmobilienFinanzierungsCluster {
         this.marktwertImmobilie = new Waehrungsbetrag(0);
         this.kaufnebenkosten = new Waehrungsbetrag(0);
         this.eigenkapitalanteil = new Prozentwert(0);
-    }
-    public void setMarktwertDurchschnittlich(boolean marktwertDurchschnittlich) {
-        this.marktwertDurchschnittlich = marktwertDurchschnittlich;
-    }
-    public void setEigenkapitalanteil(Prozentwert eigenkapitalanteil) {
-        this.eigenkapitalanteil = eigenkapitalanteil;
     }
 
     public void setSummeDarlehen(Waehrungsbetrag summeDarlehen) {
@@ -50,6 +38,10 @@ public class ImmobilienFinanzierungsCluster {
         this.kaufnebenkosten = kaufnebenkosten;
     }
 
+    public boolean koKriteriumIstErfuellt() {
+        return summeDarlehen.groesserAls(beleihungswert) || !summeDarlehen.plus(eigenmittel).equals(marktwertImmobilie.plus(kaufnebenkosten));
+    }
+
     public boolean pruefeKoKriterium() {
         return summeDarlehen.groesserAls(beleihungswert) || !summeDarlehen.plus(eigenmittel).equals(marktwertImmobilie.plus(kaufnebenkosten));
     }
@@ -63,10 +55,5 @@ public class ImmobilienFinanzierungsCluster {
         } else if (eigenkapitalanteil.groesserAls(new Prozentwert(30))) {
             ergebnis = ergebnis.plus(new Punkte(15));
         }
-
-        if(marktwertDurchschnittlich) {
-            ergebnis = ergebnis.plus(new Punkte(15));
-        }
-        return ergebnis;
     }
 }

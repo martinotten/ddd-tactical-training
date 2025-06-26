@@ -1,0 +1,56 @@
+package com.bigpugloans.scoring.application.service;
+
+import com.bigpugloans.scoring.application.model.Antrag;
+import com.bigpugloans.scoring.application.model.AuskunfteiErgebnis;
+import com.bigpugloans.scoring.application.ports.driven.*;
+import com.bigpugloans.scoring.application.ports.driving.MainScoringStart;
+import com.bigpugloans.scoring.domainmodel.ScoringId;
+import org.junit.jupiter.api.Test;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
+public class FreigegebenerAntragVerarbeitenApplicationServiceTest {
+    
+    @Test
+    void testFreigegebenerAntragVerarbeiten() {
+        Antrag antrag = new Antrag(
+                "123",
+                "789",
+                1000,
+                2000,
+                500,
+                "Hamburg",
+                1000,
+                100000,
+                100000,
+                10000,
+                "Max",
+                "Mustermann",
+                "Musterstrasse",
+                "Musterstadt",
+                "1234",
+                new java.util.Date()
+        );
+        
+        AntragHinzufuegenDomainService antragHinzufuegenDomainServiceMock = mock(AntragHinzufuegenDomainService.class);
+        AuskunfteiHinzufuegenDomainService auskunfteiHinzufuegenDomainServiceMock = mock(AuskunfteiHinzufuegenDomainService.class);
+        KreditAbfrageService kreditAbfrageServiceMock = mock(KreditAbfrageService.class);
+        
+        AuskunfteiErgebnis auskunfteiErgebnis = new AuskunfteiErgebnis(1, 0, 85);
+        when(kreditAbfrageServiceMock.kreditAbfrage(antrag)).thenReturn(auskunfteiErgebnis);
+        
+        FreigegebenerAntragVerarbeitenApplicationService service = new FreigegebenerAntragVerarbeitenApplicationService(
+                antragHinzufuegenDomainServiceMock,
+                auskunfteiHinzufuegenDomainServiceMock,
+                kreditAbfrageServiceMock
+        );
+        
+        service.freigegebenerAntragVerarbeiten(antrag);
+        
+        verify(antragHinzufuegenDomainServiceMock).antragHinzufuegen(any(ScoringId.class), eq(antrag));
+        verify(kreditAbfrageServiceMock).kreditAbfrage(antrag);
+        verify(auskunfteiHinzufuegenDomainServiceMock).auskunfteiErgebnisHinzufuegen(any(ScoringId.class), eq(auskunfteiErgebnis));
+    }
+}

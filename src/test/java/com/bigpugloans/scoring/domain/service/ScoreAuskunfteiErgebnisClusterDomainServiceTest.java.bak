@@ -17,15 +17,15 @@ public class ScoreAuskunfteiErgebnisClusterDomainServiceTest {
         final AntragstellerID antragstellerID = erzeugeAntragstellerID();
         final Antragsnummer antragsnummer = new Antragsnummer("123");
 
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(antragsnummer, antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new ScoringId(antragsnummer, ScoringArt.MAIN), antragstellerID);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(100));
         auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(0);
         auskunfteiErgebnisCluster.warnungenHinzufuegen(0);
 
-        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
-        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new ScoringId(antragsnummer, ScoringArt.MAIN));
+        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
         ScoreAuskunfteiErgebnisClusterDomainService service = new ScoreAuskunfteiErgebnisClusterDomainService();
         scoringErgebnis = service.scoreAuskunfteiErgebnisCluster(auskunfteiErgebnisCluster, scoringErgebnis);
         AntragScoringEvent antragScoringEvent = scoringErgebnis.berechneErgebnis();
@@ -38,15 +38,15 @@ public class ScoreAuskunfteiErgebnisClusterDomainServiceTest {
         final AntragstellerID antragstellerID = erzeugeAntragstellerID();
         final Antragsnummer antragsnummer = new Antragsnummer("123");
 
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(antragsnummer, antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new ScoringId(antragsnummer, ScoringArt.MAIN), antragstellerID);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(100));
         auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(1);
         auskunfteiErgebnisCluster.warnungenHinzufuegen(0);
 
-        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
-        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new ScoringId(antragsnummer, ScoringArt.MAIN));
+        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
         ScoreAuskunfteiErgebnisClusterDomainService service = new ScoreAuskunfteiErgebnisClusterDomainService();
         scoringErgebnis = service.scoreAuskunfteiErgebnisCluster(auskunfteiErgebnisCluster, scoringErgebnis);
         AntragScoringEvent antragScoringEvent = scoringErgebnis.berechneErgebnis();
@@ -60,14 +60,14 @@ public class ScoreAuskunfteiErgebnisClusterDomainServiceTest {
         final AntragstellerID antragstellerID = erzeugeAntragstellerID();
         final Antragsnummer antragsnummer = new Antragsnummer("123");
 
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(antragsnummer, antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new ScoringId(antragsnummer, ScoringArt.MAIN), antragstellerID);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(100));
         auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(0);
         auskunfteiErgebnisCluster.warnungenHinzufuegen(0);
 
-        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
-        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new ScoringId(antragsnummer, ScoringArt.MAIN));
+        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
 
         ScoreAuskunfteiErgebnisClusterDomainService service = new ScoreAuskunfteiErgebnisClusterDomainService();
         scoringErgebnis = service.scoreAuskunfteiErgebnisCluster(auskunfteiErgebnisCluster, scoringErgebnis);

@@ -3,8 +3,9 @@ package com.bigpugloans.scoring.application.service;
 import com.bigpugloans.scoring.application.model.Antrag;
 import com.bigpugloans.scoring.application.model.AuskunfteiErgebnis;
 import com.bigpugloans.scoring.application.ports.driven.*;
-import com.bigpugloans.scoring.application.ports.driving.MainScoringStart;
-import com.bigpugloans.scoring.domainmodel.ScoringId;
+import com.bigpugloans.scoring.domain.model.ScoringId;
+import com.bigpugloans.scoring.domain.service.AntragHinzufuegenDomainService;
+import com.bigpugloans.scoring.domain.service.AuskunfteiHinzufuegenDomainService;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -41,10 +42,13 @@ public class FreigegebenerAntragVerarbeitenApplicationServiceTest {
         AuskunfteiErgebnis auskunfteiErgebnis = new AuskunfteiErgebnis(1, 0, 85);
         when(kreditAbfrageServiceMock.kreditAbfrage(antrag)).thenReturn(auskunfteiErgebnis);
         
+        ScoringAusfuehrenUndVeroeffentlichenService scoringAusfuehrenUndVeroeffentlichenServiceMock = mock(ScoringAusfuehrenUndVeroeffentlichenService.class);
+        
         FreigegebenerAntragVerarbeitenApplicationService service = new FreigegebenerAntragVerarbeitenApplicationService(
                 antragHinzufuegenDomainServiceMock,
                 auskunfteiHinzufuegenDomainServiceMock,
-                kreditAbfrageServiceMock
+                kreditAbfrageServiceMock,
+                scoringAusfuehrenUndVeroeffentlichenServiceMock
         );
         
         service.freigegebenerAntragVerarbeiten(antrag);

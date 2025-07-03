@@ -1,8 +1,8 @@
-package com.bigpugloans.scoring.domainmodel;
+package com.bigpugloans.scoring.domain.model;
 
 import java.util.Objects;
 
-public record ScoringId(Antragsnummer antragsnummer, ScoringArt scoringArt) {
+public record ScoringId(Antragsnummer antragsnummer, com.bigpugloans.scoring.domain.model.ScoringArt scoringArt) {
     
     public ScoringId {
         Objects.requireNonNull(antragsnummer, "Antragsnummer darf nicht null sein");

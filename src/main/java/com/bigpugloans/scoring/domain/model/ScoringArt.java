@@ -1,4 +1,4 @@
-package com.bigpugloans.scoring.domainmodel;
+package com.bigpugloans.scoring.domain.model;
 
 public enum ScoringArt {
     PRE,

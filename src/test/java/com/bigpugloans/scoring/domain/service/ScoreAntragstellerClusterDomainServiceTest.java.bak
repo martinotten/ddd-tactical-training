@@ -1,0 +1,66 @@
+package com.bigpugloans.scoring.domain.service;
+
+import com.bigpugloans.scoring.domain.model.*;
+import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
+import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
+import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+public class ScoreAntragstellerClusterDomainServiceTest {
+    @Test
+    void testScoreAntragstellerClusterVollstaendigGruen() {
+        final Antragsnummer antragsnummer = new Antragsnummer("123");
+
+        AntragstellerCluster antragsterllerCluster = new AntragstellerCluster(new ScoringId(antragsnummer, ScoringArt.MAIN));
+        antragsterllerCluster.guthabenHinzufuegen(new Waehrungsbetrag(11000));
+        antragsterllerCluster.wohnortHinzufuegen("München");
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new ScoringId(antragsnummer, ScoringArt.MAIN));
+        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        ScoreAntragstellerClusterDomainService service = new ScoreAntragstellerClusterDomainService();
+        scoringErgebnis = service.scoreAntragstellerCluster(antragsterllerCluster, scoringErgebnis);
+        AntragErfolgreichGescored antragScoringEvent = scoringErgebnis.berechneErgebnis().get();
+        assertEquals(ScoringFarbe.GRUEN, antragScoringEvent.farbe());
+
+    }
+
+    @Test
+    void testScoreAntragstellerClusterVollstaendigROT() {
+        final Antragsnummer antragsnummer = new Antragsnummer("123");
+
+        AntragstellerCluster antragsterllerCluster = new AntragstellerCluster(new ScoringId(antragsnummer, ScoringArt.MAIN));
+        antragsterllerCluster.guthabenHinzufuegen(new Waehrungsbetrag(11000));
+        antragsterllerCluster.wohnortHinzufuegen("München");
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new ScoringId(antragsnummer, ScoringArt.MAIN));
+        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(2), new KoKriterien(0)));
+        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(2), new KoKriterien(0)));
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(2), new KoKriterien(0)));
+        ScoreAntragstellerClusterDomainService service = new ScoreAntragstellerClusterDomainService();
+        scoringErgebnis = service.scoreAntragstellerCluster(antragsterllerCluster, scoringErgebnis);
+        AntragErfolgreichGescored antragScoringEvent = scoringErgebnis.berechneErgebnis().get();
+        assertEquals(ScoringFarbe.ROT, antragScoringEvent.farbe());
+    }
+
+    @Test
+    void testScoreAntragstellerClusterNichtVollstaendig() {
+        final Antragsnummer antragsnummer = new Antragsnummer("123");
+        ScoringId scoringId = new ScoringId(antragsnummer, ScoringArt.MAIN);
+        AntragstellerCluster antragsterllerCluster = new AntragstellerCluster(scoringId);
+        antragsterllerCluster.guthabenHinzufuegen(new Waehrungsbetrag(11000));
+        antragsterllerCluster.wohnortHinzufuegen("München");
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(scoringId);
+        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(scoringId, new Punkte(122), new KoKriterien(0)));
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(scoringId, new Punkte(2), new KoKriterien(0)));
+        ScoreAntragstellerClusterDomainService service = new ScoreAntragstellerClusterDomainService();
+        scoringErgebnis = service.scoreAntragstellerCluster(antragsterllerCluster, scoringErgebnis);
+        Optional<AntragErfolgreichGescored> antragScoringEvent = scoringErgebnis.berechneErgebnis();
+        assert(antragScoringEvent.isPresent());
+        assertEquals(scoringId, antragScoringEvent.get().scoringId());
+    }
+
+}

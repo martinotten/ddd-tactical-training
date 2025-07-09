@@ -58,7 +58,6 @@ public class AuskunfteiErgebnisCluster implements ClusterScoring {
         this.negativMerkmale = new NegativMerkmal(anzahlNegativMerkmale);
     }
 
-
     public void warnungenHinzufuegen(int anzahlWarnungen) {
         this.warnungen = new Warnung(anzahlWarnungen);
     }

@@ -1,9 +1,14 @@
 package com.bigpugloans.scoring.domain.model.scoringErgebnis;
 
 import com.bigpugloans.scoring.domain.model.*;
+import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
+import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
+import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
+import com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster.MonatlicheFinanzsituationCluster;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 public class ScoringErgebnis {
     private final ScoringId scoringId;
@@ -23,6 +28,53 @@ public class ScoringErgebnis {
         this.scoringId = scoringId;
         this.gesamtPunkte = new Punkte(0);
         this.koKriterien = new KoKriterien(0);
+    }
+
+    /**
+     * Factory method to create a ScoringErgebnis from cluster scoring results.
+     * This method encapsulates the business logic for building a complete scoring result.
+     */
+    public static Optional<ScoringErgebnis> ausClusterErgebnissen(ScoringId scoringId, Set<ClusterScoring> clusters) {
+        if (clusters.isEmpty()) {
+            return Optional.empty();
+        }
+
+        // Score all clusters
+        var scoringResults = clusters.stream()
+                .map(ClusterScoring::scoren)
+                .toList();
+
+        // Check if any cluster failed to score
+        if (scoringResults.stream().anyMatch(Optional::isEmpty)) {
+            return Optional.empty();
+        }
+
+        // Create the scoring result and add all cluster results
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(scoringId);
+        var clusterList = clusters.stream().toList();
+        
+        for (int i = 0; i < clusterList.size(); i++) {
+            var clusterResult = scoringResults.get(i);
+            var cluster = clusterList.get(i);
+
+            clusterResult.ifPresent(clusterGescored -> scoringErgebnis.addClusterResult(clusterGescored, cluster));
+        }
+        
+        return Optional.of(scoringErgebnis);
+    }
+
+    /**
+     * Adds a cluster result to this scoring result.
+     * This method encapsulates the business logic for handling different cluster types.
+     */
+    private void addClusterResult(ClusterGescored clusterResult, ClusterScoring cluster) {
+        switch (cluster) {
+            case AntragstellerCluster ignored -> antragstellerClusterHinzufuegen(clusterResult);
+            case MonatlicheFinanzsituationCluster ignored -> monatlicheFinansituationClusterHinzufuegen(clusterResult);
+            case ImmobilienFinanzierungsCluster ignored -> immobilienFinanzierungClusterHinzufuegen(clusterResult);
+            case AuskunfteiErgebnisCluster ignored -> auskunfteiErgebnisClusterHinzufuegen(clusterResult);
+            default -> throw new IllegalArgumentException("Unknown cluster type: " + cluster.getClass().getSimpleName());
+        }
     }
 
     public ScoringId scoringId() {

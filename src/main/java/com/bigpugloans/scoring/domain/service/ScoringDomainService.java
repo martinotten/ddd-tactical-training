@@ -31,29 +31,24 @@ public class ScoringDomainService {
     }
     
     public Optional<ScoringErgebnis> scoring(ScoringId scoringId) {
-        // Load all clusters into a set
         Set<ClusterScoring> clusters = loadAllClusters(scoringId);
         
         if (clusters.isEmpty()) {
             return Optional.empty();
         }
         
-        // Score all clusters using Stream API
-        List<Optional<ClusterGescored>> scoringResults = clusters.stream()
-                .map(ClusterScoring::scoren)
-                .toList();
-        
-        // Check if any cluster could not be scored (contains empty Optional)
-        boolean anyClusterNotScored = scoringResults.stream()
-                .anyMatch(Optional::isEmpty);
-        
-        if (anyClusterNotScored) {
+        List<Optional<ClusterGescored>> scoringResults = scoreAllClusters(clusters);
+
+        if (isAnyClusterNotScored(scoringResults)) {
             return Optional.empty();
         }
-        
-        // Create combined scoring result
+
+        return buildScoringErgebnis(scoringId, clusters, scoringResults);
+    }
+
+    private Optional<ScoringErgebnis> buildScoringErgebnis(ScoringId scoringId, Set<ClusterScoring> clusters, List<Optional<ClusterGescored>> scoringResults) {
         ScoringErgebnis scoringErgebnis = new ScoringErgebnis(scoringId);
-        
+
         // Add cluster results by pairing them with their original clusters
         List<ClusterScoring> clusterList = clusters.stream().toList();
         for (int i = 0; i < clusterList.size(); i++) {
@@ -63,10 +58,20 @@ public class ScoringDomainService {
                 addClusterResult(scoringErgebnis, result.get(), cluster);
             }
         }
-        
         return Optional.of(scoringErgebnis);
     }
-    
+
+    private static boolean isAnyClusterNotScored(List<Optional<ClusterGescored>> scoringResults) {
+        return scoringResults.stream()
+                .anyMatch(Optional::isEmpty);
+    }
+
+    private static List<Optional<ClusterGescored>> scoreAllClusters(Set<ClusterScoring> clusters) {
+        return clusters.stream()
+                .map(ClusterScoring::scoren)
+                .toList();
+    }
+
     private Set<ClusterScoring> loadAllClusters(ScoringId scoringId) {
         try {
             return Set.of(

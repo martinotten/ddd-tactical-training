@@ -17,7 +17,7 @@ public class AntragstellerClusterTest {
 
     @Test
     void antragstellerClusterMitGleichenScoringIdsSindGleich() {
-        ScoringId scoringId = new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN);
+        ScoringId scoringId = ScoringId.mainScoringIdAusAntragsnummer("123");
         AntragstellerCluster antragstellerCluster1 = new AntragstellerCluster(scoringId);
         antragstellerCluster1.wohnortHinzufuegen("Stuttgart");
         antragstellerCluster1.guthabenHinzufuegen(new Waehrungsbetrag(3000));
@@ -31,7 +31,7 @@ public class AntragstellerClusterTest {
     }
     @Test
     void antragstellerAusMuenchenMitGuthaben12000Bekommen10Punkte() {
-        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN));
+        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(ScoringId.mainScoringIdAusAntragsnummer("123"));
         antragstellerCluster.wohnortHinzufuegen("München");
         antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(12000));
         ClusterGescored ergebnis = antragstellerCluster.scoren().get();
@@ -40,7 +40,7 @@ public class AntragstellerClusterTest {
 
     @Test
     void antragstellerAusMuenchenMitGuthabenVon9000Bekommen5Punkte() {
-        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN));
+        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(ScoringId.mainScoringIdAusAntragsnummer("123"));
         antragstellerCluster.wohnortHinzufuegen("München");
         antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(9000));
         ClusterGescored ergebnis = antragstellerCluster.scoren().get();
@@ -49,7 +49,7 @@ public class AntragstellerClusterTest {
 
     @Test
     void antragstellerAusDortmundMitGuthaben12000Bekommen5Punkte() {
-        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN));
+        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(ScoringId.mainScoringIdAusAntragsnummer("123"));
         antragstellerCluster.wohnortHinzufuegen("Dortmund");
         antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(12000));
         ClusterGescored ergebnis = antragstellerCluster.scoren().get();
@@ -57,7 +57,7 @@ public class AntragstellerClusterTest {
     }
     @Test
     void antragstellerAusDortmundMitGuthaben10000Bekommen0Punkte() {
-        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN));
+        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(ScoringId.mainScoringIdAusAntragsnummer("123"));
         antragstellerCluster.wohnortHinzufuegen("Dortmund");
         antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(10000));
         ClusterGescored ergebnis = antragstellerCluster.scoren().get();

@@ -19,17 +19,22 @@ public class ScoringErgebnisRepositoryTest {
 
     @Test
     void testLadeScoringErgebnis() {
-        ScoringErgebnis geladen = repo.lade(new Antragsnummer("123"));
+        ScoringId scoringId = ScoringId.preScoringIdAusAntragsnummer("123");
+        ScoringErgebnis geladen = repo.lade(scoringId);
         System.out.println(geladen);
     }
 
     @Test
     void testSpeichereAntragstellerCluster() {
-        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("152"));
-        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("152"), new Punkte(100), new KoKriterien(1)));
+
+        final ScoringId scoringId = ScoringId.preScoringIdAusAntragsnummer("152");
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(scoringId);
+        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(scoringId, new Punkte(100), new KoKriterien(1)));
         repo.speichern(scoringErgebnis);
 
-        ScoringErgebnis geladen = repo.lade(new Antragsnummer("152"));
-        assertEquals(ScoringFarbe.ROT, ((AntragErfolgreichGescored)geladen.berechneErgebnis()).farbe());
+        ScoringErgebnis geladen = repo.lade(scoringId);
+        var ergebnis = geladen.berechneErgebnis();
+        assertEquals(true, ergebnis.isPresent());
+        assertEquals(ScoringFarbe.ROT, ergebnis.get().farbe());
     }
 }

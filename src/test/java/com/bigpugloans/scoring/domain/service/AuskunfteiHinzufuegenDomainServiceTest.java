@@ -18,22 +18,20 @@ class AuskunfteiHinzufuegenDomainServiceTest {
     private AuskunfteiHinzufuegenDomainService auskunfteiHinzufuegenDomainService;
     
     private ScoringId testScoringId;
-    private Antragsnummer testAntragsnummer;
     private AuskunfteiErgebnis testAuskunfteiErgebnis;
     
     @BeforeEach
     void setUp() {
         auskunfteiErgebnisClusterRepository = mock(AuskunfteiErgebnisClusterRepository.class);
         auskunfteiHinzufuegenDomainService = new AuskunfteiHinzufuegenDomainService(auskunfteiErgebnisClusterRepository);
-        
-        testAntragsnummer = new Antragsnummer("TEST123");
-        testScoringId = new ScoringId(testAntragsnummer, ScoringArt.MAIN);
+
+        testScoringId = ScoringId.mainScoringIdAusAntragsnummer("TEST123");
         testAuskunfteiErgebnis = new AuskunfteiErgebnis(3, 1, 85);
     }
-    
+
     @Test
     void auskunfteiErgebnisHinzufuegen_shouldThrowException_whenClusterNotFound() {
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer)).thenReturn(null);
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(null);
         
         IllegalStateException exception = assertThrows(
             IllegalStateException.class,
@@ -42,7 +40,7 @@ class AuskunfteiHinzufuegenDomainServiceTest {
         
         assertTrue(exception.getMessage().contains("AuskunfteiErgebnisCluster für ScoringId"));
         assertTrue(exception.getMessage().contains("nicht gefunden"));
-        verify(auskunfteiErgebnisClusterRepository).lade(testAntragsnummer);
+        verify(auskunfteiErgebnisClusterRepository).lade(testScoringId);
         verify(auskunfteiErgebnisClusterRepository, never()).speichern(any());
     }
     
@@ -50,7 +48,7 @@ class AuskunfteiHinzufuegenDomainServiceTest {
     void auskunfteiErgebnisHinzufuegen_shouldUpdateClusterWithCorrectValues() {
         AntragstellerID antragstellerID = new AntragstellerID("KUNDE123");
         AuskunfteiErgebnisCluster existingCluster = new AuskunfteiErgebnisCluster(testScoringId, antragstellerID);
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer)).thenReturn(existingCluster);
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
         auskunfteiHinzufuegenDomainService.auskunfteiErgebnisHinzufuegen(testScoringId, testAuskunfteiErgebnis);
         
@@ -67,11 +65,11 @@ class AuskunfteiHinzufuegenDomainServiceTest {
     void auskunfteiErgebnisHinzufuegen_shouldLoadAndSaveCorrectCluster() {
         AntragstellerID antragstellerID = new AntragstellerID("KUNDE123");
         AuskunfteiErgebnisCluster existingCluster = new AuskunfteiErgebnisCluster(testScoringId, antragstellerID);
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer)).thenReturn(existingCluster);
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
         auskunfteiHinzufuegenDomainService.auskunfteiErgebnisHinzufuegen(testScoringId, testAuskunfteiErgebnis);
         
-        verify(auskunfteiErgebnisClusterRepository).lade(testAntragsnummer);
+        verify(auskunfteiErgebnisClusterRepository).lade(testScoringId);
         verify(auskunfteiErgebnisClusterRepository).speichern(same(existingCluster));
     }
     
@@ -79,7 +77,7 @@ class AuskunfteiHinzufuegenDomainServiceTest {
     void auskunfteiErgebnisHinzufuegen_shouldHandleZeroValues() {
         AntragstellerID antragstellerID = new AntragstellerID("KUNDE123");
         AuskunfteiErgebnisCluster existingCluster = new AuskunfteiErgebnisCluster(testScoringId, antragstellerID);
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer)).thenReturn(existingCluster);
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
         AuskunfteiErgebnis zeroValuesErgebnis = new AuskunfteiErgebnis(0, 0, 100);
         
@@ -98,7 +96,7 @@ class AuskunfteiHinzufuegenDomainServiceTest {
     void auskunfteiErgebnisHinzufuegen_shouldHandleMaximumValues() {
         AntragstellerID antragstellerID = new AntragstellerID("KUNDE123");
         AuskunfteiErgebnisCluster existingCluster = new AuskunfteiErgebnisCluster(testScoringId, antragstellerID);
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer)).thenReturn(existingCluster);
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
         AuskunfteiErgebnis maxValuesErgebnis = new AuskunfteiErgebnis(10, 5, 0);
         
@@ -115,7 +113,7 @@ class AuskunfteiHinzufuegenDomainServiceTest {
     
     @Test
     void auskunfteiErgebnisHinzufuegen_shouldThrowException_whenRepositoryThrowsException() {
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer))
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
         
         assertThrows(
@@ -123,7 +121,7 @@ class AuskunfteiHinzufuegenDomainServiceTest {
             () -> auskunfteiHinzufuegenDomainService.auskunfteiErgebnisHinzufuegen(testScoringId, testAuskunfteiErgebnis)
         );
         
-        verify(auskunfteiErgebnisClusterRepository).lade(testAntragsnummer);
+        verify(auskunfteiErgebnisClusterRepository).lade(testScoringId);
         verify(auskunfteiErgebnisClusterRepository, never()).speichern(any());
     }
 }

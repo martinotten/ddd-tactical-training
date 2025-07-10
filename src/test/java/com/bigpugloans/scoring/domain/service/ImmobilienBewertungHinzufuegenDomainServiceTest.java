@@ -18,7 +18,6 @@ class ImmobilienBewertungHinzufuegenDomainServiceTest {
     private ImmobilienBewertungHinzufuegenDomainService immobilienBewertungHinzufuegenDomainService;
     
     private ImmobilienBewertung testImmobilienBewertung;
-    private Antragsnummer testAntragsnummer;
     private ScoringId testScoringId;
     
     @BeforeEach
@@ -27,9 +26,9 @@ class ImmobilienBewertungHinzufuegenDomainServiceTest {
         immobilienBewertungHinzufuegenDomainService = new ImmobilienBewertungHinzufuegenDomainService(
             immobilienFinanzierungClusterRepository
         );
-        
-        testAntragsnummer = new Antragsnummer("TEST123");
-        testScoringId = new ScoringId(testAntragsnummer, ScoringArt.MAIN);
+
+        Antragsnummer testAntragsnummer = new Antragsnummer("TEST123");
+        testScoringId = ScoringId.mainScoringIdAusAntragsnummer(testAntragsnummer.nummer());
         testImmobilienBewertung = new ImmobilienBewertung(
             "TEST123",
             450000,
@@ -43,7 +42,7 @@ class ImmobilienBewertungHinzufuegenDomainServiceTest {
     @Test
     void immobilienBewertungHinzufuegen_shouldUpdateClusterWithCorrectValues() {
         ImmobilienFinanzierungsCluster existingCluster = new ImmobilienFinanzierungsCluster(testScoringId);
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer)).thenReturn(existingCluster);
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
         immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(testImmobilienBewertung);
         
@@ -59,29 +58,29 @@ class ImmobilienBewertungHinzufuegenDomainServiceTest {
     @Test
     void immobilienBewertungHinzufuegen_shouldLoadCorrectClusterByAntragsnummer() {
         ImmobilienFinanzierungsCluster existingCluster = new ImmobilienFinanzierungsCluster(testScoringId);
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer)).thenReturn(existingCluster);
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
         immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(testImmobilienBewertung);
         
-        verify(immobilienFinanzierungClusterRepository).lade(testAntragsnummer);
+        verify(immobilienFinanzierungClusterRepository).lade(testScoringId);
     }
     
     @Test
     void immobilienBewertungHinzufuegen_shouldThrowException_whenClusterNotFound() {
-        when(immobilienFinanzierungClusterRepository.lade(any(Antragsnummer.class))).thenReturn(null);
+        when(immobilienFinanzierungClusterRepository.lade(any(ScoringId.class))).thenReturn(null);
         
         assertThrows(
             NullPointerException.class,
             () -> immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(testImmobilienBewertung)
         );
         
-        verify(immobilienFinanzierungClusterRepository).lade(any(Antragsnummer.class));
+        verify(immobilienFinanzierungClusterRepository).lade(any(ScoringId.class));
         verify(immobilienFinanzierungClusterRepository, never()).speichern(any());
     }
     
     @Test
     void immobilienBewertungHinzufuegen_shouldHandleRepositoryException() {
-        when(immobilienFinanzierungClusterRepository.lade(any(Antragsnummer.class)))
+        when(immobilienFinanzierungClusterRepository.lade(any(ScoringId.class)))
             .thenThrow(new RuntimeException("Repository error"));
         
         assertThrows(
@@ -89,14 +88,14 @@ class ImmobilienBewertungHinzufuegenDomainServiceTest {
             () -> immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(testImmobilienBewertung)
         );
         
-        verify(immobilienFinanzierungClusterRepository).lade(any(Antragsnummer.class));
+        verify(immobilienFinanzierungClusterRepository).lade(any(ScoringId.class));
         verify(immobilienFinanzierungClusterRepository, never()).speichern(any());
     }
     
     @Test
     void immobilienBewertungHinzufuegen_shouldSaveClusterAfterUpdate() {
         ImmobilienFinanzierungsCluster existingCluster = new ImmobilienFinanzierungsCluster(testScoringId);
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer)).thenReturn(existingCluster);
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
         immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(testImmobilienBewertung);
         
@@ -106,7 +105,7 @@ class ImmobilienBewertungHinzufuegenDomainServiceTest {
     @Test
     void immobilienBewertungHinzufuegen_shouldSetAllMarktwertVergleichValues() {
         ImmobilienFinanzierungsCluster existingCluster = new ImmobilienFinanzierungsCluster(testScoringId);
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer)).thenReturn(existingCluster);
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
         immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(testImmobilienBewertung);
         
@@ -130,7 +129,7 @@ class ImmobilienBewertungHinzufuegenDomainServiceTest {
             0
         );
         ImmobilienFinanzierungsCluster existingCluster = new ImmobilienFinanzierungsCluster(testScoringId);
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer)).thenReturn(existingCluster);
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
         immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(minValuesBewertung);
         

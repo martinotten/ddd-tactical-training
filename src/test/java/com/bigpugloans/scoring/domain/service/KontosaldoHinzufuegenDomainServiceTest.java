@@ -17,22 +17,21 @@ class KontosaldoHinzufuegenDomainServiceTest {
     private KontosaldoHinzufuegenDomainService kontosaldoHinzufuegenDomainService;
     
     private ScoringId testScoringId;
-    private Antragsnummer testAntragsnummer;
     private Waehrungsbetrag testKontosaldo;
     
     @BeforeEach
     void setUp() {
         antragstellerClusterRepository = mock(AntragstellerClusterRepository.class);
         kontosaldoHinzufuegenDomainService = new KontosaldoHinzufuegenDomainService(antragstellerClusterRepository);
-        
-        testAntragsnummer = new Antragsnummer("TEST123");
-        testScoringId = new ScoringId(testAntragsnummer, ScoringArt.MAIN);
+
+        Antragsnummer testAntragsnummer = new Antragsnummer("TEST123");
+        testScoringId = ScoringId.mainScoringIdAusAntragsnummer(testAntragsnummer.nummer());
         testKontosaldo = new Waehrungsbetrag(5000);
     }
     
     @Test
     void kontosaldoHinzufuegen_shouldThrowException_whenClusterNotFound() {
-        when(antragstellerClusterRepository.lade(testAntragsnummer)).thenReturn(null);
+        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(null);
         
         IllegalStateException exception = assertThrows(
             IllegalStateException.class,
@@ -41,14 +40,14 @@ class KontosaldoHinzufuegenDomainServiceTest {
         
         assertTrue(exception.getMessage().contains("AntragstellerCluster für ScoringId"));
         assertTrue(exception.getMessage().contains("nicht gefunden"));
-        verify(antragstellerClusterRepository).lade(testAntragsnummer);
+        verify(antragstellerClusterRepository).lade(testScoringId);
         verify(antragstellerClusterRepository, never()).speichern(any());
     }
     
     @Test
     void kontosaldoHinzufuegen_shouldUpdateClusterWithKontosaldo() {
         AntragstellerCluster existingCluster = new AntragstellerCluster(testScoringId);
-        when(antragstellerClusterRepository.lade(testAntragsnummer)).thenReturn(existingCluster);
+        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
         kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, testKontosaldo);
         
@@ -64,18 +63,18 @@ class KontosaldoHinzufuegenDomainServiceTest {
     @Test
     void kontosaldoHinzufuegen_shouldLoadAndSaveCorrectCluster() {
         AntragstellerCluster existingCluster = new AntragstellerCluster(testScoringId);
-        when(antragstellerClusterRepository.lade(testAntragsnummer)).thenReturn(existingCluster);
+        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
         kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, testKontosaldo);
         
-        verify(antragstellerClusterRepository).lade(testAntragsnummer);
+        verify(antragstellerClusterRepository).lade(testScoringId);
         verify(antragstellerClusterRepository).speichern(same(existingCluster));
     }
     
     @Test
     void kontosaldoHinzufuegen_shouldHandleZeroKontosaldo() {
         AntragstellerCluster existingCluster = new AntragstellerCluster(testScoringId);
-        when(antragstellerClusterRepository.lade(testAntragsnummer)).thenReturn(existingCluster);
+        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
         Waehrungsbetrag zeroKontosaldo = new Waehrungsbetrag(0);
         
@@ -93,7 +92,7 @@ class KontosaldoHinzufuegenDomainServiceTest {
     @Test
     void kontosaldoHinzufuegen_shouldHandleNegativeKontosaldo() {
         AntragstellerCluster existingCluster = new AntragstellerCluster(testScoringId);
-        when(antragstellerClusterRepository.lade(testAntragsnummer)).thenReturn(existingCluster);
+        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
         Waehrungsbetrag negativeKontosaldo = new Waehrungsbetrag(-1000);
         
@@ -110,7 +109,7 @@ class KontosaldoHinzufuegenDomainServiceTest {
     
     @Test
     void kontosaldoHinzufuegen_shouldThrowException_whenRepositoryThrowsException() {
-        when(antragstellerClusterRepository.lade(testAntragsnummer))
+        when(antragstellerClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
         
         assertThrows(
@@ -118,14 +117,14 @@ class KontosaldoHinzufuegenDomainServiceTest {
             () -> kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, testKontosaldo)
         );
         
-        verify(antragstellerClusterRepository).lade(testAntragsnummer);
+        verify(antragstellerClusterRepository).lade(testScoringId);
         verify(antragstellerClusterRepository, never()).speichern(any());
     }
     
     @Test
     void kontosaldoHinzufuegen_shouldHandleLargeKontosaldo() {
         AntragstellerCluster existingCluster = new AntragstellerCluster(testScoringId);
-        when(antragstellerClusterRepository.lade(testAntragsnummer)).thenReturn(existingCluster);
+        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
         Waehrungsbetrag largeKontosaldo = new Waehrungsbetrag(1000000);
         

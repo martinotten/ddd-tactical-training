@@ -2,8 +2,8 @@ package com.bigpugloans.scoring.application.ports.driven;
 
 import com.bigpugloans.scoring.application.model.AuskunfteiErgebnis;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public interface KonditionsAbfrage {
-    public AuskunfteiErgebnis konditionsAbfrage(String vorname, String nachname, String strasse, String stadt, String plz, Date geburtsdatum);
+    public AuskunfteiErgebnis konditionsAbfrage(String vorname, String nachname, String strasse, String stadt, String plz, LocalDate geburtsdatum);
 }

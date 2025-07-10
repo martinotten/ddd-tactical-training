@@ -16,7 +16,7 @@ public class MonatlicheFinanzsituationClusterTest {
 
     @Test
     void keinScoringOhneEinnahmen() {
-        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN));
+        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(ScoringId.mainScoringIdAusAntragsnummer("123"));
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(10));
         Optional<ClusterGescored> ergebnis = monatlicheFinanzsituationCluster.scoren();
@@ -26,7 +26,7 @@ public class MonatlicheFinanzsituationClusterTest {
 
     @Test
     void keinScoringOhneAusgaben() {
-        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN));
+        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(ScoringId.mainScoringIdAusAntragsnummer("123"));
         monatlicheFinanzsituationCluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(10));
         Optional<ClusterGescored> ergebnis = monatlicheFinanzsituationCluster.scoren();
@@ -36,7 +36,7 @@ public class MonatlicheFinanzsituationClusterTest {
 
     @Test
     void keinScoringOhneMonatlicheDarlehensbelastungen() {
-        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN));
+        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(ScoringId.mainScoringIdAusAntragsnummer("123"));
         monatlicheFinanzsituationCluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(10));
         Optional<ClusterGescored> ergebnis = monatlicheFinanzsituationCluster.scoren();
@@ -46,7 +46,7 @@ public class MonatlicheFinanzsituationClusterTest {
 
     @Test
     void monatlicheFinanzsituationClusterMitGleicherScoringIdSindGleich() {
-        ScoringId scoringId = new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN);
+        ScoringId scoringId = ScoringId.mainScoringIdAusAntragsnummer("123");
 
         MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster1 = new MonatlicheFinanzsituationCluster(scoringId);
         monatlicheFinanzsituationCluster1.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(3000));
@@ -62,7 +62,7 @@ public class MonatlicheFinanzsituationClusterTest {
     }
     @Test
     void monatlicheDarlehensbelastungGroesserEinnahmenMinusAusgabenIstKoKriterium() {
-        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN));
+        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(ScoringId.mainScoringIdAusAntragsnummer("123"));
         monatlicheFinanzsituationCluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(3000));
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(2500));
@@ -71,7 +71,7 @@ public class MonatlicheFinanzsituationClusterTest {
     }
     @Test
     void monatlicherHaushaltsueberschussOhneTilgungenUeber1500Gibt15Punkte() {
-        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN));
+        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(ScoringId.mainScoringIdAusAntragsnummer("123"));
         monatlicheFinanzsituationCluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(2600));
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(1500));

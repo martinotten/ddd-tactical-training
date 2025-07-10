@@ -34,10 +34,10 @@ public class ScoringDomainService {
     private Set<ClusterScoring> loadAllClusters(ScoringId scoringId) {
         try {
             return Set.of(
-                antragstellerClusterRepository.lade(scoringId.antragsnummer()),
-                monatlicheFinanzsituationClusterRepository.lade(scoringId.antragsnummer()),
-                immobilienFinanzierungClusterRepository.lade(scoringId.antragsnummer()),
-                auskunfteiErgebnisClusterRepository.lade(scoringId.antragsnummer())
+                antragstellerClusterRepository.lade(scoringId),
+                monatlicheFinanzsituationClusterRepository.lade(scoringId),
+                immobilienFinanzierungClusterRepository.lade(scoringId),
+                auskunfteiErgebnisClusterRepository.lade(scoringId)
             );
         } catch (Exception e) {
             return Set.of(); // Return empty set if any cluster fails to load

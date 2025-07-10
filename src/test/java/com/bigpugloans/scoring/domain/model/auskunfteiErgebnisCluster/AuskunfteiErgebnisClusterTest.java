@@ -3,7 +3,7 @@ package com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster;
 import com.bigpugloans.scoring.domain.model.*;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,7 +18,7 @@ public class AuskunfteiErgebnisClusterTest {
                     .postleitzahl("40789")
                     .stadt("Monheim")
                     .strasse("Krischerstrasse 100")
-                    .geburtsdatum(new Date(1970, 1, 1))
+                    .geburtsdatum(LocalDate.of(1970, 1, 1))
                     .build());
         });
     }
@@ -26,7 +26,7 @@ public class AuskunfteiErgebnisClusterTest {
     @Test
     void antragsstellerIDNullWirftException() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new AuskunfteiErgebnisCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN), null);
+            new AuskunfteiErgebnisCluster(ScoringId.mainScoringIdAusAntragsnummer("123"), null);
         });
     }
     @Test
@@ -35,9 +35,9 @@ public class AuskunfteiErgebnisClusterTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN), antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(ScoringId.mainScoringIdAusAntragsnummer("123"), antragstellerID);
         assertEquals(Optional.empty(), auskunfteiErgebnisCluster.scoren());
     }
     @Test
@@ -46,9 +46,9 @@ public class AuskunfteiErgebnisClusterTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        ScoringId scoringId = new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN);
+        ScoringId scoringId = ScoringId.mainScoringIdAusAntragsnummer("123");
 
         AuskunfteiErgebnisCluster auskunfteiErgebnisCluster1 = new AuskunfteiErgebnisCluster(scoringId, antragstellerID);
         auskunfteiErgebnisCluster1.warnungenHinzufuegen(3);
@@ -67,9 +67,9 @@ public class AuskunfteiErgebnisClusterTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN), antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(ScoringId.mainScoringIdAusAntragsnummer("123"), antragstellerID);
         auskunfteiErgebnisCluster.warnungenHinzufuegen(3);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
         ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren().get();
@@ -83,9 +83,9 @@ public class AuskunfteiErgebnisClusterTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN), antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(ScoringId.mainScoringIdAusAntragsnummer("123"), antragstellerID);
         auskunfteiErgebnisCluster.warnungenHinzufuegen(4);
         auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(2);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
@@ -100,9 +100,9 @@ public class AuskunfteiErgebnisClusterTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN), antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(ScoringId.mainScoringIdAusAntragsnummer("123"), antragstellerID);
         auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(1);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
         ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren().get();
@@ -116,9 +116,9 @@ public class AuskunfteiErgebnisClusterTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new ScoringId(new Antragsnummer("123"), ScoringArt.MAIN), antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(ScoringId.mainScoringIdAusAntragsnummer("123"), antragstellerID);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(50));
         ClusterGescored clusterGescored = auskunfteiErgebnisCluster.scoren().get();
         assertEquals(50, clusterGescored.punkte().getPunkte(), "0 Warnungen, 0 Negativ und 50% = 50 Punkte und 1 KO");

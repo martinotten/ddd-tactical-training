@@ -16,7 +16,7 @@ public class AuskunfteiHinzufuegenDomainService {
     
     public void auskunfteiErgebnisHinzufuegen(ScoringId scoringId, AuskunfteiErgebnis auskunfteiErgebnis) {
         // Load the existing AuskunfteiErgebnisCluster by ScoringId
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = auskunfteiErgebnisClusterRepository.lade(scoringId.antragsnummer());
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = auskunfteiErgebnisClusterRepository.lade(scoringId);
         
         if (auskunfteiErgebnisCluster == null) {
             throw new IllegalStateException("AuskunfteiErgebnisCluster für ScoringId " + scoringId + " nicht gefunden. Bitte zuerst Antrag hinzufügen.");

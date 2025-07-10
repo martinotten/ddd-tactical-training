@@ -8,6 +8,8 @@ import com.bigpugloans.scoring.domain.service.AntragHinzufuegenDomainService;
 import com.bigpugloans.scoring.domain.service.AuskunfteiHinzufuegenDomainService;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -32,7 +34,7 @@ public class FreigegebenerAntragVerarbeitenApplicationServiceTest {
                 "Musterstrasse",
                 "Musterstadt",
                 "1234",
-                new java.util.Date()
+                LocalDate.of(1970, 2, 1)
         );
         
         AntragHinzufuegenDomainService antragHinzufuegenDomainServiceMock = mock(AntragHinzufuegenDomainService.class);

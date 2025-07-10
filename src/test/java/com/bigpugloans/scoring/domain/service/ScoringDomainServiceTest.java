@@ -25,8 +25,7 @@ class ScoringDomainServiceTest {
     private ScoringDomainService scoringDomainService;
     
     private ScoringId testScoringId;
-    private Antragsnummer testAntragsnummer;
-    
+
     @BeforeEach
     void setUp() {
         antragstellerClusterRepository = mock(AntragstellerClusterRepository.class);
@@ -40,20 +39,20 @@ class ScoringDomainServiceTest {
             immobilienFinanzierungClusterRepository,
             auskunfteiErgebnisClusterRepository
         );
-        
-        testAntragsnummer = new Antragsnummer("TEST123");
-        testScoringId = new ScoringId(testAntragsnummer, ScoringArt.MAIN);
+
+        Antragsnummer testAntragsnummer = new Antragsnummer("TEST123");
+        testScoringId = ScoringId.mainScoringIdAusAntragsnummer(testAntragsnummer.nummer());
     }
     
     @Test
     void scoring_shouldReturnEmptyOptional_whenAllRepositoriesThrowException() {
-        when(antragstellerClusterRepository.lade(testAntragsnummer))
+        when(antragstellerClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
         
         Optional<ScoringErgebnis> result = scoringDomainService.scoring(testScoringId);
         
         assertTrue(result.isEmpty());
-        verify(antragstellerClusterRepository).lade(testAntragsnummer);
+        verify(antragstellerClusterRepository).lade(testScoringId);
     }
     
     @Test
@@ -62,11 +61,11 @@ class ScoringDomainServiceTest {
         MonatlicheFinanzsituationCluster monatlicheCluster = mock(MonatlicheFinanzsituationCluster.class);
         ImmobilienFinanzierungsCluster immobilienCluster = mock(ImmobilienFinanzierungsCluster.class);
         AuskunfteiErgebnisCluster auskunfteiCluster = mock(AuskunfteiErgebnisCluster.class);
-        
-        when(antragstellerClusterRepository.lade(testAntragsnummer)).thenReturn(antragstellerCluster);
-        when(monatlicheFinanzsituationClusterRepository.lade(testAntragsnummer)).thenReturn(monatlicheCluster);
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer)).thenReturn(immobilienCluster);
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer)).thenReturn(auskunfteiCluster);
+
+        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(antragstellerCluster);
+        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId)).thenReturn(monatlicheCluster);
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(immobilienCluster);
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(auskunfteiCluster);
         
         ClusterGescored antragstellerResult = new ClusterGescored(testScoringId, new Punkte(100), new KoKriterien(0));
         ClusterGescored monatlicheResult = new ClusterGescored(testScoringId, new Punkte(80), new KoKriterien(0));
@@ -93,10 +92,10 @@ class ScoringDomainServiceTest {
         ImmobilienFinanzierungsCluster immobilienCluster = mock(ImmobilienFinanzierungsCluster.class);
         AuskunfteiErgebnisCluster auskunfteiCluster = mock(AuskunfteiErgebnisCluster.class);
         
-        when(antragstellerClusterRepository.lade(testAntragsnummer)).thenReturn(antragstellerCluster);
-        when(monatlicheFinanzsituationClusterRepository.lade(testAntragsnummer)).thenReturn(monatlicheCluster);
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer)).thenReturn(immobilienCluster);
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer)).thenReturn(auskunfteiCluster);
+        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(antragstellerCluster);
+        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId)).thenReturn(monatlicheCluster);
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(immobilienCluster);
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(auskunfteiCluster);
         
         ClusterGescored antragstellerResult = new ClusterGescored(testScoringId, new Punkte(100), new KoKriterien(0));
         ClusterGescored monatlicheResult = new ClusterGescored(testScoringId, new Punkte(80), new KoKriterien(1));
@@ -126,17 +125,17 @@ class ScoringDomainServiceTest {
         AntragstellerCluster antragstellerCluster = mock(AntragstellerCluster.class);
         MonatlicheFinanzsituationCluster monatlicheCluster = mock(MonatlicheFinanzsituationCluster.class);
         
-        when(antragstellerClusterRepository.lade(testAntragsnummer)).thenReturn(antragstellerCluster);
-        when(monatlicheFinanzsituationClusterRepository.lade(testAntragsnummer)).thenReturn(monatlicheCluster);
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer))
+        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(antragstellerCluster);
+        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId)).thenReturn(monatlicheCluster);
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
         
         Optional<ScoringErgebnis> result = scoringDomainService.scoring(testScoringId);
         
         assertTrue(result.isEmpty());
-        verify(antragstellerClusterRepository).lade(testAntragsnummer);
-        verify(monatlicheFinanzsituationClusterRepository).lade(testAntragsnummer);
-        verify(immobilienFinanzierungClusterRepository).lade(testAntragsnummer);
+        verify(antragstellerClusterRepository).lade(testScoringId);
+        verify(monatlicheFinanzsituationClusterRepository).lade(testScoringId);
+        verify(immobilienFinanzierungClusterRepository).lade(testScoringId);
     }
     
     @Test
@@ -146,10 +145,10 @@ class ScoringDomainServiceTest {
         ImmobilienFinanzierungsCluster immobilienCluster = mock(ImmobilienFinanzierungsCluster.class);
         AuskunfteiErgebnisCluster auskunfteiCluster = mock(AuskunfteiErgebnisCluster.class);
         
-        when(antragstellerClusterRepository.lade(testAntragsnummer)).thenReturn(antragstellerCluster);
-        when(monatlicheFinanzsituationClusterRepository.lade(testAntragsnummer)).thenReturn(monatlicheCluster);
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer)).thenReturn(immobilienCluster);
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer)).thenReturn(auskunfteiCluster);
+        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(antragstellerCluster);
+        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId)).thenReturn(monatlicheCluster);
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(immobilienCluster);
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(auskunfteiCluster);
         
         ClusterGescored antragstellerResult = new ClusterGescored(testScoringId, new Punkte(100));
         ClusterGescored monatlicheResult = new ClusterGescored(testScoringId, new Punkte(80));
@@ -165,10 +164,10 @@ class ScoringDomainServiceTest {
         
         assertTrue(result.isPresent());
         
-        verify(antragstellerClusterRepository).lade(testAntragsnummer);
-        verify(monatlicheFinanzsituationClusterRepository).lade(testAntragsnummer);
-        verify(immobilienFinanzierungClusterRepository).lade(testAntragsnummer);
-        verify(auskunfteiErgebnisClusterRepository).lade(testAntragsnummer);
+        verify(antragstellerClusterRepository).lade(testScoringId);
+        verify(monatlicheFinanzsituationClusterRepository).lade(testScoringId);
+        verify(immobilienFinanzierungClusterRepository).lade(testScoringId);
+        verify(auskunfteiErgebnisClusterRepository).lade(testScoringId);
     }
     
     @Test
@@ -178,10 +177,10 @@ class ScoringDomainServiceTest {
         ImmobilienFinanzierungsCluster immobilienCluster = mock(ImmobilienFinanzierungsCluster.class);
         AuskunfteiErgebnisCluster auskunfteiCluster = mock(AuskunfteiErgebnisCluster.class);
         
-        when(antragstellerClusterRepository.lade(testAntragsnummer)).thenReturn(antragstellerCluster);
-        when(monatlicheFinanzsituationClusterRepository.lade(testAntragsnummer)).thenReturn(monatlicheCluster);
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer)).thenReturn(immobilienCluster);
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer)).thenReturn(auskunfteiCluster);
+        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(antragstellerCluster);
+        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId)).thenReturn(monatlicheCluster);
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(immobilienCluster);
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(auskunfteiCluster);
         
         when(antragstellerCluster.scoren()).thenReturn(Optional.empty());
         when(monatlicheCluster.scoren()).thenReturn(Optional.empty());
@@ -198,12 +197,12 @@ class ScoringDomainServiceTest {
     
     @Test
     void scoring_shouldPassCorrectAntragsnummerToAllRepositories() {
-        when(antragstellerClusterRepository.lade(testAntragsnummer))
+        when(antragstellerClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Test exception"));
         
         scoringDomainService.scoring(testScoringId);
         
-        verify(antragstellerClusterRepository).lade(testAntragsnummer);
+        verify(antragstellerClusterRepository).lade(testScoringId);
         verifyNoInteractions(monatlicheFinanzsituationClusterRepository);
         verifyNoInteractions(immobilienFinanzierungClusterRepository);
         verifyNoInteractions(auskunfteiErgebnisClusterRepository);

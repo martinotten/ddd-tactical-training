@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.domain.model;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class AntragstellerID {
@@ -60,14 +60,14 @@ public class AntragstellerID {
         private String strasse;
         private String postleitzahl;
         private String stadt;
-        private Date geburtsdatum;
+        private LocalDate geburtsdatum;
 
         public Builder(String vorname, String nachname) {
             this.vorname = vorname;
             this.nachname = nachname;
         }
 
-        public Builder geburtsdatum(Date geburtsdatum) {
+        public Builder geburtsdatum(LocalDate geburtsdatum) {
             this.geburtsdatum = geburtsdatum;
             return this;
         }

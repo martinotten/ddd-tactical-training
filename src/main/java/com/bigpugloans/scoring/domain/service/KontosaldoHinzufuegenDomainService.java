@@ -14,7 +14,7 @@ public class KontosaldoHinzufuegenDomainService {
     }
     
     public void kontosaldoHinzufuegen(ScoringId scoringId, Waehrungsbetrag kontosaldo) {
-        AntragstellerCluster antragstellerCluster = antragstellerClusterRepository.lade(scoringId.antragsnummer());
+        AntragstellerCluster antragstellerCluster = antragstellerClusterRepository.lade(scoringId);
         if (antragstellerCluster == null) {
             throw new IllegalStateException("AntragstellerCluster für ScoringId " + scoringId + " nicht gefunden. Bitte zuerst Antrag hinzufügen.");
         }

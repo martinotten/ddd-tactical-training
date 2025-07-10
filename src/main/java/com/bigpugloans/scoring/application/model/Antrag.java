@@ -1,6 +1,6 @@
 package com.bigpugloans.scoring.application.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public record Antrag(
         String antragsnummer,
@@ -18,7 +18,7 @@ public record Antrag(
         String strasse,
         String stadt,
         String postleitzahl,
-        Date geburtsdatum
+        LocalDate geburtsdatum
 )
 
 {

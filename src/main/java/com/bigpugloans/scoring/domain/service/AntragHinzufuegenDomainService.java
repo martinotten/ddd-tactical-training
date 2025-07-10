@@ -60,7 +60,7 @@ public class AntragHinzufuegenDomainService {
 
     private AntragstellerCluster loadOrCreateAntragstellerCluster(ScoringId scoringId) {
         try {
-            return antragstellerClusterRepository.lade(scoringId.antragsnummer());
+            return antragstellerClusterRepository.lade(scoringId);
         } catch (Exception e) {
             return new AntragstellerCluster(scoringId);
         }
@@ -68,7 +68,7 @@ public class AntragHinzufuegenDomainService {
     
     private MonatlicheFinanzsituationCluster loadOrCreateMonatlicheFinanzsituationCluster(ScoringId scoringId) {
         try {
-            return monatlicheFinanzsituationClusterRepository.lade(scoringId.antragsnummer());
+            return monatlicheFinanzsituationClusterRepository.lade(scoringId);
         } catch (Exception e) {
             return new MonatlicheFinanzsituationCluster(scoringId);
         }
@@ -76,7 +76,7 @@ public class AntragHinzufuegenDomainService {
     
     private ImmobilienFinanzierungsCluster loadOrCreateImmobilienFinanzierungsCluster(ScoringId scoringId) {
         try {
-            return immobilienFinanzierungClusterRepository.lade(scoringId.antragsnummer());
+            return immobilienFinanzierungClusterRepository.lade(scoringId);
         } catch (Exception e) {
             return new ImmobilienFinanzierungsCluster(scoringId);
         }
@@ -91,7 +91,7 @@ public class AntragHinzufuegenDomainService {
     
     private AuskunfteiErgebnisCluster loadOrCreateAuskunfteiErgebnisCluster(ScoringId scoringId, AntragstellerID antragstellerID) {
         try {
-            return auskunfteiErgebnisClusterRepository.lade(scoringId.antragsnummer());
+            return auskunfteiErgebnisClusterRepository.lade(scoringId);
         } catch (Exception e) {
             return new AuskunfteiErgebnisCluster(scoringId, antragstellerID);
         }

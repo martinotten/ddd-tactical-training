@@ -11,6 +11,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -25,7 +27,6 @@ class AntragHinzufuegenDomainServiceTest {
     private AntragHinzufuegenDomainService antragHinzufuegenDomainService;
     
     private ScoringId testScoringId;
-    private Antragsnummer testAntragsnummer;
     private Antrag testAntrag;
     
     @BeforeEach
@@ -41,9 +42,9 @@ class AntragHinzufuegenDomainServiceTest {
             immobilienFinanzierungClusterRepository,
             auskunfteiErgebnisClusterRepository
         );
-        
-        testAntragsnummer = new Antragsnummer("TEST123");
-        testScoringId = new ScoringId(testAntragsnummer, ScoringArt.MAIN);
+
+        Antragsnummer testAntragsnummer = new Antragsnummer("TEST123");
+        testScoringId = ScoringId.mainScoringIdAusAntragsnummer(testAntragsnummer.nummer());
         testAntrag = new Antrag(
             "TEST123",
             "KUNDE123",
@@ -60,19 +61,19 @@ class AntragHinzufuegenDomainServiceTest {
             "Musterstraße 1",
             "Berlin",
             "12345",
-            new java.util.Date()
+            LocalDate.of(1970, 2, 1)
         );
     }
     
     @Test
     void antragHinzufuegen_shouldCreateAndSaveAllClusters_whenRepositoriesThrowException() {
-        when(antragstellerClusterRepository.lade(testAntragsnummer))
+        when(antragstellerClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(monatlicheFinanzsituationClusterRepository.lade(testAntragsnummer))
+        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer))
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer))
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
         
         antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
@@ -91,10 +92,10 @@ class AntragHinzufuegenDomainServiceTest {
         AuskunfteiErgebnisCluster existingAuskunfteiCluster = new AuskunfteiErgebnisCluster(
             testScoringId, new AntragstellerID("KUNDE123"));
         
-        when(antragstellerClusterRepository.lade(testAntragsnummer)).thenReturn(existingAntragstellerCluster);
-        when(monatlicheFinanzsituationClusterRepository.lade(testAntragsnummer)).thenReturn(existingMonatlicheCluster);
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer)).thenReturn(existingImmobilienCluster);
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer)).thenReturn(existingAuskunfteiCluster);
+        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(existingAntragstellerCluster);
+        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId)).thenReturn(existingMonatlicheCluster);
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(existingImmobilienCluster);
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(existingAuskunfteiCluster);
         
         antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
         
@@ -107,13 +108,13 @@ class AntragHinzufuegenDomainServiceTest {
     @Test
     void antragHinzufuegen_shouldSetCorrectWohnortInAntragstellerCluster() {
         ArgumentCaptor<AntragstellerCluster> captor = ArgumentCaptor.forClass(AntragstellerCluster.class);
-        when(antragstellerClusterRepository.lade(testAntragsnummer))
+        when(antragstellerClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(monatlicheFinanzsituationClusterRepository.lade(testAntragsnummer))
+        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer))
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer))
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
         
         antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
@@ -129,13 +130,13 @@ class AntragHinzufuegenDomainServiceTest {
     @Test
     void antragHinzufuegen_shouldSetCorrectValuesInMonatlicheFinanzsituationCluster() {
         ArgumentCaptor<MonatlicheFinanzsituationCluster> captor = ArgumentCaptor.forClass(MonatlicheFinanzsituationCluster.class);
-        when(antragstellerClusterRepository.lade(testAntragsnummer))
+        when(antragstellerClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(monatlicheFinanzsituationClusterRepository.lade(testAntragsnummer))
+        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer))
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer))
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
         
         antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
@@ -151,13 +152,13 @@ class AntragHinzufuegenDomainServiceTest {
     @Test
     void antragHinzufuegen_shouldSetCorrectValuesInImmobilienFinanzierungsCluster() {
         ArgumentCaptor<ImmobilienFinanzierungsCluster> captor = ArgumentCaptor.forClass(ImmobilienFinanzierungsCluster.class);
-        when(antragstellerClusterRepository.lade(testAntragsnummer))
+        when(antragstellerClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(monatlicheFinanzsituationClusterRepository.lade(testAntragsnummer))
+        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer))
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer))
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
         
         antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
@@ -173,13 +174,13 @@ class AntragHinzufuegenDomainServiceTest {
     @Test
     void antragHinzufuegen_shouldCreateAuskunfteiErgebnisClusterWithCorrectAntragstellerID() {
         ArgumentCaptor<AuskunfteiErgebnisCluster> captor = ArgumentCaptor.forClass(AuskunfteiErgebnisCluster.class);
-        when(antragstellerClusterRepository.lade(testAntragsnummer))
+        when(antragstellerClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(monatlicheFinanzsituationClusterRepository.lade(testAntragsnummer))
+        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer))
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer))
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
         
         antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
@@ -194,24 +195,24 @@ class AntragHinzufuegenDomainServiceTest {
     
     @Test
     void antragHinzufuegen_shouldCallAllRepositoriesInCorrectOrder() {
-        when(antragstellerClusterRepository.lade(testAntragsnummer))
+        when(antragstellerClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(monatlicheFinanzsituationClusterRepository.lade(testAntragsnummer))
+        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer))
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer))
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
         
         antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
         
-        verify(antragstellerClusterRepository).lade(testAntragsnummer);
+        verify(antragstellerClusterRepository).lade(testScoringId);
         verify(antragstellerClusterRepository).speichern(any(AntragstellerCluster.class));
-        verify(monatlicheFinanzsituationClusterRepository).lade(testAntragsnummer);
+        verify(monatlicheFinanzsituationClusterRepository).lade(testScoringId);
         verify(monatlicheFinanzsituationClusterRepository).speichern(any(MonatlicheFinanzsituationCluster.class));
-        verify(immobilienFinanzierungClusterRepository).lade(testAntragsnummer);
+        verify(immobilienFinanzierungClusterRepository).lade(testScoringId);
         verify(immobilienFinanzierungClusterRepository).speichern(any(ImmobilienFinanzierungsCluster.class));
-        verify(auskunfteiErgebnisClusterRepository).lade(testAntragsnummer);
+        verify(auskunfteiErgebnisClusterRepository).lade(testScoringId);
         verify(auskunfteiErgebnisClusterRepository).speichern(any(AuskunfteiErgebnisCluster.class));
     }
     
@@ -220,11 +221,11 @@ class AntragHinzufuegenDomainServiceTest {
         AntragstellerCluster existingAntragstellerCluster = new AntragstellerCluster(testScoringId);
         ImmobilienFinanzierungsCluster existingImmobilienCluster = new ImmobilienFinanzierungsCluster(testScoringId);
         
-        when(antragstellerClusterRepository.lade(testAntragsnummer)).thenReturn(existingAntragstellerCluster);
-        when(monatlicheFinanzsituationClusterRepository.lade(testAntragsnummer))
+        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(existingAntragstellerCluster);
+        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
-        when(immobilienFinanzierungClusterRepository.lade(testAntragsnummer)).thenReturn(existingImmobilienCluster);
-        when(auskunfteiErgebnisClusterRepository.lade(testAntragsnummer))
+        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(existingImmobilienCluster);
+        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
             .thenThrow(new RuntimeException("Repository error"));
         
         antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);

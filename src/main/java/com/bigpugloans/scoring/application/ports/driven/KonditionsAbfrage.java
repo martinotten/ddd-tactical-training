@@ -5,5 +5,5 @@ import com.bigpugloans.scoring.application.model.AuskunfteiErgebnis;
 import java.time.LocalDate;
 
 public interface KonditionsAbfrage {
-    public AuskunfteiErgebnis konditionsAbfrage(String vorname, String nachname, String strasse, String stadt, String plz, LocalDate geburtsdatum);
+    AuskunfteiErgebnis konditionsAbfrage(String vorname, String nachname, String strasse, String stadt, String plz, LocalDate geburtsdatum);
 }

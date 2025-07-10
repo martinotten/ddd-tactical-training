@@ -9,9 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class MonatlicheFinanzsituationClusterTest {
     @Test
     void monatlicheFinanzsituationClusterOhneScoringIdWirftException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new MonatlicheFinanzsituationCluster(null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> new MonatlicheFinanzsituationCluster(null));
     }
 
     @Test
@@ -67,7 +65,7 @@ public class MonatlicheFinanzsituationClusterTest {
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(2500));
         ClusterGescored ergebnis = monatlicheFinanzsituationCluster.scoren().get();
-        assertTrue(ergebnis.koKriterien().anzahl() == 1, "Monatliche Darlehensbelastungen > (Einnahmen - Ausgaben) sollte ein KO-Kriterium sein.");
+        assertEquals(1, ergebnis.koKriterien().anzahl(), "Monatliche Darlehensbelastungen > (Einnahmen - Ausgaben) sollte ein KO-Kriterium sein.");
     }
     @Test
     void monatlicherHaushaltsueberschussOhneTilgungenUeber1500Gibt15Punkte() {

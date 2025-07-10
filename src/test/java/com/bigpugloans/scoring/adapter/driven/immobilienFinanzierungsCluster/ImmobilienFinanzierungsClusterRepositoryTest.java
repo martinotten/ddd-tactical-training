@@ -1,8 +1,6 @@
 package com.bigpugloans.scoring.adapter.driven.immobilienFinanzierungsCluster;
 
 import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungClusterRepository;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
-import com.bigpugloans.scoring.domain.model.ScoringArt;
 import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.Waehrungsbetrag;
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;

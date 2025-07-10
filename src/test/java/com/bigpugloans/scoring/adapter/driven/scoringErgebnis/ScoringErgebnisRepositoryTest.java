@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -34,7 +35,7 @@ public class ScoringErgebnisRepositoryTest {
 
         ScoringErgebnis geladen = repo.lade(scoringId);
         var ergebnis = geladen.berechneErgebnis();
-        assertEquals(true, ergebnis.isPresent());
+        assertTrue(ergebnis.isPresent());
         assertEquals(ScoringFarbe.ROT, ergebnis.get().farbe());
     }
 }

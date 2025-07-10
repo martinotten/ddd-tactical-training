@@ -10,9 +10,7 @@ public class ImmobilienFinanzierungsClusterTest {
 
     @Test
     void immobilienFinanzierungsClusterOhneAntragsnummerWirftException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new ImmobilienFinanzierungsCluster(null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> new ImmobilienFinanzierungsCluster(null));
     }
 
     @Test

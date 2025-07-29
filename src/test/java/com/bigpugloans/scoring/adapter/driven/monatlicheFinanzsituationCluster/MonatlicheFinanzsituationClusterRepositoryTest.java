@@ -33,7 +33,7 @@ public class MonatlicheFinanzsituationClusterRepositoryTest {
         cluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(500));
         repo.speichern(cluster);
 
-        MonatlicheFinanzsituationCluster geladen = repo.lade(new Antragsnummer("152"));
+        MonatlicheFinanzsituationCluster geladen = repo.lade(scoringId);
         assertEquals(3000, geladen.memento().einnahmen().intValue());
     }
 }

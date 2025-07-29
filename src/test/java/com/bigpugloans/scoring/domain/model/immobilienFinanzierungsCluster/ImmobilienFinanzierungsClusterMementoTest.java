@@ -4,13 +4,15 @@ import com.bigpugloans.scoring.domain.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ImmobilienFinanzierungsClusterMementoTest {
     @Test
     void testImmobilienFinanzierungsClusterMementoKomplett() {
-        ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster(new Antragsnummer("123"));
+        final ScoringId scoringId = ScoringId.preScoringIdAusAntragsnummer("123");
+        ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster(scoringId);
         immobilienFinanzierungsCluster.marktwertHinzufuegen(new Waehrungsbetrag(100000));
         immobilienFinanzierungsCluster.marktwertVerlgeichHinzufuegen(new Waehrungsbetrag(100000), new Waehrungsbetrag(300000), new Waehrungsbetrag(200000), new Waehrungsbetrag(250000));
         immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(25000));
@@ -19,7 +21,7 @@ public class ImmobilienFinanzierungsClusterMementoTest {
         immobilienFinanzierungsCluster.beleihungswertHinzufuegen(new Waehrungsbetrag(150000));
         ImmobilienFinanzierungsCluster.ImmobilienFinanzierungsClusterMemento memento = immobilienFinanzierungsCluster.memento();
 
-        assertEquals("123", memento.antragsnummer());
+        assertEquals(scoringId, memento.scoringId());
         assertEquals(BigDecimal.valueOf(100000), memento.marktwert());
         assertEquals(BigDecimal.valueOf(25000), memento.eigenmittel());
         assertEquals(BigDecimal.valueOf(75000), memento.summeDarlehen());
@@ -33,10 +35,11 @@ public class ImmobilienFinanzierungsClusterMementoTest {
 
     @Test
     void testImmobilienFinanzierungsClusterMementoMinimal() {
-        ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster(new Antragsnummer("123"));
+        ScoringId scoringId = ScoringId.preScoringIdAusAntragsnummer("123");
+        ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster(scoringId);
         ImmobilienFinanzierungsCluster.ImmobilienFinanzierungsClusterMemento memento = immobilienFinanzierungsCluster.memento();
 
-        assertEquals("123", memento.antragsnummer());
+        assertEquals(scoringId, memento.scoringId());
         assertNull(memento.marktwert());
         assertNull(memento.eigenmittel());
         assertNull(memento.summeDarlehen());
@@ -50,7 +53,7 @@ public class ImmobilienFinanzierungsClusterMementoTest {
 
     @Test
     void testVollstaendigesMementoZuImmobilienFinanzierungsCluster() {
-        ImmobilienFinanzierungsCluster.ImmobilienFinanzierungsClusterMemento memento = new ImmobilienFinanzierungsCluster.ImmobilienFinanzierungsClusterMemento("123");
+        ImmobilienFinanzierungsCluster.ImmobilienFinanzierungsClusterMemento memento = new ImmobilienFinanzierungsCluster.ImmobilienFinanzierungsClusterMemento(ScoringId.preScoringIdAusAntragsnummer("123"));
 
 
         memento.marktwert(BigDecimal.valueOf(100000));
@@ -64,19 +67,20 @@ public class ImmobilienFinanzierungsClusterMementoTest {
         memento.durchschnittlicherMarktwertBis(BigDecimal.valueOf(250000));
 
         ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = ImmobilienFinanzierungsCluster.fromMemento(memento);
-        assertEquals(new Antragsnummer("123"), immobilienFinanzierungsCluster.antragsnummer());
-        ClusterScoringEvent event = immobilienFinanzierungsCluster.scoren();
-        assertEquals(ClusterGescored.class, event.getClass());
-        assertEquals(new Punkte(10), ((ClusterGescored)event).punkte());
+        assertEquals(ScoringId.preScoringIdAusAntragsnummer("123"), immobilienFinanzierungsCluster.scoringId());
+        Optional<ClusterGescored> event = immobilienFinanzierungsCluster.scoren();
+        assertTrue(event.isPresent());
+        assertEquals(new Punkte(10), event.get().punkte());
     }
 
     @Test
     void testMinimalesMementoZuImmobilienFinanzierungsCluster() {
-        ImmobilienFinanzierungsCluster.ImmobilienFinanzierungsClusterMemento memento = new ImmobilienFinanzierungsCluster.ImmobilienFinanzierungsClusterMemento("123");
+        final ScoringId scoringId = ScoringId.preScoringIdAusAntragsnummer("123");
+        ImmobilienFinanzierungsCluster.ImmobilienFinanzierungsClusterMemento memento = new ImmobilienFinanzierungsCluster.ImmobilienFinanzierungsClusterMemento(scoringId);
 
         ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = ImmobilienFinanzierungsCluster.fromMemento(memento);
-        assertEquals(new Antragsnummer("123"), immobilienFinanzierungsCluster.antragsnummer());
-        ClusterScoringEvent event = immobilienFinanzierungsCluster.scoren();
-        assertEquals(ClusterKonnteNochNichtGescoredWerden.class, event.getClass());
+        assertEquals(scoringId, immobilienFinanzierungsCluster.scoringId());
+        Optional<ClusterGescored> event = immobilienFinanzierungsCluster.scoren();
+        assertTrue(event.isEmpty());
     }
 }

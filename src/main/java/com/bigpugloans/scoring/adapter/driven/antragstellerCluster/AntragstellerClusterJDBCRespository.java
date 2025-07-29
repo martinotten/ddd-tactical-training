@@ -2,6 +2,7 @@ package com.bigpugloans.scoring.adapter.driven.antragstellerCluster;
 
 import com.bigpugloans.scoring.application.ports.driven.AntragstellerClusterRepository;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -21,22 +22,22 @@ public class AntragstellerClusterJDBCRespository implements AntragstellerCluster
     @Override
     public void speichern(AntragstellerCluster antragstellerCluster) {
         AntragstellerCluster.AntragstellerClusterMemento memento = antragstellerCluster.memento();
-        AntragstellerClusterRecord record = dao.findByAntragsnummer(antragstellerCluster.antragsnummer().nummer());
+        AntragstellerClusterRecord record = dao.findByScoringId(antragstellerCluster.scoringId());
         if(record == null) {
             record = new AntragstellerClusterRecord();
-            record.setAntragsnummer(memento.antragsnummer());
+            record.setScoringId(memento.scoringId());
         }
         record.setMemento(memento);
         dao.save(record);
     }
 
     @Override
-    public AntragstellerCluster lade(Antragsnummer antragsnummer) {
-        if(antragsnummer == null) {
+    public AntragstellerCluster lade(ScoringId scoringId) {
+        if(scoringId == null) {
             throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
         }
 
-        AntragstellerClusterRecord record = dao.findByAntragsnummer(antragsnummer.nummer());
+        AntragstellerClusterRecord record = dao.findByScoringId(scoringId);
         if(record == null) {
             return null;
         } else {

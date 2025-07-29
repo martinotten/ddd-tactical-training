@@ -185,8 +185,7 @@ public class ScoringErgebnis {
         return Objects.hashCode(scoringId);
     }
     public static ScoringErgebnis fromMemento(ScoringErgebnisMemento memento) {
-        Antragsnummer antragsnummer = new Antragsnummer(memento.antragsnummer());
-        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(memento.scoringId());
         scoringErgebnis.antragstellerClusterErgebnis = memento.antragstellerClusterErgebnis();
         scoringErgebnis.auskunfteiClusterErgebnis = memento.auskunfteiClusterErgebnis();
         scoringErgebnis.immobilienFinanzierungsClusterErgebnis = memento.immobilienFinanzierungsClusterErgebnis();
@@ -202,7 +201,7 @@ public class ScoringErgebnis {
         ClusterGescored monatlicherHaushaltsueberschussClusterErgebnis = this.monatlicherHaushaltsueberschussClusterErgebnis;
         int koKriterien = this.koKriterien.anzahl();
         int gesamtPunkte = this.gesamtPunkte.getPunkte();
-        return new ScoringErgebnisMemento(antragsnummer.nummer(), antragstellerClusterErgebnis, auskunfteiClusterErgebnis, immobilienFinanzierungsClusterErgebnis, monatlicherHaushaltsueberschussClusterErgebnis, koKriterien, gesamtPunkte);
+        return new ScoringErgebnisMemento(scoringId, antragstellerClusterErgebnis, auskunfteiClusterErgebnis, immobilienFinanzierungsClusterErgebnis, monatlicherHaushaltsueberschussClusterErgebnis, koKriterien, gesamtPunkte);
     }
-    public record ScoringErgebnisMemento (String antragsnummer, ClusterGescored antragstellerClusterErgebnis, ClusterGescored auskunfteiClusterErgebnis, ClusterGescored immobilienFinanzierungsClusterErgebnis, ClusterGescored monatlicherHaushaltsueberschussClusterErgebnis, int koKriterien, int gesamtPunkte) {}
+    public record ScoringErgebnisMemento (ScoringId scoringId, ClusterGescored antragstellerClusterErgebnis, ClusterGescored auskunfteiClusterErgebnis, ClusterGescored immobilienFinanzierungsClusterErgebnis, ClusterGescored monatlicherHaushaltsueberschussClusterErgebnis, int koKriterien, int gesamtPunkte) {}
 }

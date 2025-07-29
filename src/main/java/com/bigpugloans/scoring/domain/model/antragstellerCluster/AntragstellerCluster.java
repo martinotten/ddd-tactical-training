@@ -17,12 +17,12 @@ public class AntragstellerCluster implements ClusterScoring {
         if(scoringId == null) {
             throw new IllegalArgumentException("ScoringId darf nicht null sein.");
         }
-        this.antragsnummer = antragsnummer;
-        this.guthaben = new Guthaben(0);
+        this.scoringId = scoringId;
+        this.guthabenBeiMopsBank = new Guthaben(0);
     }
 
     public AntragstellerCluster(AntragstellerClusterMemento memento) {
-        this.antragsnummer = new Antragsnummer(memento.antragsnummer());
+        this.scoringId = memento.scoringId();
         if(memento.wohnort() == null) {
             this.wohnort = null;
         } else {
@@ -30,9 +30,9 @@ public class AntragstellerCluster implements ClusterScoring {
         }
 
         if(memento.guthaben == null) {
-            this.guthaben = new Guthaben(0);
+            this.guthabenBeiMopsBank = new Guthaben(0);
         } else {
-            this.guthaben = new Guthaben(memento.guthaben());
+            this.guthabenBeiMopsBank = new Guthaben(memento.guthaben());
         }
 
     }
@@ -41,12 +41,9 @@ public class AntragstellerCluster implements ClusterScoring {
         return new AntragstellerCluster(memento);
     }
 
-    public ClusterScoringEvent scoren() {
-        if(wohnort == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Ohne Wohnort kann nicht gescort werden.");
-        }
-        if (guthabenBeiMopsBank == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Ohne Guthaben kann nicht gescort werden.");
+    public Optional<ClusterGescored> scoren() {
+        if(wohnort == null || guthabenBeiMopsBank == null) {
+            return Optional.empty();
         }
 
         Punkte ergebnis = new Punkte(0);
@@ -82,11 +79,12 @@ public class AntragstellerCluster implements ClusterScoring {
     }
 
     public AntragstellerClusterMemento memento() {
+        ScoringId scoringId = this.scoringId;
         String wohnort = this.wohnort == null ? null : this.wohnort.wohnort();
-        BigDecimal guthaben = this.guthaben == null ? null : this.guthaben.guthaben();
-        return new AntragstellerClusterMemento(antragsnummer.nummer(), wohnort, guthaben);
+        BigDecimal guthaben = this.guthabenBeiMopsBank == null ? null : this.guthabenBeiMopsBank.guthaben();
+        return new AntragstellerClusterMemento(scoringId, wohnort, guthaben);
     }
-    public record AntragstellerClusterMemento(String antragsnummer, String wohnort, BigDecimal guthaben) {
+    public record AntragstellerClusterMemento(ScoringId scoringId, String wohnort, BigDecimal guthaben) {
 
     }
 }

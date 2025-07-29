@@ -21,7 +21,7 @@ public class AntragstellerClusterRepositoryTest {
 
     @Test
     void testLadeAntragstellerCluster() {
-        AntragstellerCluster geladen = repo.lade(new Antragsnummer("123"));
+        AntragstellerCluster geladen = repo.lade(ScoringId.preScoringIdAusAntragsnummer("123"));
         assertEquals("München", geladen.memento().wohnort());
     }
     @Test

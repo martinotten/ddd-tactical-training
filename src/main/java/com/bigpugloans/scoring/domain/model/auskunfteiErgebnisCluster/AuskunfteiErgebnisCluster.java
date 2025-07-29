@@ -96,13 +96,13 @@ public class AuskunfteiErgebnisCluster implements ClusterScoring {
             rueckzahlungswahrscheinlichkeit = this.rueckzahlungswahrscheinlichkeit.rueckzahlungsWahrscheinlichkeit().getWert();
         }
 
-        return new AuskunfteiErgebnisClusterMemento(antragsnummer.nummer(), antragstellerID.id(), anzahlNegativMerkmale, anzahlWarnungen, rueckzahlungswahrscheinlichkeit);
+        return new AuskunfteiErgebnisClusterMemento(scoringId, antragstellerID.id(), anzahlNegativMerkmale, anzahlWarnungen, rueckzahlungswahrscheinlichkeit);
     }
 
     public static AuskunfteiErgebnisCluster fromMemento(AuskunfteiErgebnisClusterMemento memento) {
-        Antragsnummer antragsnummer = new Antragsnummer(memento.antragsnummer());
+        ScoringId scoringId1 = memento.scoringId();
         AntragstellerID antragstellerID = new AntragstellerID(memento.antragstellerID());
-        AuskunfteiErgebnisCluster cluster = new AuskunfteiErgebnisCluster(antragsnummer, antragstellerID);
+        AuskunfteiErgebnisCluster cluster = new AuskunfteiErgebnisCluster(scoringId1, antragstellerID);
         cluster.negativMerkmale = new NegativMerkmal(memento.anzahlNegativMerkmale());
         cluster.warnungen = new Warnung(memento.anzahlWarnungen());
         if (memento.rueckzahlungsWahrscheinlichkeit() != null) {
@@ -111,7 +111,7 @@ public class AuskunfteiErgebnisCluster implements ClusterScoring {
         return cluster;
     }
 
-    public record AuskunfteiErgebnisClusterMemento (String antragsnummer, String antragstellerID, int anzahlNegativMerkmale, int anzahlWarnungen, BigDecimal rueckzahlungsWahrscheinlichkeit) {}
+    public record AuskunfteiErgebnisClusterMemento (ScoringId scoringId, String antragstellerID, int anzahlNegativMerkmale, int anzahlWarnungen, BigDecimal rueckzahlungsWahrscheinlichkeit) {}
 
 
 }

@@ -1,9 +1,6 @@
 package com.bigpugloans.scoring.domain.model.antragstellerCluster;
 
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
-import com.bigpugloans.scoring.domain.model.ClusterGescored;
-import com.bigpugloans.scoring.domain.model.Punkte;
-import com.bigpugloans.scoring.domain.model.Waehrungsbetrag;
+import com.bigpugloans.scoring.domain.model.*;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,16 +10,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class AntragstellerClusterTest {
     @Test
     void antragstellerClusterOhneScoringIdWirftException() {
-        assertThrows(IllegalArgumentException.class, () -> new AntragstellerCluster(null));
+        assertThrows(IllegalArgumentException.class, () -> new AntragstellerCluster((ScoringId) null));
     }
 
     @Test
     void antragstellerClusterMitGleichenAntragsnummernSindGleich() {
-        AntragstellerCluster antragstellerCluster1 = new AntragstellerCluster(new Antragsnummer("123"));
+        AntragstellerCluster antragstellerCluster1 = new AntragstellerCluster(ScoringId.mainScoringIdAusAntragsnummer("123"));
         antragstellerCluster1.wohnortHinzufuegen("Stuttgart");
         antragstellerCluster1.guthabenHinzufuegen(new Waehrungsbetrag(3000));
 
-        AntragstellerCluster antragstellerCluster2 = new AntragstellerCluster(new Antragsnummer("123"));
+        AntragstellerCluster antragstellerCluster2 = new AntragstellerCluster(ScoringId.mainScoringIdAusAntragsnummer("123"));
         antragstellerCluster2.wohnortHinzufuegen("München");
         antragstellerCluster2.guthabenHinzufuegen(new Waehrungsbetrag(10000));
 

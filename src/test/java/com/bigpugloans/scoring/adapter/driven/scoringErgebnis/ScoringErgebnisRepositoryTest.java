@@ -1,10 +1,7 @@
 package com.bigpugloans.scoring.adapter.driven.scoringErgebnis;
 
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisRepository;
-import com.bigpugloans.scoring.domain.model.AntragErfolgreichGescored;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
-import com.bigpugloans.scoring.domain.model.ClusterGescored;
-import com.bigpugloans.scoring.domain.model.ScoringFarbe;
+import com.bigpugloans.scoring.domain.model.*;
 import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.adapter.driven.monatlicheFinanzsituationCluster;
 
 import com.bigpugloans.scoring.application.ports.driven.MonatlicheFinanzsituationClusterRepository;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster.MonatlicheFinanzsituationCluster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -20,21 +20,21 @@ public class MonatlicheFinanzsituationClusterJDBCRepository implements Monatlich
 
     @Override
     public void speichern(MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster) {
-        MonatlicheFinanzsituationClusterRecord record = dao.findByAntragsnummer(monatlicheFinanzsituationCluster.antragsnummer().nummer());
+        MonatlicheFinanzsituationClusterRecord record = dao.findByScoringId(monatlicheFinanzsituationCluster.scoringId());
         if(record == null) {
             record = new MonatlicheFinanzsituationClusterRecord();
-            record.setAntragsnummer(monatlicheFinanzsituationCluster.antragsnummer().nummer());
+            record.setScoringId(monatlicheFinanzsituationCluster.scoringId());
         }
         record.setMemento(monatlicheFinanzsituationCluster.memento());
         dao.save(record);
     }
 
     @Override
-    public MonatlicheFinanzsituationCluster lade(Antragsnummer antragsnummer) {
-        if(antragsnummer == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
+    public MonatlicheFinanzsituationCluster lade(ScoringId scoringId) {
+        if(scoringId == null) {
+            throw new IllegalArgumentException("ScoringId darf nicht null sein");
         }
-        MonatlicheFinanzsituationClusterRecord record = dao.findByAntragsnummer(antragsnummer.nummer());
+        MonatlicheFinanzsituationClusterRecord record = dao.findByScoringId(scoringId);
         if(record == null) {
             return null;
         }

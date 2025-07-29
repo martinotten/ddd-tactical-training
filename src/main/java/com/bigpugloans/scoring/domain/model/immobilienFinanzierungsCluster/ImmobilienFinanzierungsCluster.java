@@ -121,7 +121,7 @@ public class ImmobilienFinanzierungsCluster implements ClusterScoring {
     }
 
     public ImmobilienFinanzierungsClusterMemento memento() {
-        ImmobilienFinanzierungsClusterMemento memento = new ImmobilienFinanzierungsClusterMemento(antragsnummer.nummer());
+        ImmobilienFinanzierungsClusterMemento memento = new ImmobilienFinanzierungsClusterMemento(scoringId);
         if(this.beleihungswert != null) {
             memento.beleihungswert(beleihungswert.betrag());
         }
@@ -147,8 +147,7 @@ public class ImmobilienFinanzierungsCluster implements ClusterScoring {
     }
 
     public static ImmobilienFinanzierungsCluster fromMemento(ImmobilienFinanzierungsClusterMemento memento) {
-        Antragsnummer antragsnummer = new Antragsnummer(memento.antragsnummer);
-        ImmobilienFinanzierungsCluster cluster = new ImmobilienFinanzierungsCluster(antragsnummer);
+        ImmobilienFinanzierungsCluster cluster = new ImmobilienFinanzierungsCluster(memento.scoringId);
         if(memento.beleihungswert != null) {
             cluster.beleihungswertHinzufuegen(new Waehrungsbetrag(memento.beleihungswert));
         }
@@ -171,7 +170,7 @@ public class ImmobilienFinanzierungsCluster implements ClusterScoring {
     }
 
     public static class ImmobilienFinanzierungsClusterMemento {
-        private String antragsnummer;
+        private ScoringId scoringId;
         private BigDecimal beleihungswert;
         private BigDecimal minimalerMarktwert;
         private BigDecimal maximalerMarktwert;
@@ -182,15 +181,12 @@ public class ImmobilienFinanzierungsCluster implements ClusterScoring {
         private BigDecimal summeDarlehen;
         private BigDecimal eigenmittel;
 
-        public ImmobilienFinanzierungsClusterMemento() {
+        public ImmobilienFinanzierungsClusterMemento(ScoringId scoringId) {
+            this.scoringId = scoringId;
         }
 
-        public ImmobilienFinanzierungsClusterMemento(String antragsnummer) {
-            this.antragsnummer = antragsnummer;
-        }
-
-        public String antragsnummer() {
-            return antragsnummer;
+        public ScoringId scoringId() {
+            return scoringId;
         }
         public void beleihungswert(BigDecimal beleihungswert) {
             this.beleihungswert = beleihungswert;

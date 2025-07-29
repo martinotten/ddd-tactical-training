@@ -4,9 +4,10 @@ import com.bigpugloans.scoring.domain.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AuskunfteiErgebnisClusterMementoTest {
     @Test
@@ -15,11 +16,11 @@ public class AuskunfteiErgebnisClusterMementoTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        final Antragsnummer antragsnummer = new Antragsnummer("123");
+        final ScoringId scoringId = ScoringId.mainScoringIdAusAntragsnummer("123");
 
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(antragsnummer, antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(scoringId, antragstellerID);
         auskunfteiErgebnisCluster.warnungenHinzufuegen(2);
         auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(1);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(20));
@@ -29,7 +30,7 @@ public class AuskunfteiErgebnisClusterMementoTest {
         assertEquals(2, memento.anzahlWarnungen());
         assertEquals(1, memento.anzahlNegativMerkmale());
         assertEquals(new BigDecimal(20), memento.rueckzahlungsWahrscheinlichkeit());
-        assertEquals(antragsnummer.nummer(), memento.antragsnummer());
+        assertEquals(scoringId, memento.scoringId());
         assertEquals(antragstellerID.id(), memento.antragstellerID());
     }
 
@@ -39,11 +40,11 @@ public class AuskunfteiErgebnisClusterMementoTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        final Antragsnummer antragsnummer = new Antragsnummer("123");
+        final ScoringId scoringId = ScoringId.mainScoringIdAusAntragsnummer("123");
 
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(antragsnummer, antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(scoringId, antragstellerID);
         auskunfteiErgebnisCluster.warnungenHinzufuegen(2);
         auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(1);
 
@@ -52,7 +53,7 @@ public class AuskunfteiErgebnisClusterMementoTest {
         assertEquals(2, memento.anzahlWarnungen());
         assertEquals(1, memento.anzahlNegativMerkmale());
         assertEquals(null, memento.rueckzahlungsWahrscheinlichkeit());
-        assertEquals(antragsnummer.nummer(), memento.antragsnummer());
+        assertEquals(scoringId, memento.scoringId());
         assertEquals(antragstellerID.id(), memento.antragstellerID());
     }
 
@@ -62,11 +63,11 @@ public class AuskunfteiErgebnisClusterMementoTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        final Antragsnummer antragsnummer = new Antragsnummer("123");
+        final ScoringId scoringId = ScoringId.mainScoringIdAusAntragsnummer("123");
 
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(antragsnummer, antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(scoringId, antragstellerID);
         auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(1);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(20));
 
@@ -75,7 +76,7 @@ public class AuskunfteiErgebnisClusterMementoTest {
         assertEquals(0, memento.anzahlWarnungen());
         assertEquals(1, memento.anzahlNegativMerkmale());
         assertEquals(new BigDecimal(20), memento.rueckzahlungsWahrscheinlichkeit());
-        assertEquals(antragsnummer.nummer(), memento.antragsnummer());
+        assertEquals(scoringId, memento.scoringId());
         assertEquals(antragstellerID.id(), memento.antragstellerID());
     }
 
@@ -85,11 +86,11 @@ public class AuskunfteiErgebnisClusterMementoTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        final Antragsnummer antragsnummer = new Antragsnummer("123");
+        final ScoringId scoringId = ScoringId.mainScoringIdAusAntragsnummer("123");
 
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(antragsnummer, antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(scoringId, antragstellerID);
         auskunfteiErgebnisCluster.warnungenHinzufuegen(1);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(20));
 
@@ -98,7 +99,7 @@ public class AuskunfteiErgebnisClusterMementoTest {
         assertEquals(1, memento.anzahlWarnungen());
         assertEquals(0, memento.anzahlNegativMerkmale());
         assertEquals(new BigDecimal(20), memento.rueckzahlungsWahrscheinlichkeit());
-        assertEquals(antragsnummer.nummer(), memento.antragsnummer());
+        assertEquals(scoringId, memento.scoringId());
         assertEquals(antragstellerID.id(), memento.antragstellerID());
     }
 
@@ -107,15 +108,15 @@ public class AuskunfteiErgebnisClusterMementoTest {
         String antragsnummer = "123";
         String antragstellerID = "23432df312";
         int rueckzahlungsWahrscheinlichkeit = 90;
-        AuskunfteiErgebnisCluster.AuskunfteiErgebnisClusterMemento memento = new AuskunfteiErgebnisCluster.AuskunfteiErgebnisClusterMemento(antragsnummer, antragstellerID, 0, 1, new BigDecimal(rueckzahlungsWahrscheinlichkeit));
+        AuskunfteiErgebnisCluster.AuskunfteiErgebnisClusterMemento memento = new AuskunfteiErgebnisCluster.AuskunfteiErgebnisClusterMemento(ScoringId.mainScoringIdAusAntragsnummer(antragsnummer), antragstellerID, 0, 1, new BigDecimal(rueckzahlungsWahrscheinlichkeit));
         AuskunfteiErgebnisCluster cluster = AuskunfteiErgebnisCluster.fromMemento(memento);
-        assertEquals(new Antragsnummer(antragsnummer), cluster.antragsnummer());
+        assertEquals(ScoringId.mainScoringIdAusAntragsnummer(antragsnummer), cluster.scoringId());
         assertEquals(new AntragstellerID(antragstellerID), cluster.antragstellerID());
-        ClusterScoringEvent event = cluster.scoren();
-        assertEquals(ClusterGescored.class, event.getClass());
-        assertEquals(new Punkte(rueckzahlungsWahrscheinlichkeit), ((ClusterGescored)event).punkte());
-        assertEquals(0, ((ClusterGescored)event).koKriterien().anzahl());
-        assertEquals(new Antragsnummer(antragsnummer), event.antragsnummer());
+        Optional<ClusterGescored> event = cluster.scoren();
+        assertTrue(event.isPresent());
+        assertEquals(new Punkte(rueckzahlungsWahrscheinlichkeit), event.get().punkte());
+        assertEquals(0, event.get().koKriterien().anzahl());
+        assertEquals(ScoringId.mainScoringIdAusAntragsnummer(antragsnummer), event.get().scoringId());
     }
 
     @Test
@@ -123,15 +124,15 @@ public class AuskunfteiErgebnisClusterMementoTest {
         String antragsnummer = "123";
         String antragstellerID = "23432df312";
         int rueckzahlungsWahrscheinlichkeit = 90;
-        AuskunfteiErgebnisCluster.AuskunfteiErgebnisClusterMemento memento = new AuskunfteiErgebnisCluster.AuskunfteiErgebnisClusterMemento(antragsnummer, antragstellerID, 1, 5, new BigDecimal(rueckzahlungsWahrscheinlichkeit));
+        AuskunfteiErgebnisCluster.AuskunfteiErgebnisClusterMemento memento = new AuskunfteiErgebnisCluster.AuskunfteiErgebnisClusterMemento(ScoringId.mainScoringIdAusAntragsnummer(antragsnummer), antragstellerID, 1, 5, new BigDecimal(rueckzahlungsWahrscheinlichkeit));
         AuskunfteiErgebnisCluster cluster = AuskunfteiErgebnisCluster.fromMemento(memento);
-        assertEquals(new Antragsnummer(antragsnummer), cluster.antragsnummer());
+        assertEquals(ScoringId.mainScoringIdAusAntragsnummer(antragsnummer), cluster.scoringId());
         assertEquals(new AntragstellerID(antragstellerID), cluster.antragstellerID());
-        ClusterScoringEvent event = cluster.scoren();
-        assertEquals(ClusterGescored.class, event.getClass());
-        assertEquals(new Punkte(rueckzahlungsWahrscheinlichkeit), ((ClusterGescored)event).punkte());
-        assertEquals(2, ((ClusterGescored)event).koKriterien().anzahl());
-        assertEquals(new Antragsnummer(antragsnummer), event.antragsnummer());
+        Optional<ClusterGescored> event = cluster.scoren();
+        assertTrue(event.isPresent());
+        assertEquals(new Punkte(rueckzahlungsWahrscheinlichkeit), event.get().punkte());
+        assertEquals(2, event.get().koKriterien().anzahl());
+        assertEquals(ScoringId.mainScoringIdAusAntragsnummer(antragsnummer), event.get().scoringId());
     }
 
     @Test
@@ -139,13 +140,12 @@ public class AuskunfteiErgebnisClusterMementoTest {
         String antragsnummer = "123";
         String antragstellerID = "23432df312";
         int rueckzahlungsWahrscheinlichkeit = 90;
-        AuskunfteiErgebnisCluster.AuskunfteiErgebnisClusterMemento memento = new AuskunfteiErgebnisCluster.AuskunfteiErgebnisClusterMemento(antragsnummer, antragstellerID, 1, 5, null);
+        AuskunfteiErgebnisCluster.AuskunfteiErgebnisClusterMemento memento = new AuskunfteiErgebnisCluster.AuskunfteiErgebnisClusterMemento(ScoringId.mainScoringIdAusAntragsnummer(antragsnummer), antragstellerID, 1, 5, null);
         AuskunfteiErgebnisCluster cluster = AuskunfteiErgebnisCluster.fromMemento(memento);
-        assertEquals(new Antragsnummer(antragsnummer), cluster.antragsnummer());
+        assertEquals(ScoringId.mainScoringIdAusAntragsnummer(antragsnummer), cluster.scoringId());
         assertEquals(new AntragstellerID(antragstellerID), cluster.antragstellerID());
-        ClusterScoringEvent event = cluster.scoren();
-        assertEquals(ClusterKonnteNochNichtGescoredWerden.class, event.getClass());
-        assertEquals(new Antragsnummer(antragsnummer), event.antragsnummer());
+        Optional<ClusterGescored> event = cluster.scoren();
+        assertFalse(event.isPresent());
 
     }
 }

@@ -2,6 +2,7 @@ package com.bigpugloans.scoring.adapter.driven.auskunfteiErgebnisCluster;
 
 import com.bigpugloans.scoring.application.ports.driven.AuskunfteiErgebnisClusterRepository;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -20,21 +21,21 @@ public class AuskunfteiErgebnisClusterJDBCRepository implements AuskunfteiErgebn
 
     @Override
     public void speichern(AuskunfteiErgebnisCluster auskunfteiErgebnisCluster) {
-        AuskunfteiErgebnisClusterRecord record = dao.findByAntragsnummer(auskunfteiErgebnisCluster.antragsnummer().nummer());
+        AuskunfteiErgebnisClusterRecord record = dao.findByScoringId(auskunfteiErgebnisCluster.scoringId());
         if(record == null) {
             record = new AuskunfteiErgebnisClusterRecord();
-            record.setAntragsnummer(auskunfteiErgebnisCluster.antragsnummer().nummer());
+            record.setScoringId(auskunfteiErgebnisCluster.scoringId());
         }
         record.setMemento(auskunfteiErgebnisCluster.memento());
         dao.save(record);
     }
 
     @Override
-    public AuskunfteiErgebnisCluster lade(Antragsnummer antragsnummer) {
-        if(antragsnummer == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
+    public AuskunfteiErgebnisCluster lade(ScoringId scoringId) {
+        if(scoringId == null) {
+            throw new IllegalArgumentException("ScoringID darf nicht null sein");
         }
-        AuskunfteiErgebnisClusterRecord record = dao.findByAntragsnummer(antragsnummer.nummer());
+        AuskunfteiErgebnisClusterRecord record = dao.findByScoringId(scoringId);
         if(record == null) {
             return null;
         }

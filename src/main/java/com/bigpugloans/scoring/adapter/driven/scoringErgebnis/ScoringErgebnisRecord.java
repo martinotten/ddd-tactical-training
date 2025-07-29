@@ -1,5 +1,6 @@
 package com.bigpugloans.scoring.adapter.driven.scoringErgebnis;
 
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.relational.core.mapping.Table;
@@ -9,7 +10,7 @@ public class ScoringErgebnisRecord {
     @Id
     private Long id;
 
-    private String antragsnummer;
+    private ScoringId scoringId;
 
     private int auskunfteiPunkte;
     private int auskunfteiKoKriterien;
@@ -37,12 +38,12 @@ public class ScoringErgebnisRecord {
         this.id = id;
     }
 
-    public String getAntragsnummer() {
-        return antragsnummer;
+    public ScoringId getScoringId() {
+        return scoringId;
     }
 
-    public void setAntragsnummer(String antragsnummer) {
-        this.antragsnummer = antragsnummer;
+    public void setScoringId(ScoringId scoringId) {
+        this.scoringId = scoringId;
     }
 
     public int getAuskunfteiPunkte() {

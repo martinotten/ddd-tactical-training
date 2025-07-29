@@ -4,19 +4,18 @@ import com.bigpugloans.scoring.domain.model.*;
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ScoringErgebnisMementoTest {
+
+    final ScoringId scoringId = ScoringId.preScoringIdAusAntragsnummer("152");
+
     @Test
     void testScoringErgebnisVollstaendigOhneKoZuMemento() {
-        ScoringErgebnis ergebnis = new ScoringErgebnis(new Antragsnummer("123"));
-        ergebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(10)));
-        ergebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(90)));
-        ergebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(20)));
-        ergebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30)));
-        ScoringErgebnis.ScoringErgebnisMemento memento = ergebnis.memento();
-        assertEquals("123", memento.antragsnummer());
+        ScoringErgebnis.ScoringErgebnisMemento memento = getScoringErgebnisMemento();
+        assertEquals(scoringId, memento.scoringId());
         assertEquals(10, memento.antragstellerClusterErgebnis().punkte().getPunkte());
         assertEquals(0, memento.antragstellerClusterErgebnis().koKriterien().anzahl());
 
@@ -32,15 +31,19 @@ public class ScoringErgebnisMementoTest {
         assertEquals(0, memento.koKriterien());
     }
 
+    private ScoringErgebnis.ScoringErgebnisMemento getScoringErgebnisMemento() {
+        ScoringErgebnis ergebnis = new ScoringErgebnis(scoringId);
+        ergebnis.antragstellerClusterHinzufuegen(new ClusterGescored(scoringId, new Punkte(10)));
+        ergebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(scoringId, new Punkte(90)));
+        ergebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(scoringId, new Punkte(20)));
+        ergebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(scoringId, new Punkte(30)));
+        return ergebnis.memento();
+    }
+
     @Test
     void testScoringErgebnisVollstaendigMitKoZuMemento() {
-        ScoringErgebnis ergebnis = new ScoringErgebnis(new Antragsnummer("123"));
-        ergebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(10), 1));
-        ergebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(90), 2));
-        ergebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(20),3));
-        ergebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30),4 ));
-        ScoringErgebnis.ScoringErgebnisMemento memento = ergebnis.memento();
-        assertEquals("123", memento.antragsnummer());
+        ScoringErgebnis.ScoringErgebnisMemento memento = getErgebnisMemento();
+        assertEquals(scoringId, memento.scoringId());
         assertEquals(10, memento.antragstellerClusterErgebnis().punkte().getPunkte());
         assertEquals(1, memento.antragstellerClusterErgebnis().koKriterien().anzahl());
 
@@ -56,14 +59,24 @@ public class ScoringErgebnisMementoTest {
         assertEquals(10, memento.koKriterien());
     }
 
+    private ScoringErgebnis.ScoringErgebnisMemento getErgebnisMemento() {
+        ScoringErgebnis ergebnis = new ScoringErgebnis(scoringId);
+        ergebnis.antragstellerClusterHinzufuegen(new ClusterGescored(scoringId, new Punkte(10), 1));
+        ergebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(scoringId, new Punkte(90), 2));
+        ergebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(scoringId, new Punkte(20),3));
+        ergebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(scoringId, new Punkte(30),4 ));
+        ScoringErgebnis.ScoringErgebnisMemento memento = ergebnis.memento();
+        return memento;
+    }
+
     @Test
     void testScoringErgebnisTeilweiseMitKoZuMemento() {
-        ScoringErgebnis ergebnis = new ScoringErgebnis(new Antragsnummer("123"));
-        ergebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(10), 1));
-        ergebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(90), 2));
+        ScoringErgebnis ergebnis = new ScoringErgebnis(scoringId);
+        ergebnis.antragstellerClusterHinzufuegen(new ClusterGescored(scoringId, new Punkte(10), 1));
+        ergebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(scoringId, new Punkte(90), 2));
 
         ScoringErgebnis.ScoringErgebnisMemento memento = ergebnis.memento();
-        assertEquals("123", memento.antragsnummer());
+        assertEquals(scoringId, memento.scoringId());
         assertEquals(10, memento.antragstellerClusterErgebnis().punkte().getPunkte());
         assertEquals(1, memento.antragstellerClusterErgebnis().koKriterien().anzahl());
 
@@ -78,16 +91,17 @@ public class ScoringErgebnisMementoTest {
 
     @Test
     void testMementoZuScoringErgebnisVollstaendig() {
-        ClusterGescored antragstellerCluster = new ClusterGescored(new Antragsnummer("123"), new Punkte(10), 1);
-        ClusterGescored auskunfteiErgebnisCluster = new ClusterGescored(new Antragsnummer("123"), new Punkte(20), 2);
-        ClusterGescored monatlicheFinanzsituationCluster = new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 3);
-        ClusterGescored immobilienFinanzierungsCluster = new ClusterGescored(new Antragsnummer("123"), new Punkte(40), 4);
-        ScoringErgebnis.ScoringErgebnisMemento memento = new ScoringErgebnis.ScoringErgebnisMemento("123", antragstellerCluster, auskunfteiErgebnisCluster, monatlicheFinanzsituationCluster, immobilienFinanzierungsCluster, 10, 100);
+        ClusterGescored antragstellerCluster = new ClusterGescored(scoringId, new Punkte(10), 1);
+        ClusterGescored auskunfteiErgebnisCluster = new ClusterGescored(scoringId, new Punkte(20), 2);
+        ClusterGescored monatlicheFinanzsituationCluster = new ClusterGescored(scoringId, new Punkte(30), 3);
+        ClusterGescored immobilienFinanzierungsCluster = new ClusterGescored(scoringId, new Punkte(40), 4);
+        ScoringErgebnis.ScoringErgebnisMemento memento = new ScoringErgebnis.ScoringErgebnisMemento(scoringId, antragstellerCluster, auskunfteiErgebnisCluster, monatlicheFinanzsituationCluster, immobilienFinanzierungsCluster, 10, 100);
 
         ScoringErgebnis ergebnis = ScoringErgebnis.fromMemento(memento);
-        assertEquals(new Antragsnummer("123"), ergebnis.antragsnummer());
-        assertEquals(AntragErfolgreichGescored.class, ergebnis.berechneErgebnis().getClass());
-        assertEquals(ScoringFarbe.ROT, ((AntragErfolgreichGescored)ergebnis.berechneErgebnis()).farbe());
+        assertEquals(scoringId, ergebnis.scoringId());
+        Optional<AntragErfolgreichGescored> antragErfolgreichGescored = ergebnis.berechneErgebnis();
+        assertTrue(antragErfolgreichGescored.isPresent());
+        assertEquals(ScoringFarbe.ROT, antragErfolgreichGescored.get().farbe());
 
     }
 }

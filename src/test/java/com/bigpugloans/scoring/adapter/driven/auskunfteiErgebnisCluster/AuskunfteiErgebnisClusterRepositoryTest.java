@@ -1,7 +1,12 @@
 package com.bigpugloans.scoring.adapter.driven.auskunfteiErgebnisCluster;
 
 import com.bigpugloans.scoring.application.ports.driven.AuskunfteiErgebnisClusterRepository;
+import com.bigpugloans.scoring.domain.model.ScoringId;
+import com.bigpugloans.scoring.domain.model.AntragstellerID;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.Prozentwert;
+import com.bigpugloans.scoring.domain.model.ScoringArt;
+import java.time.LocalDate;
 import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +27,7 @@ public class AuskunfteiErgebnisClusterRepositoryTest {
 
     @Test
     void testLadeCluster() {
-        AuskunfteiErgebnisCluster geladen = repo.lade(new Antragsnummer("123"));
+        AuskunfteiErgebnisCluster geladen = repo.lade(ScoringId.mainScoringIdAusAntragsnummer("123"));
         assertNotNull(geladen);
     }
 
@@ -57,7 +62,7 @@ public class AuskunfteiErgebnisClusterRepositoryTest {
         assertEquals(ScoringArt.PRE, cluster.scoringId().scoringArt());
         repo.speichern(cluster);
 
-        AuskunfteiErgebnisCluster geladen = repo.lade(new Antragsnummer("152"));
+        AuskunfteiErgebnisCluster geladen = repo.lade(ScoringId.preScoringIdAusAntragsnummer("152"));
         assertEquals(91, geladen.memento().rueckzahlungsWahrscheinlichkeit().intValue());
     }
 }

@@ -82,7 +82,7 @@ public class MonatlicheFinanzsituationCluster implements ClusterScoring {
     }
 
     public static MonatlicheFinanzsituationCluster fromMemento(MonatlicheFinanzsituationClusterMemento memento) {
-        MonatlicheFinanzsituationCluster cluster = new MonatlicheFinanzsituationCluster(new Antragsnummer(memento.antragsnummer));
+        MonatlicheFinanzsituationCluster cluster = new MonatlicheFinanzsituationCluster(memento.scoringId());
         if(memento.einnahmen != null) {
             cluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(memento.einnahmen));
         }
@@ -110,9 +110,9 @@ public class MonatlicheFinanzsituationCluster implements ClusterScoring {
         if (neueDarlehensBelastungen != null) {
             betragNeueDarlehensbelastungen = neueDarlehensBelastungen.betrag();
         }
-        return new MonatlicheFinanzsituationClusterMemento(antragsnummer.nummer(), betragEinnahmen, betragAusgaben, betragNeueDarlehensbelastungen);
+        return new MonatlicheFinanzsituationClusterMemento(scoringId, betragEinnahmen, betragAusgaben, betragNeueDarlehensbelastungen);
     }
 
-    public record MonatlicheFinanzsituationClusterMemento(String antragsnummer, BigDecimal einnahmen, BigDecimal ausgaben, BigDecimal neueDarlehensBelastungen) {}
+    public record MonatlicheFinanzsituationClusterMemento(ScoringId scoringId, BigDecimal einnahmen, BigDecimal ausgaben, BigDecimal neueDarlehensBelastungen) {}
 
 }

@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.adapter.driven.scoringErgebnis;
 
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisRepository;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.ClusterGescored;
 import com.bigpugloans.scoring.domain.model.Punkte;
 import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
@@ -18,10 +18,10 @@ public class ScoringErgebnisJDBCRepository implements ScoringErgebnisRepository 
     @Override
     public void speichern(ScoringErgebnis scoringErgebnis) {
         ScoringErgebnis.ScoringErgebnisMemento memento = scoringErgebnis.memento();
-        ScoringErgebnisRecord record = dao.findByAntragsnummer(scoringErgebnis.antragsnummer().nummer());
+        ScoringErgebnisRecord record = dao.findByScoringId(scoringErgebnis.scoringId());
         if(record == null) {
             record = new ScoringErgebnisRecord();
-            record.setAntragsnummer(scoringErgebnis.antragsnummer().nummer());
+            record.setScoringId(scoringErgebnis.scoringId());
         }
         if(memento.antragstellerClusterErgebnis() != null) {
             record.setAntragstellerPunkte(memento.antragstellerClusterErgebnis().punkte().getPunkte());
@@ -49,11 +49,11 @@ public class ScoringErgebnisJDBCRepository implements ScoringErgebnisRepository 
     }
 
     @Override
-    public ScoringErgebnis lade(Antragsnummer antragsnummer) {
-        if(antragsnummer == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
+    public ScoringErgebnis lade(ScoringId scoringId) {
+        if(scoringId == null) {
+            throw new IllegalArgumentException("ScoringId darf nicht null sein");
         }
-        ScoringErgebnisRecord record = dao.findByAntragsnummer(antragsnummer.nummer());
+        ScoringErgebnisRecord record = dao.findByScoringId(scoringId);
         if(record == null) {
             return null;
         } else {
@@ -63,19 +63,19 @@ public class ScoringErgebnisJDBCRepository implements ScoringErgebnisRepository 
             ClusterGescored immobilienFinanzierungClusterErgebnis = null;
 
             if(record.getAuskunfteiKoKriterien() != 0 && record.getAuskunfteiPunkte() != 0) {
-                antragstellerClusterErgebnis = new ClusterGescored(new Antragsnummer(record.getAntragsnummer()), record.getAuskunfteiPunkte(), record.getAuskunfteiKoKriterien());
+                antragstellerClusterErgebnis = new ClusterGescored(record.getScoringId(), new Punkte(record.getAuskunfteiPunkte()), record.getAuskunfteiKoKriterien());
             }
             if(record.getAntragstellerKoKriterien() != 0 && record.getAntragstellerPunkte() != 0) {
-                auskunfteiClusterErgebnis = new ClusterGescored(new Antragsnummer(record.getAntragsnummer()), record.getAntragstellerPunkte(), record.getAntragstellerKoKriterien());
+                auskunfteiClusterErgebnis = new ClusterGescored(record.getScoringId(), new Punkte(record.getAntragstellerPunkte()), record.getAntragstellerKoKriterien());
             }
             if(record.getMonatlicheFinanzsituationPunkte() != 0 && record.getMonatlicheFinanzsituationKoKriterien() != 0) {
-                monatlicheFinanzsituationClusterErgebnis = new ClusterGescored(new Antragsnummer(record.getAntragsnummer()), record.getMonatlicheFinanzsituationPunkte(), record.getMonatlicheFinanzsituationKoKriterien());
+                monatlicheFinanzsituationClusterErgebnis = new ClusterGescored(record.getScoringId(), new Punkte(record.getMonatlicheFinanzsituationPunkte()), record.getMonatlicheFinanzsituationKoKriterien());
             }
             if(record.getImmobilienFinanzierungPunkte() != 0 && record.getImmobilienFinanzierungKoKriterien() != 0) {
-                immobilienFinanzierungClusterErgebnis = new ClusterGescored(new Antragsnummer(record.getAntragsnummer()), record.getImmobilienFinanzierungPunkte(), record.getImmobilienFinanzierungKoKriterien());
+                immobilienFinanzierungClusterErgebnis = new ClusterGescored(record.getScoringId(), new Punkte(record.getImmobilienFinanzierungPunkte()), record.getImmobilienFinanzierungKoKriterien());
             }
             ScoringErgebnis.ScoringErgebnisMemento memento = new ScoringErgebnis.ScoringErgebnisMemento(
-                    record.getAntragsnummer(),
+                    record.getScoringId(),
                     auskunfteiClusterErgebnis,
                     antragstellerClusterErgebnis,
                     monatlicheFinanzsituationClusterErgebnis,

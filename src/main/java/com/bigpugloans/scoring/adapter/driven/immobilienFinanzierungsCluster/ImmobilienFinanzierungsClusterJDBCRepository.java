@@ -2,6 +2,7 @@ package com.bigpugloans.scoring.adapter.driven.immobilienFinanzierungsCluster;
 
 import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungClusterRepository;
 import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -20,21 +21,22 @@ public class ImmobilienFinanzierungsClusterJDBCRepository implements ImmobilienF
 
     @Override
     public void speichern(ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster) {
-        ImmobilienFinanzierungsClusterRecord record = dao.findByAntragsnummer(immobilienFinanzierungsCluster.antragsnummer().nummer());
+        ScoringId scoringId = immobilienFinanzierungsCluster.scoringId();
+        ImmobilienFinanzierungsClusterRecord record = dao.findByScoringId(scoringId);
         if(record == null) {
             record = new ImmobilienFinanzierungsClusterRecord();
-            record.setAntragsnummer(immobilienFinanzierungsCluster.antragsnummer().nummer());
+            record.setScoringId(scoringId);
         }
         record.setMemento(immobilienFinanzierungsCluster.memento());
         dao.save(record);
     }
 
     @Override
-    public ImmobilienFinanzierungsCluster lade(Antragsnummer antragsnummer) {
-        if(antragsnummer == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
+    public ImmobilienFinanzierungsCluster lade(ScoringId scoringId) {
+        if(scoringId == null) {
+            throw new IllegalArgumentException("ScoringID darf nicht null sein");
         }
-        ImmobilienFinanzierungsClusterRecord record = dao.findByAntragsnummer(antragsnummer.nummer());
+        ImmobilienFinanzierungsClusterRecord record = dao.findByScoringId(scoringId);
         if(record == null) {
             return null;
         } else {

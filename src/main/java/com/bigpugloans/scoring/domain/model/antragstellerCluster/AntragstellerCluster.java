@@ -4,17 +4,18 @@ import com.bigpugloans.scoring.domain.model.*;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Optional;
 
-public class AntragstellerCluster {
-    private final Antragsnummer antragsnummer;
+public class AntragstellerCluster implements ClusterScoring {
+    private final ScoringId scoringId;
 
     private Wohnort wohnort;
-    private Guthaben guthaben;
+    private Guthaben guthabenBeiMopsBank;
 
 
-    public AntragstellerCluster(Antragsnummer antragsnummer) {
-        if(antragsnummer == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein.");
+    public AntragstellerCluster(ScoringId scoringId) {
+        if(scoringId == null) {
+            throw new IllegalArgumentException("ScoringId darf nicht null sein.");
         }
         this.antragsnummer = antragsnummer;
         this.guthaben = new Guthaben(0);
@@ -44,19 +45,19 @@ public class AntragstellerCluster {
         if(wohnort == null) {
             return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Ohne Wohnort kann nicht gescort werden.");
         }
-        if (guthaben == null) {
+        if (guthabenBeiMopsBank == null) {
             return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Ohne Guthaben kann nicht gescort werden.");
         }
 
         Punkte ergebnis = new Punkte(0);
         ergebnis = ergebnis.plus(wohnort.berechnePunkte());
-        ergebnis = ergebnis.plus(guthaben.berechnePunkte());
+        ergebnis = ergebnis.plus(guthabenBeiMopsBank.berechnePunkte());
 
-        return new ClusterGescored(this.antragsnummer, ergebnis);
+        return Optional.of(new ClusterGescored(this.scoringId, ergebnis));
     }
 
-    public Antragsnummer antragsnummer() {
-        return antragsnummer;
+    public ScoringId scoringId() {
+        return scoringId;
     }
 
     public void wohnortHinzufuegen(String wohnort) {
@@ -64,7 +65,7 @@ public class AntragstellerCluster {
     }
 
     public void guthabenHinzufuegen(Waehrungsbetrag guthaben) {
-        this.guthaben = new Guthaben(guthaben);
+        this.guthabenBeiMopsBank = new Guthaben(guthaben);
     }
 
     @Override
@@ -72,12 +73,12 @@ public class AntragstellerCluster {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AntragstellerCluster that = (AntragstellerCluster) o;
-        return Objects.equals(antragsnummer, that.antragsnummer);
+        return Objects.equals(scoringId, that.scoringId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(antragsnummer);
+        return Objects.hashCode(scoringId);
     }
 
     public AntragstellerClusterMemento memento() {

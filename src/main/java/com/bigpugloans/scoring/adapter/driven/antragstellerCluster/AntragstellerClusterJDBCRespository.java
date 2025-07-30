@@ -1,7 +1,6 @@
 package com.bigpugloans.scoring.adapter.driven.antragstellerCluster;
 
 import com.bigpugloans.scoring.application.ports.driven.AntragstellerClusterRepository;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
 import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 import org.springframework.beans.factory.annotation.Autowired;

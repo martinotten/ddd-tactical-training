@@ -77,11 +77,13 @@ public class ScoringErgebnisMementoTest {
 
         ScoringErgebnis.ScoringErgebnisMemento memento = ergebnis.memento();
         assertEquals(scoringId, memento.scoringId());
-        assertEquals(10, memento.antragstellerClusterErgebnis().punkte().getPunkte());
-        assertEquals(1, memento.antragstellerClusterErgebnis().koKriterien().anzahl());
+        ClusterGescored antragstellerClusterErgebnis = memento.antragstellerClusterErgebnis();
+        assertEquals(10, antragstellerClusterErgebnis.punkte().getPunkte());
+        assertEquals(1, antragstellerClusterErgebnis.koKriterien().anzahl());
 
-        assertEquals(90, memento.auskunfteiClusterErgebnis().punkte().getPunkte());
-        assertEquals(2, memento.auskunfteiClusterErgebnis().koKriterien().anzahl());
+        ClusterGescored auskunfteiClusterErgebnis = memento.auskunfteiClusterErgebnis();
+        assertEquals(90, auskunfteiClusterErgebnis.punkte().getPunkte());
+        assertEquals(2, auskunfteiClusterErgebnis.koKriterien().anzahl());
 
         assertNull(memento.monatlicherHaushaltsueberschussClusterErgebnis());
         assertNull(memento.immobilienFinanzierungsClusterErgebnis());

@@ -23,6 +23,11 @@ public class AntragstellerCluster implements ClusterScoring {
 
     public AntragstellerCluster(AntragstellerClusterMemento memento) {
         this.scoringId = memento.scoringId();
+
+        if(scoringId == null) {
+            throw new IllegalArgumentException("ScoringId darf nicht null sein.");
+        }
+
         if(memento.wohnort() == null) {
             this.wohnort = null;
         } else {

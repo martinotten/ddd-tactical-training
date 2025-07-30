@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ScoringDomainServiceTestWithoutMockito {
+class ScoringDomainServiceTest {
     
     private InMemoryAntragstellerClusterRepository antragstellerClusterRepository;
     private InMemoryMonatlicheFinanzsituationClusterRepository monatlicheFinanzsituationClusterRepository;
@@ -72,7 +72,7 @@ class ScoringDomainServiceTestWithoutMockito {
         antragstellerCluster.setScoringResult(antragstellerResult);
         monatlicheCluster.setScoringResult(monatlicheResult);
         immobilienCluster.setScoringResult(immobilienResult);
-        auskunfteiCluster.setScoringResult(Optional.empty()); // This one returns empty
+        // auskunfteiCluster intentionally left without result to return empty
         
         Optional<ScoringErgebnis> result = scoringDomainService.scoring(testScoringId);
         

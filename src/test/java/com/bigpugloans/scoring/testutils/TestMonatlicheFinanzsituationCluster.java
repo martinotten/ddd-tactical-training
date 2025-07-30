@@ -6,23 +6,18 @@ import com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster.Mon
 import java.util.Optional;
 
 public class TestMonatlicheFinanzsituationCluster extends MonatlicheFinanzsituationCluster {
-    private Optional<ClusterGescored> scoringResult;
+    private ClusterGescored scoringResult = null;
 
     public TestMonatlicheFinanzsituationCluster(ScoringId scoringId) {
         super(scoringId);
-        this.scoringResult = Optional.empty();
-    }
-
-    public void setScoringResult(Optional<ClusterGescored> scoringResult) {
-        this.scoringResult = scoringResult;
     }
 
     public void setScoringResult(ClusterGescored result) {
-        this.scoringResult = Optional.of(result);
+        this.scoringResult = result;
     }
 
     @Override
     public Optional<ClusterGescored> scoren() {
-        return scoringResult;
+        return Optional.ofNullable(scoringResult);
     }
 }

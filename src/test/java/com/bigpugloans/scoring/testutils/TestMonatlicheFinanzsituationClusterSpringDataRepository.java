@@ -20,9 +20,10 @@ public class TestMonatlicheFinanzsituationClusterSpringDataRepository implements
     @Override
     public MonatlicheFinanzsituationClusterRecord findByScoringId(ScoringId scoringId) {
         try {
-            String sql = "SELECT * FROM SCORING_MONATLICHE_FINANZSITUATION_CLUSTER WHERE antragsnummer = ?";
+            String sql = "SELECT * FROM SCORING_MONATLICHE_FINANZSITUATION_CLUSTER WHERE antragsnummer = ? AND scoring_art = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, scoringId.antragsnummer().nummer());
+                stmt.setString(2, scoringId.scoringArt().name());
                 
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
@@ -57,21 +58,22 @@ public class TestMonatlicheFinanzsituationClusterSpringDataRepository implements
         try {
             if (entity.getId() == null) {
                 // Insert
-                String sql = "INSERT INTO SCORING_MONATLICHE_FINANZSITUATION_CLUSTER (antragsnummer, einnahmen, ausgaben, neue_darlehens_belastungen, version) VALUES (?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO SCORING_MONATLICHE_FINANZSITUATION_CLUSTER (antragsnummer, scoring_art, einnahmen, ausgaben, neue_darlehens_belastungen, version) VALUES (?, ?, ?, ?, ?, ?)";
                 try (PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
                     stmt.setString(1, entity.getScoringId().antragsnummer().nummer());
+                    stmt.setString(2, entity.getScoringId().scoringArt().name());
                     
                     // Extract values from memento
                     if (entity.getMemento() != null) {
-                        stmt.setBigDecimal(2, entity.getMemento().einnahmen());
-                        stmt.setBigDecimal(3, entity.getMemento().ausgaben());
-                        stmt.setBigDecimal(4, entity.getMemento().neueDarlehensBelastungen());
+                        stmt.setBigDecimal(3, entity.getMemento().einnahmen());
+                        stmt.setBigDecimal(4, entity.getMemento().ausgaben());
+                        stmt.setBigDecimal(5, entity.getMemento().neueDarlehensBelastungen());
                     } else {
-                        stmt.setBigDecimal(2, null);
                         stmt.setBigDecimal(3, null);
                         stmt.setBigDecimal(4, null);
+                        stmt.setBigDecimal(5, null);
                     }
-                    stmt.setInt(5, entity.getVersion());
+                    stmt.setInt(6, entity.getVersion());
                     
                     stmt.executeUpdate();
                     
@@ -83,21 +85,22 @@ public class TestMonatlicheFinanzsituationClusterSpringDataRepository implements
                 }
             } else {
                 // Update
-                String sql = "UPDATE SCORING_MONATLICHE_FINANZSITUATION_CLUSTER SET antragsnummer = ?, einnahmen = ?, ausgaben = ?, neue_darlehens_belastungen = ?, version = ? WHERE id = ?";
+                String sql = "UPDATE SCORING_MONATLICHE_FINANZSITUATION_CLUSTER SET antragsnummer = ?, scoring_art = ?, einnahmen = ?, ausgaben = ?, neue_darlehens_belastungen = ?, version = ? WHERE id = ?";
                 try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                     stmt.setString(1, entity.getScoringId().antragsnummer().nummer());
+                    stmt.setString(2, entity.getScoringId().scoringArt().name());
                     
                     if (entity.getMemento() != null) {
-                        stmt.setBigDecimal(2, entity.getMemento().einnahmen());
-                        stmt.setBigDecimal(3, entity.getMemento().ausgaben());
-                        stmt.setBigDecimal(4, entity.getMemento().neueDarlehensBelastungen());
+                        stmt.setBigDecimal(3, entity.getMemento().einnahmen());
+                        stmt.setBigDecimal(4, entity.getMemento().ausgaben());
+                        stmt.setBigDecimal(5, entity.getMemento().neueDarlehensBelastungen());
                     } else {
-                        stmt.setBigDecimal(2, null);
                         stmt.setBigDecimal(3, null);
                         stmt.setBigDecimal(4, null);
+                        stmt.setBigDecimal(5, null);
                     }
-                    stmt.setInt(5, entity.getVersion());
-                    stmt.setLong(6, entity.getId());
+                    stmt.setInt(6, entity.getVersion());
+                    stmt.setLong(7, entity.getId());
                     
                     stmt.executeUpdate();
                 }

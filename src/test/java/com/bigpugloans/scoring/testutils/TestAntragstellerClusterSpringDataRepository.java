@@ -20,9 +20,10 @@ public class TestAntragstellerClusterSpringDataRepository implements Antragstell
     @Override
     public AntragstellerClusterRecord findByScoringId(ScoringId scoringId) {
         try {
-            String sql = "SELECT * FROM scoring_antragsteller_cluster WHERE antragsnummer = ?";
+            String sql = "SELECT * FROM scoring_antragsteller_cluster WHERE antragsnummer = ? AND scoring_art = ?";
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, scoringId.antragsnummer().nummer());
+                stmt.setString(2, scoringId.scoringArt().name());
                 
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
@@ -55,18 +56,19 @@ public class TestAntragstellerClusterSpringDataRepository implements Antragstell
         try {
             if (entity.getId() == null) {
                 // Insert
-                String sql = "INSERT INTO scoring_antragsteller_cluster (antragsnummer, wohnort, guthaben, version) VALUES (?, ?, ?, ?)";
+                String sql = "INSERT INTO scoring_antragsteller_cluster (antragsnummer, scoring_art, wohnort, guthaben, version) VALUES (?, ?, ?, ?, ?)";
                 try (PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
                     stmt.setString(1, entity.getScoringId().antragsnummer().nummer());
+                    stmt.setString(2, entity.getScoringId().scoringArt().name());
                     
                     if (entity.getMemento() != null) {
-                        stmt.setString(2, entity.getMemento().wohnort());
-                        stmt.setBigDecimal(3, entity.getMemento().guthaben());
+                        stmt.setString(3, entity.getMemento().wohnort());
+                        stmt.setBigDecimal(4, entity.getMemento().guthaben());
                     } else {
-                        stmt.setString(2, null);
-                        stmt.setBigDecimal(3, null);
+                        stmt.setString(3, null);
+                        stmt.setBigDecimal(4, null);
                     }
-                    stmt.setInt(4, entity.getVersion());
+                    stmt.setInt(5, entity.getVersion());
                     
                     stmt.executeUpdate();
                     
@@ -78,19 +80,20 @@ public class TestAntragstellerClusterSpringDataRepository implements Antragstell
                 }
             } else {
                 // Update
-                String sql = "UPDATE scoring_antragsteller_cluster SET antragsnummer = ?, wohnort = ?, guthaben = ?, version = ? WHERE id = ?";
+                String sql = "UPDATE scoring_antragsteller_cluster SET antragsnummer = ?, scoring_art = ?, wohnort = ?, guthaben = ?, version = ? WHERE id = ?";
                 try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                     stmt.setString(1, entity.getScoringId().antragsnummer().nummer());
+                    stmt.setString(2, entity.getScoringId().scoringArt().name());
                     
                     if (entity.getMemento() != null) {
-                        stmt.setString(2, entity.getMemento().wohnort());
-                        stmt.setBigDecimal(3, entity.getMemento().guthaben());
+                        stmt.setString(3, entity.getMemento().wohnort());
+                        stmt.setBigDecimal(4, entity.getMemento().guthaben());
                     } else {
-                        stmt.setString(2, null);
-                        stmt.setBigDecimal(3, null);
+                        stmt.setString(3, null);
+                        stmt.setBigDecimal(4, null);
                     }
-                    stmt.setInt(4, entity.getVersion());
-                    stmt.setLong(5, entity.getId());
+                    stmt.setInt(5, entity.getVersion());
+                    stmt.setLong(6, entity.getId());
                     
                     stmt.executeUpdate();
                 }

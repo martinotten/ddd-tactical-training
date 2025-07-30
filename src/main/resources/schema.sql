@@ -1,15 +1,18 @@
 CREATE TABLE SCORING_MONATLICHE_FINANZSITUATION_CLUSTER (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     antragsnummer VARCHAR(255) NOT NULL,
+    scoring_art VARCHAR(10) NOT NULL,
     einnahmen DECIMAL(19, 2),
     ausgaben DECIMAL(19, 2),
     neue_darlehens_belastungen DECIMAL(19, 2),
-    version BIGINT
+    version BIGINT,
+    UNIQUE KEY uk_monatliche_scoring_id (antragsnummer, scoring_art)
 );
 
 CREATE TABLE SCORING_IMMOBILIEN_FINANZIERUNGS_CLUSTER (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     antragsnummer VARCHAR(255) NOT NULL,
+    scoring_art VARCHAR(10) NOT NULL,
     marktwert DECIMAL(19, 2),
     eigenmittel DECIMAL(19, 2),
     summe_darlehen DECIMAL(19, 2),
@@ -19,31 +22,36 @@ CREATE TABLE SCORING_IMMOBILIEN_FINANZIERUNGS_CLUSTER (
     maximaler_marktwert DECIMAL(19, 2),
     durchschnittlicher_marktwert_von DECIMAL(19, 2),
     durchschnittlicher_marktwert_bis DECIMAL(19, 2),
-    version BIGINT
+    version BIGINT,
+    UNIQUE KEY uk_immobilien_scoring_id (antragsnummer, scoring_art)
 );
 
 CREATE TABLE SCORING_AUSKUNFTEI_ERGEBNIS_CLUSTER (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     antragsteller_id varchar(255) NOT NULL,
     antragsnummer VARCHAR(255) NOT NULL,
+    scoring_art VARCHAR(10) NOT NULL,
     anzahl_warnungen INTEGER,
     anzahl_negativ_merkmale INTEGER,
     rueckzahlungs_wahrscheinlichkeit DECIMAL(19, 2),
-    version BIGINT
+    version BIGINT,
+    UNIQUE KEY uk_auskunftei_scoring_id (antragsnummer, scoring_art)
 );
 
 CREATE TABLE scoring_antragsteller_cluster (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     antragsnummer VARCHAR(255) NOT NULL,
+    scoring_art VARCHAR(10) NOT NULL,
     wohnort VARCHAR(255),
     guthaben DECIMAL(19, 2),
-    version BIGINT
+    version BIGINT,
+    UNIQUE KEY uk_antragsteller_scoring_id (antragsnummer, scoring_art)
 );
-CREATE UNIQUE INDEX idx_scoring_antragsteller_antragsnummer ON scoring_antragsteller_cluster(antragsnummer);
 
 CREATE TABLE SCORING_SCORING_ERGEBNIS (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     antragsnummer VARCHAR(255) NOT NULL,
+    scoring_art VARCHAR(10) NOT NULL,
     auskunftei_punkte INTEGER,
     auskunftei_ko_kriterien INTEGER,
     antragsteller_punkte INTEGER,
@@ -54,5 +62,6 @@ CREATE TABLE SCORING_SCORING_ERGEBNIS (
     immobilien_finanzierung_ko_kriterien INTEGER,
     gesamt_punkte INTEGER,
     gesamt_ko_kriterien INTEGER,
-    version BIGINT
+    version BIGINT,
+    UNIQUE KEY uk_scoring_ergebnis_scoring_id (antragsnummer, scoring_art)
 );

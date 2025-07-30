@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.adapter.driven.antragstellerCluster;
 
 import com.bigpugloans.scoring.application.ports.driven.AntragstellerClusterRepository;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -21,8 +21,8 @@ public class AntragstellerClusterJpaRepository implements AntragstellerClusterRe
     }
 
     @Override
-    public AntragstellerCluster lade(Antragsnummer antragsnummer) {
-        AntragstellerCluster cluster = dao.findByAntragsnummer(antragsnummer);
+    public AntragstellerCluster lade(ScoringId scoringId) {
+        AntragstellerCluster cluster = dao.findByScoringId(scoringId);
         return cluster;
     }
 }

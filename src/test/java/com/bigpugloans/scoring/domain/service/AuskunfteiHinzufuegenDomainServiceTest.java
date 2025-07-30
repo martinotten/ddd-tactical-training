@@ -6,15 +6,26 @@ import com.bigpugloans.scoring.domain.model.*;
 import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestPropertySource;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
+@DataJpaTest
+@Import(AuskunfteiHinzufuegenDomainService.class)
+@TestPropertySource(properties = {
+    "spring.jpa.hibernate.ddl-auto=create-drop",
+    "spring.jpa.show-sql=false"
+})
 class AuskunfteiHinzufuegenDomainServiceTest {
     
+    @Autowired
     private AuskunfteiErgebnisClusterRepository auskunfteiErgebnisClusterRepository;
+    @Autowired
     private AuskunfteiHinzufuegenDomainService auskunfteiHinzufuegenDomainService;
     
     private ScoringId testScoringId;
@@ -22,16 +33,13 @@ class AuskunfteiHinzufuegenDomainServiceTest {
     
     @BeforeEach
     void setUp() {
-        auskunfteiErgebnisClusterRepository = mock(AuskunfteiErgebnisClusterRepository.class);
-        auskunfteiHinzufuegenDomainService = new AuskunfteiHinzufuegenDomainService(auskunfteiErgebnisClusterRepository);
-
         testScoringId = ScoringId.mainScoringIdAusAntragsnummer("TEST123");
         testAuskunfteiErgebnis = new AuskunfteiErgebnis(3, 1, 85);
     }
 
     @Test
     void auskunfteiErgebnisHinzufuegen_shouldThrowException_whenClusterNotFound() {
-        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(null);
+        // No cluster exists in database for this scoring ID
         
         IllegalStateException exception = assertThrows(
             IllegalStateException.class,
@@ -40,88 +48,67 @@ class AuskunfteiHinzufuegenDomainServiceTest {
         
         assertTrue(exception.getMessage().contains("AuskunfteiErgebnisCluster für ScoringId"));
         assertTrue(exception.getMessage().contains("nicht gefunden"));
-        verify(auskunfteiErgebnisClusterRepository).lade(testScoringId);
-        verify(auskunfteiErgebnisClusterRepository, never()).speichern(any());
     }
     
     @Test
     void auskunfteiErgebnisHinzufuegen_shouldUpdateClusterWithCorrectValues() {
+        // Create and save initial cluster
         AntragstellerID antragstellerID = new AntragstellerID("KUNDE123");
         AuskunfteiErgebnisCluster existingCluster = new AuskunfteiErgebnisCluster(testScoringId, antragstellerID);
-        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
+        auskunfteiErgebnisClusterRepository.speichern(existingCluster);
         
+        // Execute domain service operation
         auskunfteiHinzufuegenDomainService.auskunfteiErgebnisHinzufuegen(testScoringId, testAuskunfteiErgebnis);
         
-        ArgumentCaptor<AuskunfteiErgebnisCluster> captor = ArgumentCaptor.forClass(AuskunfteiErgebnisCluster.class);
-        verify(auskunfteiErgebnisClusterRepository).speichern(captor.capture());
+        // Verify behavior: cluster should now be able to score (i.e., has complete data)
+        AuskunfteiErgebnisCluster updatedCluster = auskunfteiErgebnisClusterRepository.lade(testScoringId);
+        assertNotNull(updatedCluster, "Cluster should exist after update");
         
-        AuskunfteiErgebnisCluster savedCluster = captor.getValue();
-        // AuskunfteiErgebnisCluster doesn't expose getters for internal state
-        // We verify the cluster is saved which confirms data was set correctly
-        assertNotNull(savedCluster);
-    }
-    
-    @Test
-    void auskunfteiErgebnisHinzufuegen_shouldLoadAndSaveCorrectCluster() {
-        AntragstellerID antragstellerID = new AntragstellerID("KUNDE123");
-        AuskunfteiErgebnisCluster existingCluster = new AuskunfteiErgebnisCluster(testScoringId, antragstellerID);
-        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
-        
-        auskunfteiHinzufuegenDomainService.auskunfteiErgebnisHinzufuegen(testScoringId, testAuskunfteiErgebnis);
-        
-        verify(auskunfteiErgebnisClusterRepository).lade(testScoringId);
-        verify(auskunfteiErgebnisClusterRepository).speichern(same(existingCluster));
+        Optional<ClusterGescored> scoringResult = updatedCluster.scoren();
+        assertTrue(scoringResult.isPresent(), "Cluster should be scoreable after adding Auskunftei data");
+        assertEquals(testScoringId, scoringResult.get().scoringId(), "Scoring result should have correct ScoringId");
     }
     
     @Test
     void auskunfteiErgebnisHinzufuegen_shouldHandleZeroValues() {
+        // Create and save initial cluster
         AntragstellerID antragstellerID = new AntragstellerID("KUNDE123");
         AuskunfteiErgebnisCluster existingCluster = new AuskunfteiErgebnisCluster(testScoringId, antragstellerID);
-        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
+        auskunfteiErgebnisClusterRepository.speichern(existingCluster);
         
         AuskunfteiErgebnis zeroValuesErgebnis = new AuskunfteiErgebnis(0, 0, 100);
         
+        // Execute domain service operation
         auskunfteiHinzufuegenDomainService.auskunfteiErgebnisHinzufuegen(testScoringId, zeroValuesErgebnis);
         
-        ArgumentCaptor<AuskunfteiErgebnisCluster> captor = ArgumentCaptor.forClass(AuskunfteiErgebnisCluster.class);
-        verify(auskunfteiErgebnisClusterRepository).speichern(captor.capture());
+        // Verify behavior: cluster should be updated and scoreable
+        AuskunfteiErgebnisCluster updatedCluster = auskunfteiErgebnisClusterRepository.lade(testScoringId);
+        assertNotNull(updatedCluster, "Cluster should exist after update");
         
-        AuskunfteiErgebnisCluster savedCluster = captor.getValue();
-        // AuskunfteiErgebnisCluster doesn't expose getters for internal state
-        // We verify the cluster is saved which confirms data was set correctly
-        assertNotNull(savedCluster);
+        Optional<ClusterGescored> scoringResult = updatedCluster.scoren();
+        assertTrue(scoringResult.isPresent(), "Cluster should be scoreable with zero values");
     }
     
     @Test
     void auskunfteiErgebnisHinzufuegen_shouldHandleMaximumValues() {
+        // Create and save initial cluster
         AntragstellerID antragstellerID = new AntragstellerID("KUNDE123");
         AuskunfteiErgebnisCluster existingCluster = new AuskunfteiErgebnisCluster(testScoringId, antragstellerID);
-        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
+        auskunfteiErgebnisClusterRepository.speichern(existingCluster);
         
         AuskunfteiErgebnis maxValuesErgebnis = new AuskunfteiErgebnis(10, 5, 0);
         
+        // Execute domain service operation
         auskunfteiHinzufuegenDomainService.auskunfteiErgebnisHinzufuegen(testScoringId, maxValuesErgebnis);
         
-        ArgumentCaptor<AuskunfteiErgebnisCluster> captor = ArgumentCaptor.forClass(AuskunfteiErgebnisCluster.class);
-        verify(auskunfteiErgebnisClusterRepository).speichern(captor.capture());
+        // Verify behavior: cluster should be updated and scoreable
+        AuskunfteiErgebnisCluster updatedCluster = auskunfteiErgebnisClusterRepository.lade(testScoringId);
+        assertNotNull(updatedCluster, "Cluster should exist after update");
         
-        AuskunfteiErgebnisCluster savedCluster = captor.getValue();
-        // AuskunfteiErgebnisCluster doesn't expose getters for internal state
-        // We verify the cluster is saved which confirms data was set correctly
-        assertNotNull(savedCluster);
-    }
-    
-    @Test
-    void auskunfteiErgebnisHinzufuegen_shouldThrowException_whenRepositoryThrowsException() {
-        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
+        Optional<ClusterGescored> scoringResult = updatedCluster.scoren();
+        assertTrue(scoringResult.isPresent(), "Cluster should be scoreable with maximum values");
         
-        assertThrows(
-            RuntimeException.class,
-            () -> auskunfteiHinzufuegenDomainService.auskunfteiErgebnisHinzufuegen(testScoringId, testAuskunfteiErgebnis)
-        );
-        
-        verify(auskunfteiErgebnisClusterRepository).lade(testScoringId);
-        verify(auskunfteiErgebnisClusterRepository, never()).speichern(any());
+        // With high warnings and negative features, should likely have KO criteria
+        assertTrue(scoringResult.get().koKriterien().anzahl() > 0, "High risk values should result in KO criteria");
     }
 }

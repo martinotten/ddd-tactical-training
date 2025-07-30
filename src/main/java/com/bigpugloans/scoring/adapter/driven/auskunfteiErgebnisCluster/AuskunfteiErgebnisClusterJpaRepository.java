@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.adapter.driven.auskunfteiErgebnisCluster;
 
 import com.bigpugloans.scoring.application.ports.driven.AuskunfteiErgebnisClusterRepository;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -21,7 +21,7 @@ public class AuskunfteiErgebnisClusterJpaRepository implements AuskunfteiErgebni
     }
 
     @Override
-    public AuskunfteiErgebnisCluster lade(Antragsnummer antragsnummer) {
-        return dao.findByAntragsnummer(antragsnummer);
+    public AuskunfteiErgebnisCluster lade(ScoringId scoringId) {
+        return dao.findByScoringId(scoringId);
     }
 }

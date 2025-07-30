@@ -4,15 +4,16 @@ import com.bigpugloans.scoring.domain.model.*;
 import jakarta.persistence.*;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
-public class ImmobilienFinanzierungsCluster {
+public class ImmobilienFinanzierungsCluster implements ClusterScoring {
     @Id
     @GeneratedValue
     private Long id;
-
-    @Embedded
-    private Antragsnummer antragsnummer;
+    
+    @Embedded 
+    private ScoringId scoringId;
 
     @Embedded
     @AttributeOverrides({
@@ -46,16 +47,19 @@ public class ImmobilienFinanzierungsCluster {
     })
     private Waehrungsbetrag eigenmittel;
 
-    private ImmobilienFinanzierungsCluster() {}
-    public ImmobilienFinanzierungsCluster(Antragsnummer antragsnummer) {
-        if(antragsnummer == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein.");
+    private ImmobilienFinanzierungsCluster() {
+        // JPA constructor
+    }
+    
+    public ImmobilienFinanzierungsCluster(ScoringId scoringId) {
+        if(scoringId == null) {
+            throw new IllegalArgumentException("ScoringID darf nicht null sein.");
         }
-        this.antragsnummer = antragsnummer;
+        this.scoringId = scoringId;
     }
 
-    public Antragsnummer antragsnummer() {
-        return antragsnummer;
+    public ScoringId scoringId() {
+        return scoringId;
     }
 
     private KoKriterien pruefeKoKriterium() {
@@ -90,27 +94,27 @@ public class ImmobilienFinanzierungsCluster {
         return eigenmittel.anteilVon(marktwert.plus(kaufnebenkosten));
     }
 
-    public ClusterScoringEvent scoren() {
+    public Optional<ClusterGescored> scoren() {
         if(beleihungswert == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Der Beleihungswert fehlt.");
+            return Optional.empty();
         }
         if(marktwert == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Der Marktwert fehlt.");
+            return Optional.empty();
         }
         if(kaufnebenkosten == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Die Kaufnebenkosten fehlen.");
+            return Optional.empty();
         }
         if (summeDarlehen == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Die Summe der Darlehen fehlt.");
+            return Optional.empty();
         }
         if (eigenmittel == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Die Summe der Eigenmittel fehlt.");
+            return Optional.empty();
         }
         if (marktwertVergleich == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Der Marktwertvergleich fehlt.");
+            return Optional.empty();
         }
 
-        return new ClusterGescored(this.antragsnummer, berechnePunkte(), pruefeKoKriterium());
+        return Optional.of(new ClusterGescored(this.scoringId, berechnePunkte(), pruefeKoKriterium()));
     }
 
     public void beleihungswertHinzufuegen(Waehrungsbetrag beleihungswert) {
@@ -142,12 +146,12 @@ public class ImmobilienFinanzierungsCluster {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImmobilienFinanzierungsCluster that = (ImmobilienFinanzierungsCluster) o;
-        return Objects.equals(antragsnummer, that.antragsnummer);
+        return Objects.equals(scoringId, that.scoringId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(antragsnummer);
+        return Objects.hashCode(scoringId);
     }
 }
 

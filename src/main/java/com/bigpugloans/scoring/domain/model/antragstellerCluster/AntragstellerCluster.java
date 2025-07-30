@@ -7,15 +7,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
-public class AntragstellerCluster {
+public class AntragstellerCluster implements ClusterScoring {
     @Id
     @GeneratedValue
     private Long id;
-
+    
     @Embedded
-    private Antragsnummer antragsnummer;
+    private ScoringId scoringId;
 
     @Embedded
     private Wohnort wohnort;
@@ -24,33 +25,34 @@ public class AntragstellerCluster {
     private Guthaben guthabenBeiMopsBank;
 
     private AntragstellerCluster() {
+        // JPA constructor
     }
 
-    public AntragstellerCluster(Antragsnummer antragsnummer) {
-        if(antragsnummer == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein.");
+    public AntragstellerCluster(ScoringId scoringId) {
+        if(scoringId == null) {
+            throw new IllegalArgumentException("ScoringId darf nicht null sein.");
         }
-        this.antragsnummer = antragsnummer;
+        this.scoringId = scoringId;
         this.guthabenBeiMopsBank = new Guthaben(0);
     }
 
-    public ClusterScoringEvent scoren() {
+    public Optional<ClusterGescored> scoren() {
         if(wohnort == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Ohne Wohnort kann nicht gescort werden.");
+            return Optional.empty();
         }
         if (guthabenBeiMopsBank == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Ohne Guthaben kann nicht gescort werden.");
+            return Optional.empty();
         }
 
         Punkte ergebnis = new Punkte(0);
         ergebnis = ergebnis.plus(wohnort.berechnePunkte());
         ergebnis = ergebnis.plus(guthabenBeiMopsBank.berechnePunkte());
 
-        return new ClusterGescored(this.antragsnummer, ergebnis);
+        return Optional.of(new ClusterGescored(this.scoringId, ergebnis));
     }
 
-    public Antragsnummer antragsnummer() {
-        return antragsnummer;
+    public ScoringId scoringId() {
+        return scoringId;
     }
 
     public void wohnortHinzufuegen(String wohnort) {
@@ -66,11 +68,11 @@ public class AntragstellerCluster {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AntragstellerCluster that = (AntragstellerCluster) o;
-        return Objects.equals(antragsnummer, that.antragsnummer);
+        return Objects.equals(scoringId, that.scoringId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(antragsnummer);
+        return Objects.hashCode(scoringId);
     }
 }

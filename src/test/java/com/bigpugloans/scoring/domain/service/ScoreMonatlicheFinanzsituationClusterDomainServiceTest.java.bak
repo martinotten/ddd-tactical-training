@@ -13,14 +13,14 @@ public class ScoreMonatlicheFinanzsituationClusterDomainServiceTest {
     void testScoreMonatlicheFinanzsituationClusterVollstaendigGruen() {
         final Antragsnummer antragsnummer = new Antragsnummer("123");
 
-        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(antragsnummer);
+        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(new ScoringId(antragsnummer, ScoringArt.MAIN));
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(2500));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(800));
-        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
-        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new ScoringId(antragsnummer, ScoringArt.MAIN));
+        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
 
         ScoreMonatlicheFinanzsituationClusterDomainService service = new ScoreMonatlicheFinanzsituationClusterDomainService();
         scoringErgebnis = service.scoreMonatlicheFinanzsituationCluster(monatlicheFinanzsituationCluster, scoringErgebnis);
@@ -34,14 +34,14 @@ public class ScoreMonatlicheFinanzsituationClusterDomainServiceTest {
     void testScoreMonatlicheFinanzsituationClusterVollstaendigROT() {
         final Antragsnummer antragsnummer = new Antragsnummer("123");
 
-        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(antragsnummer);
+        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(new ScoringId(antragsnummer, ScoringArt.MAIN));
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(1500));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(800));
-        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
-        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new ScoringId(antragsnummer, ScoringArt.MAIN));
+        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
 
         ScoreMonatlicheFinanzsituationClusterDomainService service = new ScoreMonatlicheFinanzsituationClusterDomainService();
         scoringErgebnis = service.scoreMonatlicheFinanzsituationCluster(monatlicheFinanzsituationCluster, scoringErgebnis);
@@ -55,13 +55,13 @@ public class ScoreMonatlicheFinanzsituationClusterDomainServiceTest {
     void testScoreMonatlicheFinanzsituationClusterNichtVollstaendig() {
         final Antragsnummer antragsnummer = new Antragsnummer("123");
 
-        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(antragsnummer);
+        MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(new ScoringId(antragsnummer, ScoringArt.MAIN));
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(2500));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(800));
-        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
-        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new ScoringId(antragsnummer, ScoringArt.MAIN));
+        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
 
         ScoreMonatlicheFinanzsituationClusterDomainService service = new ScoreMonatlicheFinanzsituationClusterDomainService();
         scoringErgebnis = service.scoreMonatlicheFinanzsituationCluster(monatlicheFinanzsituationCluster, scoringErgebnis);

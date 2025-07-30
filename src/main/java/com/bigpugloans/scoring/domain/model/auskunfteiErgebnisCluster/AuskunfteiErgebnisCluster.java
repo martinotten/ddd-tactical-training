@@ -4,18 +4,19 @@ import com.bigpugloans.scoring.domain.model.*;
 import jakarta.persistence.*;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
-public class AuskunfteiErgebnisCluster {
+public class AuskunfteiErgebnisCluster implements ClusterScoring {
     @Id
     @GeneratedValue
     private Long id;
+    
+    @Embedded
+    private ScoringId scoringId;
 
     @Embedded
     private AntragstellerID antragstellerID;
-
-    @Embedded
-    private Antragsnummer antragsnummer;
 
     @Embedded
     private NegativMerkmal negativMerkmale;
@@ -26,18 +27,20 @@ public class AuskunfteiErgebnisCluster {
     @Embedded
     private RueckzahlungsWahrscheinlichkeit rueckzahlungswahrscheinlichkeit;
 
-    private AuskunfteiErgebnisCluster() {}
+    private AuskunfteiErgebnisCluster() {
+        // JPA constructor
+    }
 
-    public AuskunfteiErgebnisCluster(Antragsnummer antragsnummer, AntragstellerID antragstellerID) {
-        if(antragsnummer == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein.");
+    public AuskunfteiErgebnisCluster(ScoringId scoringId, AntragstellerID antragstellerID) {
+        if(scoringId == null) {
+            throw new IllegalArgumentException("ScoringId darf nicht null sein.");
         }
         if(antragstellerID == null) {
             throw new IllegalArgumentException("AntragstellerID darf nicht null sein.");
         }
         this.warnungen = new Warnung(0);
         this.negativMerkmale = new NegativMerkmal(0);
-        this.antragsnummer = antragsnummer;
+        this.scoringId = scoringId;
         this.antragstellerID = antragstellerID;
     }
 
@@ -45,8 +48,8 @@ public class AuskunfteiErgebnisCluster {
         return antragstellerID;
     }
 
-    public Antragsnummer antragsnummer() {
-        return antragsnummer;
+    public ScoringId scoringId() {
+        return scoringId;
     }
 
     private KoKriterien pruefeKoKriterium() {
@@ -62,17 +65,16 @@ public class AuskunfteiErgebnisCluster {
         return this.rueckzahlungswahrscheinlichkeit.berechnePunkte();
     }
 
-    public ClusterScoringEvent scoren() {
+    public Optional<ClusterGescored> scoren() {
         if(rueckzahlungswahrscheinlichkeit == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Die Rückzahlungswahrscheinlichkeit fehlt.");
+            return Optional.empty();
         }
-        return new ClusterGescored(this.antragsnummer, berechnePunkte(), pruefeKoKriterium());
+        return Optional.of(new ClusterGescored(this.scoringId, berechnePunkte(), pruefeKoKriterium()));
     }
 
     public void negativMerkmaleHinzufuegen(int anzahlNegativMerkmale) {
         this.negativMerkmale = new NegativMerkmal(anzahlNegativMerkmale);
     }
-
 
     public void warnungenHinzufuegen(int anzahlWarnungen) {
         this.warnungen = new Warnung(anzahlWarnungen);
@@ -87,11 +89,11 @@ public class AuskunfteiErgebnisCluster {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AuskunfteiErgebnisCluster that = (AuskunfteiErgebnisCluster) o;
-        return Objects.equals(antragstellerID, that.antragstellerID) && Objects.equals(antragsnummer, that.antragsnummer);
+        return Objects.equals(antragstellerID, that.antragstellerID) && Objects.equals(scoringId, that.scoringId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(antragstellerID, antragsnummer);
+        return Objects.hash(antragstellerID, scoringId);
     }
 }

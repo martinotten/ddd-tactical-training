@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.adapter.driven.immobilienFinanzierungsCluster;
 
-import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungsClusterRepository;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungClusterRepository;
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.Waehrungsbetrag;
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import org.junit.jupiter.api.Test;
@@ -17,12 +17,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 public class ImmobilienFinanzierungsClusterRepositoryTest {
     @Autowired
-    private ImmobilienFinanzierungsClusterRepository repo;
+    private ImmobilienFinanzierungClusterRepository repo;
 
     @Test
+    void testLadeCluster() {
+        ImmobilienFinanzierungsCluster geladen = repo.lade(ScoringId.preScoringIdAusAntragsnummer("123"));
+        assertNotNull(geladen);
+    }
+    @Test
     void testSpeichereCluster() {
-
-        ImmobilienFinanzierungsCluster cluster = new ImmobilienFinanzierungsCluster(new Antragsnummer("152"));
+        ScoringId scoringId = ScoringId.preScoringIdAusAntragsnummer("152");
+        ImmobilienFinanzierungsCluster cluster = new ImmobilienFinanzierungsCluster(scoringId);
         cluster.summeDarlehenHinzufuegen(new Waehrungsbetrag(200000));
         cluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(50000));
         cluster.marktwertHinzufuegen(new Waehrungsbetrag(250000));
@@ -31,7 +36,7 @@ public class ImmobilienFinanzierungsClusterRepositoryTest {
 
         repo.speichern(cluster);
 
-        ImmobilienFinanzierungsCluster geladen = repo.lade(new Antragsnummer("152"));
-        assertEquals(new Antragsnummer("152"), geladen.antragsnummer());
+        ImmobilienFinanzierungsCluster geladen = repo.lade(scoringId);
+        assertEquals(scoringId, geladen.scoringId());
     }
 }

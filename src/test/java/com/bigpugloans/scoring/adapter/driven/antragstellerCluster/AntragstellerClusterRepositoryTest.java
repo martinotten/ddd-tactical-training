@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.adapter.driven.antragstellerCluster;
 
 import com.bigpugloans.scoring.application.ports.driven.AntragstellerClusterRepository;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,13 +19,19 @@ public class AntragstellerClusterRepositoryTest {
     private AntragstellerClusterRepository repo;
 
     @Test
+    void testLadeAntragstellerCluster() {
+        AntragstellerCluster geladen = repo.lade(ScoringId.preScoringIdAusAntragsnummer("123"));
+        assertNotNull(geladen);
+    }
+    @Test
     void testSpeichereAntragstellerCluster() {
-        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new Antragsnummer("152"));
+        ScoringId scoringId = ScoringId.preScoringIdAusAntragsnummer("152");
+        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(scoringId);
         antragstellerCluster.wohnortHinzufuegen("Berlin");
         repo.speichern(antragstellerCluster);
 
-        AntragstellerCluster geladen = repo.lade(new Antragsnummer("152"));
-        assertEquals(new Antragsnummer(("152")), geladen.antragsnummer());
+        AntragstellerCluster geladen = repo.lade(scoringId);
+        assertEquals(scoringId, geladen.scoringId());
     }
 
 }

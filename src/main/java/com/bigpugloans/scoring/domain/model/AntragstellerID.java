@@ -4,7 +4,7 @@ import jakarta.persistence.Embedded;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Embeddable
@@ -52,9 +52,9 @@ public class AntragstellerID {
     }
 
     private static String convertByteArrayToHexString(byte[] arrayBytes) {
-        StringBuffer stringBuffer = new StringBuffer();
-        for (int i = 0; i < arrayBytes.length; i++) {
-            stringBuffer.append(Integer.toString((arrayBytes[i] & 0xff) + 0x100, 16)
+        StringBuilder stringBuffer = new StringBuilder();
+        for (byte arrayByte : arrayBytes) {
+            stringBuffer.append(Integer.toString((arrayByte & 0xff) + 0x100, 16)
                     .substring(1));
         }
         return stringBuffer.toString();
@@ -66,14 +66,14 @@ public class AntragstellerID {
         private String strasse;
         private String postleitzahl;
         private String stadt;
-        private Date geburtsdatum;
+        private LocalDate geburtsdatum;
 
         public Builder(String vorname, String nachname) {
             this.vorname = vorname;
             this.nachname = nachname;
         }
 
-        public Builder geburtsdatum(Date geburtsdatum) {
+        public Builder geburtsdatum(LocalDate geburtsdatum) {
             this.geburtsdatum = geburtsdatum;
             return this;
         }

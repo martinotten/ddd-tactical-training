@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.adapter.driven.immobilienFinanzierungsCluster;
 
 import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungClusterRepository;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -20,23 +20,23 @@ public class ImmobilienFinanzierungsClusterMongoDbRepository implements Immobili
         if(cluster == null) {
             throw new IllegalArgumentException("ImmobilienFinanzierungsCluster darf nicht null sein");
         }
-        ImmobilienFinanzierungsClusterDocument document = dao.findByAntragsnummer(cluster.antragsnummer().nummer());
+        ImmobilienFinanzierungsClusterDocument document = dao.findByScoringId(cluster.scoringId());
         if(document == null) {
             document = new ImmobilienFinanzierungsClusterDocument();
-            document.setAntragsnummer(cluster.antragsnummer().nummer());
+            document.setScoringId(cluster.scoringId());
         }
         document.setImmobilienFinanzierungsCluster(cluster);
         dao.save(document);
     }
 
     @Override
-    public ImmobilienFinanzierungsCluster lade(Antragsnummer antragsnummer) {
-        if(antragsnummer == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
+    public ImmobilienFinanzierungsCluster lade(ScoringId scoringId) {
+        if(scoringId == null) {
+            throw new IllegalArgumentException("ScoringId darf nicht null sein");
         }
-        ImmobilienFinanzierungsClusterDocument document = dao.findByAntragsnummer(antragsnummer.nummer());
+        ImmobilienFinanzierungsClusterDocument document = dao.findByScoringId(scoringId);
         if(document == null) {
-            return null;
+            return new ImmobilienFinanzierungsCluster(scoringId);
         } else {
             return document.getImmobilienFinanzierungsCluster();
         }

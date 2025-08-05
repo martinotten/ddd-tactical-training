@@ -19,10 +19,6 @@ public class AntragEingereicht implements Serializable {
         this.antragsnummer = antragsnummer;
     }
 
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }

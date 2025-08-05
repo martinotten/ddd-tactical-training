@@ -10,7 +10,7 @@ import java.util.Map;
 public class TestKreditAbfrageService implements KreditAbfrageService {
     
     private final Map<String, AuskunfteiErgebnis> responses = new HashMap<>();
-    private AuskunfteiErgebnis defaultResponse = new AuskunfteiErgebnis(1, 0, 85);
+    private final AuskunfteiErgebnis defaultResponse = new AuskunfteiErgebnis(1, 0, 85);
     
     public void willReturn(Antrag antrag, AuskunfteiErgebnis result) {
         responses.put(antrag.antragsnummer(), result);

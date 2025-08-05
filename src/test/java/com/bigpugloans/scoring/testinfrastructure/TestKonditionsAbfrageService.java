@@ -10,7 +10,7 @@ import java.util.Map;
 public class TestKonditionsAbfrageService implements KonditionsAbfrageService {
     
     private final Map<String, AuskunfteiErgebnis> responses = new HashMap<>();
-    private AuskunfteiErgebnis defaultResponse = new AuskunfteiErgebnis(0, 0, 50);
+    private final AuskunfteiErgebnis defaultResponse = new AuskunfteiErgebnis(0, 0, 50);
     
     public void willReturn(Antrag antrag, AuskunfteiErgebnis result) {
         responses.put(antrag.antragsnummer(), result);

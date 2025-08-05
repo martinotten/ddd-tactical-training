@@ -1,16 +1,11 @@
 package com.bigpugloans.events;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class MainScoringRot implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private String antragsnummer;
-    private Date datum = new Date();
-
-    private MainScoringRot() {
-    }
+    private final String antragsnummer;
 
     public MainScoringRot(String antragsnummer) {
         this.antragsnummer = antragsnummer;
@@ -20,7 +15,4 @@ public class MainScoringRot implements Serializable {
         return antragsnummer;
     }
 
-    public Date getDatum() {
-        return datum;
-    }
 }

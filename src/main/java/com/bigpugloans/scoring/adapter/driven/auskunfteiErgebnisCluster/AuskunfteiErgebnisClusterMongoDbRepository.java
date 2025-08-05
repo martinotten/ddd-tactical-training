@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class AuskunfteiErgebnisClusterMongoDbRepository implements AuskunfteiErgebnisClusterRepository {
-    private AuskunfteiErgebnisClusterSpringDataRepository dao;
+    private final AuskunfteiErgebnisClusterSpringDataRepository dao;
 
     @Autowired
     public AuskunfteiErgebnisClusterMongoDbRepository(AuskunfteiErgebnisClusterSpringDataRepository dao) {

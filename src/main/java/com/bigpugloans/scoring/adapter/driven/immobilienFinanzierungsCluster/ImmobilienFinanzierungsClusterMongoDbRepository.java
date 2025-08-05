@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class ImmobilienFinanzierungsClusterMongoDbRepository implements ImmobilienFinanzierungClusterRepository {
-    private ImmobilienFinanzierungsClusterSpringDataRepository dao;
+    private final ImmobilienFinanzierungsClusterSpringDataRepository dao;
 
     @Autowired
     public ImmobilienFinanzierungsClusterMongoDbRepository(ImmobilienFinanzierungsClusterSpringDataRepository dao) {

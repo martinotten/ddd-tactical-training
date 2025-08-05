@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class MonatlicheFinanzsituationClusterMongoDbRepository implements MonatlicheFinanzsituationClusterRepository {
-    private MonatlicheFinanzsituationClusterSpringDataRepository dao;
+    private final MonatlicheFinanzsituationClusterSpringDataRepository dao;
 
     @Autowired
     public MonatlicheFinanzsituationClusterMongoDbRepository(MonatlicheFinanzsituationClusterSpringDataRepository dao) {

@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ImmobilienFinanzierungsClusterSpringDataRepository extends MongoRepository<ImmobilienFinanzierungsClusterDocument, Long> {
-    public ImmobilienFinanzierungsClusterDocument findByScoringId(ScoringId scoringId);
+    ImmobilienFinanzierungsClusterDocument findByScoringId(ScoringId scoringId);
 }

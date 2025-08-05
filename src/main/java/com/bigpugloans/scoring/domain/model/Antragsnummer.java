@@ -3,7 +3,7 @@ package com.bigpugloans.scoring.domain.model;
 import java.util.Objects;
 
 public class Antragsnummer {
-    private String antragsnummer;
+    private final String antragsnummer;
 
     public Antragsnummer(String antragsnummer) {
         if(antragsnummer == null) {

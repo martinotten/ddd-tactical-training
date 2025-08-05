@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AuskunfteiErgebnisClusterSpringDataRepository extends MongoRepository<AuskunfteiErgebnisClusterDocument, Long> {
-    public AuskunfteiErgebnisClusterDocument findByScoringId(ScoringId scoringId);
+    AuskunfteiErgebnisClusterDocument findByScoringId(ScoringId scoringId);
 }

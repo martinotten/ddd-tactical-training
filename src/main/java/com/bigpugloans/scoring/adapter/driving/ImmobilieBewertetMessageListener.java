@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ImmobilieBewertetMessageListener {
-    private VerarbeitungImmobilienBewertung verarbeitungImmobilienBewertung;
+    private final VerarbeitungImmobilienBewertung verarbeitungImmobilienBewertung;
 
     @Autowired
     public ImmobilieBewertetMessageListener(VerarbeitungImmobilienBewertung verarbeitungImmobilienBewertung) {

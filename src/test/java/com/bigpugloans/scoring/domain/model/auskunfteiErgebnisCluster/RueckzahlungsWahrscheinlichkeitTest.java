@@ -14,7 +14,7 @@ public class RueckzahlungsWahrscheinlichkeitTest {
 
         RueckzahlungsWahrscheinlichkeit rueckzahlungsWahrscheinlichkeit = new RueckzahlungsWahrscheinlichkeit(new Prozentwert(59)); // < 60%
 
-        assertTrue(rueckzahlungsWahrscheinlichkeit.bestimmeKoKriterien().anzahl() == 1, "Rückzahlungswahrscheinlichkeit < 60% sollte ein KO-Kriterium sein.");
+        assertEquals(1, rueckzahlungsWahrscheinlichkeit.bestimmeKoKriterien().anzahl(), "Rückzahlungswahrscheinlichkeit < 60% sollte ein KO-Kriterium sein.");
     }
 
     @Test

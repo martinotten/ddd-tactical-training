@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class ScoringErgebnisMongoDbRepository implements ScoringErgebnisRepository {
-    private ScoringErgebnisSpringDataRepository dao;
+    private final ScoringErgebnisSpringDataRepository dao;
 
     @Autowired
     public ScoringErgebnisMongoDbRepository(ScoringErgebnisSpringDataRepository dao) {

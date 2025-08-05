@@ -12,7 +12,7 @@ import java.util.Random;
 
 @Component
 public class LeseKontoSaldoAdapter implements LeseKontoSaldo {
-    private HashSet<Waehrungsbetrag> kontoSalden = new HashSet<>();
+    private final HashSet<Waehrungsbetrag> kontoSalden = new HashSet<>();
 
     public LeseKontoSaldoAdapter() {
         kontoSalden.add(new Waehrungsbetrag(1000));

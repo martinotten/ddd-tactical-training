@@ -9,7 +9,7 @@ import java.util.*;
 
 @Component
 public class KonditionsAbfrageAdapter implements KonditionsAbfrage {
-    private HashSet<AuskunfteiErgebnis> auskunfteiErgebnisse = new HashSet<>();
+    private final HashSet<AuskunfteiErgebnis> auskunfteiErgebnisse = new HashSet<>();
 
     public KonditionsAbfrageAdapter() {
         auskunfteiErgebnisse.add(new AuskunfteiErgebnis(0, 0, 99));

@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ScoringErgebnisSpringDataRepository extends MongoRepository<ScoringErgebnisDocument, String> {
-    public ScoringErgebnisDocument findByScoringId(ScoringId scoringId);
+    ScoringErgebnisDocument findByScoringId(ScoringId scoringId);
 }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestScoringErgebnisVeroeffentlichen implements ScoringErgebnisVeroeffentlichen {
-    private List<AntragErfolgreichGescored> veroeffentlichteErgebnisse = new ArrayList<>();
+    private final List<AntragErfolgreichGescored> veroeffentlichteErgebnisse = new ArrayList<>();
     
     @Override
     public void preScoringErgebnisVeroeffentlichen(AntragErfolgreichGescored gesamtScoringErgebnis) {

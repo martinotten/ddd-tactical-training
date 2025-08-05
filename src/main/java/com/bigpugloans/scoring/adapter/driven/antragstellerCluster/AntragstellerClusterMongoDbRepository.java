@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class AntragstellerClusterMongoDbRepository implements AntragstellerClusterRepository {
-    private AntragstellerClusterSpringDataRepository dao;
+    private final AntragstellerClusterSpringDataRepository dao;
 
     @Autowired
     public AntragstellerClusterMongoDbRepository(AntragstellerClusterSpringDataRepository dao) {

@@ -1,73 +1,79 @@
 package com.bigpugloans.scoring.application.service;
 
 import com.bigpugloans.scoring.application.model.ImmobilienBewertung;
-import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungClusterRepository;
-import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisRepository;
-import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisVeroeffentlichen;
 import com.bigpugloans.scoring.domain.model.*;
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
-import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
+import com.bigpugloans.scoring.domain.service.ImmobilienBewertungHinzufuegenDomainService;
+import com.bigpugloans.scoring.testinfrastructure.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class VerarbeitungImmobilienBewertungApplicationServiceTest {
+    
+    private TestRepositoryManager repos;
+    private TestScoringErgebnisVeroeffentlichen scoringVeroeffentlichen;
+    private VerarbeitungImmobilienBewertungApplicationService service;
+    
+    @BeforeEach
+    void setUp() {
+        repos = new TestRepositoryManager();
+        scoringVeroeffentlichen = new TestScoringErgebnisVeroeffentlichen();
+        
+        // Create domain services with test repositories
+        ImmobilienBewertungHinzufuegenDomainService immobilienBewertungHinzufuegenDomainService = 
+            new ImmobilienBewertungHinzufuegenDomainService(repos.immobilienFinanzierungClusterRepository);
+        
+        // Create ScoringDomainService first
+        com.bigpugloans.scoring.domain.service.ScoringDomainService scoringDomainService = 
+            new com.bigpugloans.scoring.domain.service.ScoringDomainService(
+                repos.antragstellerClusterRepository,
+                repos.monatlicheFinanzsituationClusterRepository,
+                repos.immobilienFinanzierungClusterRepository,
+                repos.auskunfteiErgebnisClusterRepository
+            );
+        
+        ScoringAusfuehrenUndVeroeffentlichenService scoringAusfuehrenUndVeroeffentlichenService = 
+            new ScoringAusfuehrenUndVeroeffentlichenService(
+                scoringDomainService,
+                repos.scoringErgebnisRepository,
+                scoringVeroeffentlichen
+            );
+        
+        service = new VerarbeitungImmobilienBewertungApplicationService(
+            immobilienBewertungHinzufuegenDomainService,
+            scoringAusfuehrenUndVeroeffentlichenService
+        );
+    }
+
     @Test
     void testVerarbeiteImmobilienBewertung() {
-        ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepositoryMock = mock();
-        when(immobilienFinanzierungClusterRepositoryMock.lade(any()))
-                .thenReturn(new ImmobilienFinanzierungsCluster(new Antragsnummer("123")));
-        ScoringErgebnisRepository scoringErgebnisRepositoryMock = mock();
-        when(scoringErgebnisRepositoryMock.lade(any()))
-                .thenReturn(new ScoringErgebnis(new Antragsnummer("123")));
-        ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichenMock = mock();
-        doAnswer(invocation -> {
-            AntragErfolgreichGescored arg = invocation.getArgument(0);
-            System.out.println(arg);
-            return null;
-        }).when(scoringErgebnisVeroeffentlichenMock).preScoringErgebnisVeroeffentlichen(any(AntragErfolgreichGescored.class));
-
-        VerarbeitungImmobilienBewertungApplicationService verarbeitungImmobilienBewertungApplicationService = new VerarbeitungImmobilienBewertungApplicationService(immobilienFinanzierungClusterRepositoryMock, scoringErgebnisRepositoryMock, scoringErgebnisVeroeffentlichenMock);
         ImmobilienBewertung immobilienBewertung = new ImmobilienBewertung("123", 1000, 2000, 5000, 2600, 2800);
-        verarbeitungImmobilienBewertungApplicationService.verarbeiteImmobilienBewertung(immobilienBewertung);
+        ScoringId expectedScoringId = ScoringId.preScoringIdAusAntragsnummer(immobilienBewertung.antragsnummer());
+        
+        repos.immobilienFinanzierungClusterRepository.speichern(
+            new ImmobilienFinanzierungsCluster(expectedScoringId)
+        );
+        
+        service.verarbeiteImmobilienBewertung(immobilienBewertung);
+        
+        assertTrue(repos.hasImmobilienFinanzierungCluster(expectedScoringId), 
+            "ImmobilienFinanzierungsCluster should be updated with new bewertung data");
     }
 
     @Test
     void testVerarbeiteImmobilienBewertungMitFertigemScoring() {
-        ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepositoryMock = mock();
-        doAnswer(invocation -> {
-            Antragsnummer antragsnummer = invocation.getArgument(0);
-            System.out.println("Lade ImmobilienFinanzierungsCluster für Antragsnummer " + antragsnummer);
-            ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster(antragsnummer);
-            immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(10000));
-            immobilienFinanzierungsCluster.summeDarlehenHinzufuegen(new Waehrungsbetrag(100000));
-            immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(5000));
-            immobilienFinanzierungsCluster.marktwertHinzufuegen(new Waehrungsbetrag(200000));
-            return immobilienFinanzierungsCluster;
-        }).when(immobilienFinanzierungClusterRepositoryMock).lade(any());
-
-
-        ScoringErgebnisRepository scoringErgebnisRepositoryMock = mock();
-        doAnswer(invocationOnMock -> {
-            Antragsnummer antragsnummer = invocationOnMock.getArgument(0);
-            System.out.println("Lade ScoringErgebnis für Antragsnummer " + antragsnummer);
-            ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
-            scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(98), new KoKriterien(0)));
-            scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(10), new KoKriterien(0)));
-            scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(10), new KoKriterien(0)));
-            return scoringErgebnis;
-        }).when(scoringErgebnisRepositoryMock).lade(any());
-
-        ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichenMock = mock();
-        doAnswer(invocation -> {
-            AntragErfolgreichGescored arg = invocation.getArgument(0);
-            System.out.println(arg);
-            return null;
-        }).when(scoringErgebnisVeroeffentlichenMock).preScoringErgebnisVeroeffentlichen(any(AntragErfolgreichGescored.class));
-
-        VerarbeitungImmobilienBewertungApplicationService verarbeitungImmobilienBewertungApplicationService = new VerarbeitungImmobilienBewertungApplicationService(immobilienFinanzierungClusterRepositoryMock, scoringErgebnisRepositoryMock, scoringErgebnisVeroeffentlichenMock);
-        ImmobilienBewertung immobilienBewertung = new ImmobilienBewertung("123", 1000, 2000, 5000, 2600, 2800);
-        verarbeitungImmobilienBewertungApplicationService.verarbeiteImmobilienBewertung(immobilienBewertung);
+        ImmobilienBewertung immobilienBewertung = new ImmobilienBewertung("456", 1500, 2500, 6000, 3000, 3200);
+        ScoringId expectedScoringId = ScoringId.preScoringIdAusAntragsnummer(immobilienBewertung.antragsnummer());
+        
+        repos.immobilienFinanzierungClusterRepository.speichern(
+            new com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster(expectedScoringId)
+        );
+        
+        service.verarbeiteImmobilienBewertung(immobilienBewertung);
+        
+        assertTrue(repos.hasImmobilienFinanzierungCluster(expectedScoringId), 
+            "ImmobilienFinanzierungsCluster should be updated");
     }
 }

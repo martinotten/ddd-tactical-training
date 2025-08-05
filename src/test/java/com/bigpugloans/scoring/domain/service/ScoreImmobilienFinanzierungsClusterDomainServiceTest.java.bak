@@ -14,7 +14,7 @@ public class ScoreImmobilienFinanzierungsClusterDomainServiceTest {
     void testScoreImmobilienFinanzierungsClusterVollstaendigGruen() {
         final Antragsnummer antragsnummer = new Antragsnummer("123");
 
-        ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster(antragsnummer);
+        ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster(new ScoringId(antragsnummer, ScoringArt.MAIN));
         immobilienFinanzierungsCluster.beleihungswertHinzufuegen(new Waehrungsbetrag(280000));
         immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(110000));
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(10000));
@@ -26,10 +26,10 @@ public class ScoreImmobilienFinanzierungsClusterDomainServiceTest {
                 new Waehrungsbetrag(320000)
         );
 
-        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
-        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new ScoringId(antragsnummer, ScoringArt.MAIN));
+        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
 
         ScoreImmobilienFinanzierungsClusterDomainService service = new ScoreImmobilienFinanzierungsClusterDomainService();
         scoringErgebnis = service.scoreImmobilienFinanzierungsCluster(immobilienFinanzierungsCluster, scoringErgebnis);
@@ -44,7 +44,7 @@ public class ScoreImmobilienFinanzierungsClusterDomainServiceTest {
     void testScoreImmobilienFinanzierungsClusterVollstaendigROT() {
         final Antragsnummer antragsnummer = new Antragsnummer("123");
 
-        ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster(antragsnummer);
+        ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster(new ScoringId(antragsnummer, ScoringArt.MAIN));
         immobilienFinanzierungsCluster.beleihungswertHinzufuegen(new Waehrungsbetrag(280000));
         immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(110000));
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(10000));
@@ -56,10 +56,10 @@ public class ScoreImmobilienFinanzierungsClusterDomainServiceTest {
                 new Waehrungsbetrag(320000)
         );
 
-        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
-        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new ScoringId(antragsnummer, ScoringArt.MAIN));
+        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
 
         ScoreImmobilienFinanzierungsClusterDomainService service = new ScoreImmobilienFinanzierungsClusterDomainService();
         scoringErgebnis = service.scoreImmobilienFinanzierungsCluster(immobilienFinanzierungsCluster, scoringErgebnis);
@@ -73,7 +73,7 @@ public class ScoreImmobilienFinanzierungsClusterDomainServiceTest {
     void testScoreImmobilienFinanzierungsClusterNichtVollstaendig() {
         final Antragsnummer antragsnummer = new Antragsnummer("123");
 
-        ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster(antragsnummer);
+        ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster(new ScoringId(antragsnummer, ScoringArt.MAIN));
         immobilienFinanzierungsCluster.beleihungswertHinzufuegen(new Waehrungsbetrag(280000));
         immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(110000));
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(10000));
@@ -85,9 +85,9 @@ public class ScoreImmobilienFinanzierungsClusterDomainServiceTest {
                 new Waehrungsbetrag(320000)
         );
 
-        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(antragsnummer);
-        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
-        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(antragsnummer, new Punkte(100), new KoKriterien(0)));
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new ScoringId(antragsnummer, ScoringArt.MAIN));
+        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new ScoringId(antragsnummer, ScoringArt.MAIN), new Punkte(100), new KoKriterien(0)));
 
         ScoreImmobilienFinanzierungsClusterDomainService service = new ScoreImmobilienFinanzierungsClusterDomainService();
         scoringErgebnis = service.scoreImmobilienFinanzierungsCluster(immobilienFinanzierungsCluster, scoringErgebnis);

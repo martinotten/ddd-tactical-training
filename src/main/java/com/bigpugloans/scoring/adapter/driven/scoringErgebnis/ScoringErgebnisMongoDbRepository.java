@@ -1,7 +1,7 @@
 package com.bigpugloans.scoring.adapter.driven.scoringErgebnis;
 
 import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisRepository;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -20,23 +20,23 @@ public class ScoringErgebnisMongoDbRepository implements ScoringErgebnisReposito
         if(scoringErgebnis == null) {
             throw new IllegalArgumentException("ScoringErgebnis darf nicht null sein");
         }
-        ScoringErgebnisDocument document = dao.findByAntragsnummer(scoringErgebnis.antragsnummer().nummer());
+        ScoringErgebnisDocument document = dao.findByScoringId(scoringErgebnis.scoringId());
         if(document == null) {
             document = new ScoringErgebnisDocument();
-            document.setAntragsnummer(scoringErgebnis.antragsnummer().nummer());
+            document.setScoringId(scoringErgebnis.scoringId());
         }
         document.setScoringErgebnis(scoringErgebnis);
         dao.save(document);
     }
 
     @Override
-    public ScoringErgebnis lade(Antragsnummer antragsnummer) {
-        if(antragsnummer == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
+    public ScoringErgebnis lade(ScoringId scoringId) {
+        if(scoringId == null) {
+            throw new IllegalArgumentException("ScoringId darf nicht null sein");
         }
-        ScoringErgebnisDocument document = dao.findByAntragsnummer(antragsnummer.nummer());
+        ScoringErgebnisDocument document = dao.findByScoringId(scoringId);
         if(document == null) {
-            return null;
+            return new ScoringErgebnis(scoringId);
         } else {
             return document.getScoringErgebnis();
         }

@@ -1,56 +1,29 @@
 package com.bigpugloans.scoring.application.service;
 
 import com.bigpugloans.scoring.application.model.ImmobilienBewertung;
-import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungClusterRepository;
-import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisRepository;
-import com.bigpugloans.scoring.application.ports.driven.ScoringErgebnisVeroeffentlichen;
 import com.bigpugloans.scoring.application.ports.driving.VerarbeitungImmobilienBewertung;
 import com.bigpugloans.scoring.domain.model.*;
-import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
-import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnis;
-import com.bigpugloans.scoring.domain.service.ScoreImmobilienFinanzierungsClusterDomainService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.bigpugloans.scoring.domain.service.ImmobilienBewertungHinzufuegenDomainService;
 
-@Service
 public class VerarbeitungImmobilienBewertungApplicationService implements VerarbeitungImmobilienBewertung {
+    private final ImmobilienBewertungHinzufuegenDomainService immobilienBewertungHinzufuegenDomainService;
+    private final ScoringAusfuehrenUndVeroeffentlichenService scoringAusfuehrenUndVeroeffentlichenService;
 
-    private static final Logger log = LoggerFactory.getLogger(VerarbeitungImmobilienBewertungApplicationService.class);
-
-    private ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository;
-    private ScoringErgebnisRepository scoringErgebnisRepository;
-
-    private ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichen;
-
-    @Autowired
-    public VerarbeitungImmobilienBewertungApplicationService(ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository, ScoringErgebnisRepository scoringErgebnisRepository, ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichen) {
-        this.immobilienFinanzierungClusterRepository = immobilienFinanzierungClusterRepository;
-        this.scoringErgebnisRepository = scoringErgebnisRepository;
-        this.scoringErgebnisVeroeffentlichen = scoringErgebnisVeroeffentlichen;
+    public VerarbeitungImmobilienBewertungApplicationService(
+            ImmobilienBewertungHinzufuegenDomainService immobilienBewertungHinzufuegenDomainService,
+            ScoringAusfuehrenUndVeroeffentlichenService scoringAusfuehrenUndVeroeffentlichenService
+    ) {
+        this.immobilienBewertungHinzufuegenDomainService = immobilienBewertungHinzufuegenDomainService;
+        this.scoringAusfuehrenUndVeroeffentlichenService = scoringAusfuehrenUndVeroeffentlichenService;
     }
 
     @Override
     public void verarbeiteImmobilienBewertung(ImmobilienBewertung immobilienBewertung) {
-        ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = immobilienFinanzierungClusterRepository.lade(new Antragsnummer(immobilienBewertung.antragsnummer()));
-        immobilienFinanzierungsCluster.beleihungswertHinzufuegen(new Waehrungsbetrag(immobilienBewertung.beleihungswert()));
-        immobilienFinanzierungsCluster.marktwertVerlgeichHinzufuegen(
-                new Waehrungsbetrag(immobilienBewertung.minimalerMarktwert()),
-                new Waehrungsbetrag(immobilienBewertung.maximalerMarktwert()),
-                new Waehrungsbetrag(immobilienBewertung.durchschnittlicherMarktwertVon()),
-                new Waehrungsbetrag(immobilienBewertung.durchschnittlicherMarktwertBis()));
-        ScoringErgebnis scoringErgebnis = scoringErgebnisRepository.lade(new Antragsnummer(immobilienBewertung.antragsnummer()));
-        ScoreImmobilienFinanzierungsClusterDomainService domainService = new ScoreImmobilienFinanzierungsClusterDomainService();
-        scoringErgebnis = domainService.scoreImmobilienFinanzierungsCluster(immobilienFinanzierungsCluster, scoringErgebnis);
-        log.info("ScoringErgebnis nach ImmobilienFinanzierungsCluster: " + scoringErgebnis);
-        scoringErgebnisRepository.speichern(scoringErgebnis);
+        immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(immobilienBewertung);
 
-        AntragScoringEvent ergebnis = scoringErgebnis.berechneErgebnis();
-        log.info("Aktuelles Ergebnis nach Verarbeitung Immobilien Bewertung: " + ergebnis);
-        if(AntragErfolgreichGescored.class.equals(ergebnis.getClass())) {
-            AntragErfolgreichGescored antragErfolgreichGescored = (AntragErfolgreichGescored) ergebnis;
-            scoringErgebnisVeroeffentlichen.preScoringErgebnisVeroeffentlichen(antragErfolgreichGescored);
-        }
+        Antragsnummer antragsnummer = new Antragsnummer(immobilienBewertung.antragsnummer());
+        ScoringId scoringId = new ScoringId(antragsnummer, ScoringArt.PRE);
+
+        scoringAusfuehrenUndVeroeffentlichenService.scoringAusfuehrenUndVeroeffentlichen(scoringId);
     }
 }

@@ -1,12 +1,14 @@
 package com.bigpugloans.scoring.domain.service;
 
-import com.bigpugloans.scoring.application.model.Antrag;
+import com.bigpugloans.events.antrag.Antrag;
 import com.bigpugloans.scoring.application.ports.driven.*;
 import com.bigpugloans.scoring.domain.model.*;
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster.MonatlicheFinanzsituationCluster;
+
+import java.util.Objects;
 
 public class AntragHinzufuegenDomainService {
     
@@ -83,17 +85,13 @@ public class AntragHinzufuegenDomainService {
     }
     
     private void auskunfteiErgebnisClusterVorbereiten(ScoringId scoringId, Antrag antrag) {
-        // Create AuskunfteiErgebnisCluster with AntragstellerID from kundennummer
         AntragstellerID antragstellerID = new AntragstellerID(antrag.kundennummer());
         AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = loadOrCreateAuskunfteiErgebnisCluster(scoringId, antragstellerID);
         auskunfteiErgebnisClusterRepository.speichern(auskunfteiErgebnisCluster);
     }
     
     private AuskunfteiErgebnisCluster loadOrCreateAuskunfteiErgebnisCluster(ScoringId scoringId, AntragstellerID antragstellerID) {
-        try {
-            return auskunfteiErgebnisClusterRepository.lade(scoringId);
-        } catch (Exception e) {
-            return new AuskunfteiErgebnisCluster(scoringId, antragstellerID);
-        }
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster =  auskunfteiErgebnisClusterRepository.lade(scoringId);
+        return Objects.isNull(auskunfteiErgebnisCluster) ? new AuskunfteiErgebnisCluster(scoringId, antragstellerID) : auskunfteiErgebnisCluster;
     }
 }

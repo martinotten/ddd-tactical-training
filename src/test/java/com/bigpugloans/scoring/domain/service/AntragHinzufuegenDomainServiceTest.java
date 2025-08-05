@@ -1,6 +1,6 @@
 package com.bigpugloans.scoring.domain.service;
 
-import com.bigpugloans.scoring.application.model.Antrag;
+import com.bigpugloans.events.antrag.Antrag;
 import com.bigpugloans.scoring.domain.model.*;
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;

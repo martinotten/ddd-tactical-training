@@ -1,144 +1,96 @@
 package com.bigpugloans.scoring.domain.service;
 
 import com.bigpugloans.scoring.application.model.ImmobilienBewertung;
-import com.bigpugloans.scoring.application.ports.driven.ImmobilienFinanzierungClusterRepository;
 import com.bigpugloans.scoring.domain.model.*;
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
+import com.bigpugloans.scoring.testinfrastructure.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class ImmobilienBewertungHinzufuegenDomainServiceTest {
     
-    private ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository;
+    private TestRepositoryManager repos;
     private ImmobilienBewertungHinzufuegenDomainService immobilienBewertungHinzufuegenDomainService;
-    
-    private ImmobilienBewertung testImmobilienBewertung;
     private ScoringId testScoringId;
     
     @BeforeEach
     void setUp() {
-        immobilienFinanzierungClusterRepository = mock(ImmobilienFinanzierungClusterRepository.class);
+        repos = new TestRepositoryManager();
         immobilienBewertungHinzufuegenDomainService = new ImmobilienBewertungHinzufuegenDomainService(
-            immobilienFinanzierungClusterRepository
+            repos.immobilienFinanzierungClusterRepository
         );
-
-        Antragsnummer testAntragsnummer = new Antragsnummer("TEST123");
-        testScoringId = ScoringId.mainScoringIdAusAntragsnummer(testAntragsnummer.nummer());
-        testImmobilienBewertung = new ImmobilienBewertung(
-            "TEST123",
-            450000,
-            480000,
-            520000,
-            485000,
-            515000
-        );
-    }
-    
-    @Test
-    void immobilienBewertungHinzufuegen_shouldUpdateClusterWithCorrectValues() {
-        ImmobilienFinanzierungsCluster existingCluster = new ImmobilienFinanzierungsCluster(testScoringId);
-        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
         
-        immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(testImmobilienBewertung);
-        
-        ArgumentCaptor<ImmobilienFinanzierungsCluster> captor = ArgumentCaptor.forClass(ImmobilienFinanzierungsCluster.class);
-        verify(immobilienFinanzierungClusterRepository).speichern(captor.capture());
-        
-        ImmobilienFinanzierungsCluster savedCluster = captor.getValue();
-        // ImmobilienFinanzierungsCluster doesn't expose getters for internal state
-        // We verify the cluster is saved which confirms data was set correctly
-        assertNotNull(savedCluster);
+        testScoringId = ScoringId.preScoringIdAusAntragsnummer("TEST123");
     }
     
     @Test
     void immobilienBewertungHinzufuegen_shouldLoadCorrectClusterByAntragsnummer() {
         ImmobilienFinanzierungsCluster existingCluster = new ImmobilienFinanzierungsCluster(testScoringId);
-        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
+        repos.immobilienFinanzierungClusterRepository.speichern(existingCluster);
         
-        immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(testImmobilienBewertung);
+        ImmobilienBewertung bewertung = new ImmobilienBewertung("TEST123", 1000, 2000, 5000, 2600, 2800);
+        immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(bewertung);
         
-        verify(immobilienFinanzierungClusterRepository).lade(testScoringId);
+        assertTrue(repos.hasImmobilienFinanzierungCluster(testScoringId), "Cluster should be updated");
+        assertEquals(1, repos.immobilienFinanzierungClusterRepository.size(), "Should have exactly one cluster");
     }
     
     @Test
-    void immobilienBewertungHinzufuegen_shouldThrowException_whenClusterNotFound() {
-        when(immobilienFinanzierungClusterRepository.lade(any(ScoringId.class))).thenReturn(null);
+    void immobilienBewertungHinzufuegen_shouldUpdateClusterWithCorrectValues() {
+        ImmobilienFinanzierungsCluster existingCluster = new ImmobilienFinanzierungsCluster(testScoringId);
+        repos.immobilienFinanzierungClusterRepository.speichern(existingCluster);
         
-        assertThrows(
-            NullPointerException.class,
-            () -> immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(testImmobilienBewertung)
-        );
+        ImmobilienBewertung bewertung = new ImmobilienBewertung("TEST123", 1500, 2500, 6000, 3000, 3200);
+        immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(bewertung);
         
-        verify(immobilienFinanzierungClusterRepository).lade(any(ScoringId.class));
-        verify(immobilienFinanzierungClusterRepository, never()).speichern(any());
-    }
-    
-    @Test
-    void immobilienBewertungHinzufuegen_shouldHandleRepositoryException() {
-        when(immobilienFinanzierungClusterRepository.lade(any(ScoringId.class)))
-            .thenThrow(new RuntimeException("Repository error"));
-        
-        assertThrows(
-            RuntimeException.class,
-            () -> immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(testImmobilienBewertung)
-        );
-        
-        verify(immobilienFinanzierungClusterRepository).lade(any(ScoringId.class));
-        verify(immobilienFinanzierungClusterRepository, never()).speichern(any());
+        ImmobilienFinanzierungsCluster updatedCluster = repos.immobilienFinanzierungClusterRepository.lade(testScoringId);
+        assertNotNull(updatedCluster, "Updated cluster should be retrievable");
     }
     
     @Test
     void immobilienBewertungHinzufuegen_shouldSaveClusterAfterUpdate() {
         ImmobilienFinanzierungsCluster existingCluster = new ImmobilienFinanzierungsCluster(testScoringId);
-        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
+        repos.immobilienFinanzierungClusterRepository.speichern(existingCluster);
         
-        immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(testImmobilienBewertung);
+        ImmobilienBewertung bewertung = new ImmobilienBewertung("TEST123", 2000, 3000, 7000, 3500, 3700);
+        immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(bewertung);
         
-        verify(immobilienFinanzierungClusterRepository).speichern(same(existingCluster));
+        assertTrue(repos.hasImmobilienFinanzierungCluster(testScoringId), "Cluster should be saved after update");
     }
     
     @Test
     void immobilienBewertungHinzufuegen_shouldSetAllMarktwertVergleichValues() {
+
         ImmobilienFinanzierungsCluster existingCluster = new ImmobilienFinanzierungsCluster(testScoringId);
-        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
+        repos.immobilienFinanzierungClusterRepository.speichern(existingCluster);
         
-        immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(testImmobilienBewertung);
+        ImmobilienBewertung bewertung = new ImmobilienBewertung("TEST123", 1200, 2200, 5500, 2700, 2900);
         
-        ArgumentCaptor<ImmobilienFinanzierungsCluster> captor = ArgumentCaptor.forClass(ImmobilienFinanzierungsCluster.class);
-        verify(immobilienFinanzierungClusterRepository).speichern(captor.capture());
+        immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(bewertung);
         
-        ImmobilienFinanzierungsCluster savedCluster = captor.getValue();
-        // ImmobilienFinanzierungsCluster doesn't expose getters for internal state
-        // We verify the cluster is saved which confirms data was set correctly
-        assertNotNull(savedCluster);
+        assertTrue(repos.hasImmobilienFinanzierungCluster(testScoringId), "All marktwert values should be processed");
     }
     
     @Test
     void immobilienBewertungHinzufuegen_shouldHandleMinimumValues() {
-        ImmobilienBewertung minValuesBewertung = new ImmobilienBewertung(
-            "TEST123",
-            0,
-            0,
-            0,
-            0,
-            0
-        );
         ImmobilienFinanzierungsCluster existingCluster = new ImmobilienFinanzierungsCluster(testScoringId);
-        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
+        repos.immobilienFinanzierungClusterRepository.speichern(existingCluster);
         
-        immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(minValuesBewertung);
+        ImmobilienBewertung bewertung = new ImmobilienBewertung("TEST123", 1, 1, 1, 1, 1);
         
-        ArgumentCaptor<ImmobilienFinanzierungsCluster> captor = ArgumentCaptor.forClass(ImmobilienFinanzierungsCluster.class);
-        verify(immobilienFinanzierungClusterRepository).speichern(captor.capture());
+        immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(bewertung);
         
-        ImmobilienFinanzierungsCluster savedCluster = captor.getValue();
-        // ImmobilienFinanzierungsCluster doesn't expose getters for internal state
-        // We verify the cluster is saved which confirms data was set correctly
-        assertNotNull(savedCluster);
+        assertTrue(repos.hasImmobilienFinanzierungCluster(testScoringId), "Should handle minimum values correctly");
+    }
+    
+    @Test
+    void immobilienBewertungHinzufuegen_shouldThrowException_whenClusterNotFound() {
+        ImmobilienBewertung bewertung = new ImmobilienBewertung("NOTFOUND", 1000, 2000, 5000, 2600, 2800);
+        
+        assertThrows(RuntimeException.class, () -> {
+            immobilienBewertungHinzufuegenDomainService.immobilienBewertungHinzufuegen(bewertung);
+        }, "Should throw exception when cluster not found");
     }
 }

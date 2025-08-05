@@ -4,6 +4,7 @@ import com.bigpugloans.scoring.application.model.AuskunfteiErgebnis;
 import com.bigpugloans.scoring.application.ports.driven.KonditionsAbfrage;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Component
@@ -25,10 +26,9 @@ public class KonditionsAbfrageAdapter implements KonditionsAbfrage {
     }
 
     @Override
-    public AuskunfteiErgebnis konditionsAbfrage(String vorname, String nachname, String strasse, String stadt, String plz, Date geburtsdatum) {
+    public AuskunfteiErgebnis konditionsAbfrage(String vorname, String nachname, String strasse, String stadt, String plz, LocalDate geburtsdatum) {
         List<AuskunfteiErgebnis> list = new ArrayList<AuskunfteiErgebnis>(auskunfteiErgebnisse);
         Random random = new Random();
         return list.get(random.nextInt(list.size()));
     }
-
 }

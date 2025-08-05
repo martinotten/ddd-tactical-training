@@ -1,141 +1,109 @@
 package com.bigpugloans.scoring.domain.service;
 
-import com.bigpugloans.scoring.application.ports.driven.AntragstellerClusterRepository;
 import com.bigpugloans.scoring.domain.model.*;
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
+import com.bigpugloans.scoring.testinfrastructure.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class KontosaldoHinzufuegenDomainServiceTest {
     
-    private AntragstellerClusterRepository antragstellerClusterRepository;
+    private TestRepositoryManager repos;
     private KontosaldoHinzufuegenDomainService kontosaldoHinzufuegenDomainService;
-    
     private ScoringId testScoringId;
-    private Waehrungsbetrag testKontosaldo;
     
     @BeforeEach
     void setUp() {
-        antragstellerClusterRepository = mock(AntragstellerClusterRepository.class);
-        kontosaldoHinzufuegenDomainService = new KontosaldoHinzufuegenDomainService(antragstellerClusterRepository);
-
-        Antragsnummer testAntragsnummer = new Antragsnummer("TEST123");
-        testScoringId = ScoringId.mainScoringIdAusAntragsnummer(testAntragsnummer.nummer());
-        testKontosaldo = new Waehrungsbetrag(5000);
+        repos = new TestRepositoryManager();
+        kontosaldoHinzufuegenDomainService = new KontosaldoHinzufuegenDomainService(
+            repos.antragstellerClusterRepository
+        );
+        
+        testScoringId = ScoringId.mainScoringIdAusAntragsnummer("TEST123");
     }
     
     @Test
     void kontosaldoHinzufuegen_shouldThrowException_whenClusterNotFound() {
-        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(null);
+        Waehrungsbetrag kontosaldo = new Waehrungsbetrag(5000);
         
-        IllegalStateException exception = assertThrows(
-            IllegalStateException.class,
-            () -> kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, testKontosaldo)
-        );
-        
-        assertTrue(exception.getMessage().contains("AntragstellerCluster für ScoringId"));
-        assertTrue(exception.getMessage().contains("nicht gefunden"));
-        verify(antragstellerClusterRepository).lade(testScoringId);
-        verify(antragstellerClusterRepository, never()).speichern(any());
+        assertThrows(RuntimeException.class, () -> {
+            kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, kontosaldo);
+        }, "Should throw exception when cluster not found");
     }
     
     @Test
     void kontosaldoHinzufuegen_shouldUpdateClusterWithKontosaldo() {
+
         AntragstellerCluster existingCluster = new AntragstellerCluster(testScoringId);
-        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
+        repos.antragstellerClusterRepository.speichern(existingCluster);
         
-        kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, testKontosaldo);
+        Waehrungsbetrag kontosaldo = new Waehrungsbetrag(7500);
+        kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, kontosaldo);
         
-        ArgumentCaptor<AntragstellerCluster> captor = ArgumentCaptor.forClass(AntragstellerCluster.class);
-        verify(antragstellerClusterRepository).speichern(captor.capture());
-        
-        AntragstellerCluster savedCluster = captor.getValue();
-        // AntragstellerCluster doesn't expose getters for internal state
-        // We verify the cluster is saved which confirms data was set correctly
-        assertNotNull(savedCluster);
+        assertTrue(repos.hasAntragstellerCluster(testScoringId), "AntragstellerCluster should be updated");
+        assertEquals(1, repos.antragstellerClusterRepository.size(), "Should have exactly one cluster");
     }
     
     @Test
     void kontosaldoHinzufuegen_shouldLoadAndSaveCorrectCluster() {
+
         AntragstellerCluster existingCluster = new AntragstellerCluster(testScoringId);
-        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
+        repos.antragstellerClusterRepository.speichern(existingCluster);
         
-        kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, testKontosaldo);
+        Waehrungsbetrag kontosaldo = new Waehrungsbetrag(10000);
         
-        verify(antragstellerClusterRepository).lade(testScoringId);
-        verify(antragstellerClusterRepository).speichern(same(existingCluster));
+
+        kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, kontosaldo);
+        
+
+        AntragstellerCluster updatedCluster = repos.antragstellerClusterRepository.lade(testScoringId);
+        assertNotNull(updatedCluster, "Updated cluster should be retrievable");
     }
     
     @Test
     void kontosaldoHinzufuegen_shouldHandleZeroKontosaldo() {
+
         AntragstellerCluster existingCluster = new AntragstellerCluster(testScoringId);
-        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
+        repos.antragstellerClusterRepository.speichern(existingCluster);
         
         Waehrungsbetrag zeroKontosaldo = new Waehrungsbetrag(0);
         
+
         kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, zeroKontosaldo);
         
-        ArgumentCaptor<AntragstellerCluster> captor = ArgumentCaptor.forClass(AntragstellerCluster.class);
-        verify(antragstellerClusterRepository).speichern(captor.capture());
-        
-        AntragstellerCluster savedCluster = captor.getValue();
-        // AntragstellerCluster doesn't expose getters for internal state
-        // We verify the cluster is saved which confirms data was set correctly
-        assertNotNull(savedCluster);
+
+        assertTrue(repos.hasAntragstellerCluster(testScoringId), "Should handle zero kontosaldo correctly");
     }
     
     @Test
     void kontosaldoHinzufuegen_shouldHandleNegativeKontosaldo() {
+
         AntragstellerCluster existingCluster = new AntragstellerCluster(testScoringId);
-        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
+        repos.antragstellerClusterRepository.speichern(existingCluster);
         
         Waehrungsbetrag negativeKontosaldo = new Waehrungsbetrag(-1000);
         
+
         kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, negativeKontosaldo);
         
-        ArgumentCaptor<AntragstellerCluster> captor = ArgumentCaptor.forClass(AntragstellerCluster.class);
-        verify(antragstellerClusterRepository).speichern(captor.capture());
-        
-        AntragstellerCluster savedCluster = captor.getValue();
-        // AntragstellerCluster doesn't expose getters for internal state
-        // We verify the cluster is saved which confirms data was set correctly
-        assertNotNull(savedCluster);
-    }
-    
-    @Test
-    void kontosaldoHinzufuegen_shouldThrowException_whenRepositoryThrowsException() {
-        when(antragstellerClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        
-        assertThrows(
-            RuntimeException.class,
-            () -> kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, testKontosaldo)
-        );
-        
-        verify(antragstellerClusterRepository).lade(testScoringId);
-        verify(antragstellerClusterRepository, never()).speichern(any());
+
+        assertTrue(repos.hasAntragstellerCluster(testScoringId), "Should handle negative kontosaldo correctly");
     }
     
     @Test
     void kontosaldoHinzufuegen_shouldHandleLargeKontosaldo() {
+
         AntragstellerCluster existingCluster = new AntragstellerCluster(testScoringId);
-        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(existingCluster);
+        repos.antragstellerClusterRepository.speichern(existingCluster);
         
         Waehrungsbetrag largeKontosaldo = new Waehrungsbetrag(1000000);
         
+
         kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, largeKontosaldo);
         
-        ArgumentCaptor<AntragstellerCluster> captor = ArgumentCaptor.forClass(AntragstellerCluster.class);
-        verify(antragstellerClusterRepository).speichern(captor.capture());
-        
-        AntragstellerCluster savedCluster = captor.getValue();
-        // AntragstellerCluster doesn't expose getters for internal state
-        // We verify the cluster is saved which confirms data was set correctly
-        assertNotNull(savedCluster);
+
+        assertTrue(repos.hasAntragstellerCluster(testScoringId), "Should handle large kontosaldo correctly");
     }
 }

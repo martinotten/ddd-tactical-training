@@ -32,12 +32,6 @@ public class AuskunfteiErgebnisClusterRepositoryTest {
     private AuskunfteiErgebnisClusterRepository repo;
 
     @Test
-    void testLadeCluster() {
-        AuskunfteiErgebnisCluster geladen = repo.lade(ScoringId.preScoringIdAusAntragsnummer("123"));
-        assertNotNull(geladen);
-    }
-
-    @Test
     void testSpeichereCluster() {
         final AntragstellerID antragstellerID = new AntragstellerID.Builder("Michael", "Ploed")
                 .postleitzahl("40789")
@@ -49,6 +43,10 @@ public class AuskunfteiErgebnisClusterRepositoryTest {
         
         assertNotNull(cluster);
         assertEquals(new Antragsnummer("123"), cluster.scoringId().antragsnummer());
+
+        repo.speichern(cluster);
+        AuskunfteiErgebnisCluster geladen = repo.lade(ScoringId.mainScoringIdAusAntragsnummer("123"));
+        assertNotNull(geladen);
     }
     
     @Test

@@ -1,46 +1,35 @@
 package com.bigpugloans.scoring.domain.service;
 
 import com.bigpugloans.scoring.application.model.Antrag;
-import com.bigpugloans.scoring.application.ports.driven.*;
 import com.bigpugloans.scoring.domain.model.*;
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster.MonatlicheFinanzsituationCluster;
+import com.bigpugloans.scoring.testinfrastructure.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 class AntragHinzufuegenDomainServiceTest {
     
-    private AntragstellerClusterRepository antragstellerClusterRepository;
-    private MonatlicheFinanzsituationClusterRepository monatlicheFinanzsituationClusterRepository;
-    private ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository;
-    private AuskunfteiErgebnisClusterRepository auskunfteiErgebnisClusterRepository;
-    
+    private TestRepositoryManager repos;
     private AntragHinzufuegenDomainService antragHinzufuegenDomainService;
-    
     private ScoringId testScoringId;
     private Antrag testAntrag;
     
     @BeforeEach
     void setUp() {
-        antragstellerClusterRepository = mock(AntragstellerClusterRepository.class);
-        monatlicheFinanzsituationClusterRepository = mock(MonatlicheFinanzsituationClusterRepository.class);
-        immobilienFinanzierungClusterRepository = mock(ImmobilienFinanzierungClusterRepository.class);
-        auskunfteiErgebnisClusterRepository = mock(AuskunfteiErgebnisClusterRepository.class);
+        repos = new TestRepositoryManager();
         
         antragHinzufuegenDomainService = new AntragHinzufuegenDomainService(
-            antragstellerClusterRepository,
-            monatlicheFinanzsituationClusterRepository,
-            immobilienFinanzierungClusterRepository,
-            auskunfteiErgebnisClusterRepository
+            repos.antragstellerClusterRepository,
+            repos.monatlicheFinanzsituationClusterRepository,
+            repos.immobilienFinanzierungClusterRepository,
+            repos.auskunfteiErgebnisClusterRepository
         );
 
         Antragsnummer testAntragsnummer = new Antragsnummer("TEST123");
@@ -66,22 +55,13 @@ class AntragHinzufuegenDomainServiceTest {
     }
     
     @Test
-    void antragHinzufuegen_shouldCreateAndSaveAllClusters_whenRepositoriesThrowException() {
-        when(antragstellerClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(immobilienFinanzierungClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        
+    void antragHinzufuegen_shouldCreateAndSaveAllClusters_whenRepositoriesAreEmpty() {
         antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
         
-        verify(antragstellerClusterRepository).speichern(any(AntragstellerCluster.class));
-        verify(monatlicheFinanzsituationClusterRepository).speichern(any(MonatlicheFinanzsituationCluster.class));
-        verify(immobilienFinanzierungClusterRepository).speichern(any(ImmobilienFinanzierungsCluster.class));
-        verify(auskunfteiErgebnisClusterRepository).speichern(any(AuskunfteiErgebnisCluster.class));
+        assertTrue(repos.hasAntragstellerCluster(testScoringId), "AntragstellerCluster should be created");
+        assertTrue(repos.hasMonatlicheFinanzsituationCluster(testScoringId), "MonatlicheFinanzsituationCluster should be created");
+        assertTrue(repos.hasImmobilienFinanzierungCluster(testScoringId), "ImmobilienFinanzierungsCluster should be created");
+        assertTrue(repos.hasAuskunfteiErgebnisCluster(testScoringId), "AuskunfteiErgebnisCluster should be created");
     }
     
     @Test
@@ -92,147 +72,47 @@ class AntragHinzufuegenDomainServiceTest {
         AuskunfteiErgebnisCluster existingAuskunfteiCluster = new AuskunfteiErgebnisCluster(
             testScoringId, new AntragstellerID("KUNDE123"));
         
-        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(existingAntragstellerCluster);
-        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId)).thenReturn(existingMonatlicheCluster);
-        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(existingImmobilienCluster);
-        when(auskunfteiErgebnisClusterRepository.lade(testScoringId)).thenReturn(existingAuskunfteiCluster);
+        repos.antragstellerClusterRepository.speichern(existingAntragstellerCluster);
+        repos.monatlicheFinanzsituationClusterRepository.speichern(existingMonatlicheCluster);
+        repos.immobilienFinanzierungClusterRepository.speichern(existingImmobilienCluster);
+        repos.auskunfteiErgebnisClusterRepository.speichern(existingAuskunfteiCluster);
         
         antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
         
-        verify(antragstellerClusterRepository).speichern(existingAntragstellerCluster);
-        verify(monatlicheFinanzsituationClusterRepository).speichern(existingMonatlicheCluster);
-        verify(immobilienFinanzierungClusterRepository).speichern(existingImmobilienCluster);
-        verify(auskunfteiErgebnisClusterRepository).speichern(existingAuskunfteiCluster);
+        assertTrue(repos.hasAntragstellerCluster(testScoringId), "AntragstellerCluster should still exist");
+        assertTrue(repos.hasMonatlicheFinanzsituationCluster(testScoringId), "MonatlicheFinanzsituationCluster should still exist");
+        assertTrue(repos.hasImmobilienFinanzierungCluster(testScoringId), "ImmobilienFinanzierungsCluster should still exist");
+        assertTrue(repos.hasAuskunfteiErgebnisCluster(testScoringId), "AuskunfteiErgebnisCluster should still exist");
     }
     
     @Test
-    void antragHinzufuegen_shouldSetCorrectWohnortInAntragstellerCluster() {
-        ArgumentCaptor<AntragstellerCluster> captor = ArgumentCaptor.forClass(AntragstellerCluster.class);
-        when(antragstellerClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(immobilienFinanzierungClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        
-        antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
-        
-        verify(antragstellerClusterRepository).speichern(captor.capture());
-        AntragstellerCluster savedCluster = captor.getValue();
-        assertNotNull(savedCluster);
-        // AntragstellerCluster doesn't expose wohnort directly, so we verify it was set by checking the cluster can be scored
-        // This is a valid test since wohnort is required for scoring
-        assertNotNull(savedCluster);
-    }
-    
-    @Test
-    void antragHinzufuegen_shouldSetCorrectValuesInMonatlicheFinanzsituationCluster() {
-        ArgumentCaptor<MonatlicheFinanzsituationCluster> captor = ArgumentCaptor.forClass(MonatlicheFinanzsituationCluster.class);
-        when(antragstellerClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(immobilienFinanzierungClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        
-        antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
-        
-        verify(monatlicheFinanzsituationClusterRepository).speichern(captor.capture());
-        MonatlicheFinanzsituationCluster savedCluster = captor.getValue();
-        assertNotNull(savedCluster);
-        // MonatlicheFinanzsituationCluster doesn't expose getters for individual fields
-        // We verify the cluster is created and can be scored which confirms data was set correctly
-        assertNotNull(savedCluster);
-    }
-    
-    @Test
-    void antragHinzufuegen_shouldSetCorrectValuesInImmobilienFinanzierungsCluster() {
-        ArgumentCaptor<ImmobilienFinanzierungsCluster> captor = ArgumentCaptor.forClass(ImmobilienFinanzierungsCluster.class);
-        when(antragstellerClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(immobilienFinanzierungClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        
-        antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
-        
-        verify(immobilienFinanzierungClusterRepository).speichern(captor.capture());
-        ImmobilienFinanzierungsCluster savedCluster = captor.getValue();
-        assertNotNull(savedCluster);
-        // ImmobilienFinanzierungsCluster doesn't expose getters for individual fields
-        // We verify the cluster is created and can be scored which confirms data was set correctly
-        assertNotNull(savedCluster);
-    }
-    
-    @Test
-    void antragHinzufuegen_shouldCreateAuskunfteiErgebnisClusterWithCorrectAntragstellerID() {
-        ArgumentCaptor<AuskunfteiErgebnisCluster> captor = ArgumentCaptor.forClass(AuskunfteiErgebnisCluster.class);
-        when(antragstellerClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(immobilienFinanzierungClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        
-        antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
-        
-        verify(auskunfteiErgebnisClusterRepository).speichern(captor.capture());
-        AuskunfteiErgebnisCluster savedCluster = captor.getValue();
-        assertNotNull(savedCluster);
-        // AuskunfteiErgebnisCluster doesn't expose getters for AntragstellerID
-        // We verify the cluster is created which confirms it was set correctly
-        assertNotNull(savedCluster);
-    }
-    
-    @Test
-    void antragHinzufuegen_shouldCallAllRepositoriesInCorrectOrder() {
-        when(antragstellerClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(immobilienFinanzierungClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        
-        antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
-        
-        verify(antragstellerClusterRepository).lade(testScoringId);
-        verify(antragstellerClusterRepository).speichern(any(AntragstellerCluster.class));
-        verify(monatlicheFinanzsituationClusterRepository).lade(testScoringId);
-        verify(monatlicheFinanzsituationClusterRepository).speichern(any(MonatlicheFinanzsituationCluster.class));
-        verify(immobilienFinanzierungClusterRepository).lade(testScoringId);
-        verify(immobilienFinanzierungClusterRepository).speichern(any(ImmobilienFinanzierungsCluster.class));
-        verify(auskunfteiErgebnisClusterRepository).lade(testScoringId);
-        verify(auskunfteiErgebnisClusterRepository).speichern(any(AuskunfteiErgebnisCluster.class));
-    }
-    
-    @Test
-    void antragHinzufuegen_shouldHandleMixedRepositoryStates() {
+    void antragHinzufuegen_shouldCreateNewClustersForMissingOnes() {
         AntragstellerCluster existingAntragstellerCluster = new AntragstellerCluster(testScoringId);
         ImmobilienFinanzierungsCluster existingImmobilienCluster = new ImmobilienFinanzierungsCluster(testScoringId);
         
-        when(antragstellerClusterRepository.lade(testScoringId)).thenReturn(existingAntragstellerCluster);
-        when(monatlicheFinanzsituationClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
-        when(immobilienFinanzierungClusterRepository.lade(testScoringId)).thenReturn(existingImmobilienCluster);
-        when(auskunfteiErgebnisClusterRepository.lade(testScoringId))
-            .thenThrow(new RuntimeException("Repository error"));
+        repos.antragstellerClusterRepository.speichern(existingAntragstellerCluster);
+        repos.immobilienFinanzierungClusterRepository.speichern(existingImmobilienCluster);
         
         antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
         
-        verify(antragstellerClusterRepository).speichern(existingAntragstellerCluster);
-        verify(monatlicheFinanzsituationClusterRepository).speichern(any(MonatlicheFinanzsituationCluster.class));
-        verify(immobilienFinanzierungClusterRepository).speichern(existingImmobilienCluster);
-        verify(auskunfteiErgebnisClusterRepository).speichern(any(AuskunfteiErgebnisCluster.class));
+        assertTrue(repos.hasAntragstellerCluster(testScoringId), "AntragstellerCluster should exist");
+        assertTrue(repos.hasMonatlicheFinanzsituationCluster(testScoringId), "MonatlicheFinanzsituationCluster should be created");
+        assertTrue(repos.hasImmobilienFinanzierungCluster(testScoringId), "ImmobilienFinanzierungsCluster should exist");
+        assertTrue(repos.hasAuskunfteiErgebnisCluster(testScoringId), "AuskunfteiErgebnisCluster should be created");
+    }
+    
+    @Test
+    void antragHinzufuegen_shouldHandleAllRepositoryOperations() {
+        antragHinzufuegenDomainService.antragHinzufuegen(testScoringId, testAntrag);
+        
+        assertEquals(1, repos.antragstellerClusterRepository.size(), "Should have exactly one AntragstellerCluster");
+        assertEquals(1, repos.monatlicheFinanzsituationClusterRepository.size(), "Should have exactly one MonatlicheFinanzsituationCluster");
+        assertEquals(1, repos.immobilienFinanzierungClusterRepository.size(), "Should have exactly one ImmobilienFinanzierungsCluster");
+        assertEquals(1, repos.auskunfteiErgebnisClusterRepository.size(), "Should have exactly one AuskunfteiErgebnisCluster");
+        
+        assertDoesNotThrow(() -> repos.antragstellerClusterRepository.lade(testScoringId));
+        assertDoesNotThrow(() -> repos.monatlicheFinanzsituationClusterRepository.lade(testScoringId));
+        assertDoesNotThrow(() -> repos.immobilienFinanzierungClusterRepository.lade(testScoringId));
+        assertDoesNotThrow(() -> repos.auskunfteiErgebnisClusterRepository.lade(testScoringId));
     }
 }

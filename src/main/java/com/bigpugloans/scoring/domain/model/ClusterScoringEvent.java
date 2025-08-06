@@ -4,5 +4,5 @@ import org.jmolecules.architecture.onion.classical.DomainModelRing;
 
 @DomainModelRing
 public interface ClusterScoringEvent {
-    public Antragsnummer antragsnummer();
+    ScoringId scoringId();
 }

@@ -1,19 +1,21 @@
 package com.bigpugloans.scoring.adapter.driven.monatlicheFinanzsituationCluster;
 
-import com.bigpugloans.scoring.application.ports.driven.MonatlicheFinanzsituationClusterRepository;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster.MonatlicheFinanzsituationClusterRepository;
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster.MonatlicheFinanzsituationCluster;
 import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
 import org.jmolecules.architecture.onion.classical.InfrastructureRing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @InfrastructureRing
 @org.jmolecules.ddd.annotation.Repository
 @SecondaryAdapter
 public class MonatlicheFinanzsituationClusterMongoDbRepository implements MonatlicheFinanzsituationClusterRepository {
-    private MonatlicheFinanzsituationClusterSpringDataRepository dao;
+    private final MonatlicheFinanzsituationClusterSpringDataRepository dao;
 
     @Autowired
     public MonatlicheFinanzsituationClusterMongoDbRepository(MonatlicheFinanzsituationClusterSpringDataRepository dao) {
@@ -25,25 +27,25 @@ public class MonatlicheFinanzsituationClusterMongoDbRepository implements Monatl
         if(monatlicheFinanzsituationCluster == null) {
             throw new IllegalArgumentException("MonatlicheFinanzsituationCluster darf nicht null sein");
         }
-        MonatlicheFinanzsituationClusterDocument document = dao.findByAntragsnummer(monatlicheFinanzsituationCluster.antragsnummer().nummer());
+        MonatlicheFinanzsituationClusterDocument document = dao.findByScoringId(monatlicheFinanzsituationCluster.scoringId());
         if(document == null) {
             document = new MonatlicheFinanzsituationClusterDocument();
-            document.setAntragsnummer(monatlicheFinanzsituationCluster.antragsnummer().nummer());
+            document.setScoringId(monatlicheFinanzsituationCluster.scoringId());
         }
         document.setMonatlicheFinanzsituationCluster(monatlicheFinanzsituationCluster);
         dao.save(document);
     }
 
     @Override
-    public MonatlicheFinanzsituationCluster lade(Antragsnummer antragsnummer) {
-        if(antragsnummer == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
+    public Optional<MonatlicheFinanzsituationCluster> lade(ScoringId scoringId) {
+        if(scoringId == null) {
+            throw new IllegalArgumentException("ScoringId darf nicht null sein");
         }
-        MonatlicheFinanzsituationClusterDocument document = dao.findByAntragsnummer(antragsnummer.nummer());
+        MonatlicheFinanzsituationClusterDocument document = dao.findByScoringId(scoringId);
         if(document == null) {
-            return null;
+            return Optional.of(new MonatlicheFinanzsituationCluster(scoringId));
         } else {
-            return document.getMonatlicheFinanzsituationCluster();
+            return Optional.ofNullable(document.getMonatlicheFinanzsituationCluster());
         }
     }
 }

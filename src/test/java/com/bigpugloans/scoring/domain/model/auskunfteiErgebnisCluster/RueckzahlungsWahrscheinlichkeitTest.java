@@ -5,7 +5,6 @@ import com.bigpugloans.scoring.domain.model.Punkte;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RueckzahlungsWahrscheinlichkeitTest {
 
@@ -14,7 +13,7 @@ public class RueckzahlungsWahrscheinlichkeitTest {
 
         RueckzahlungsWahrscheinlichkeit rueckzahlungsWahrscheinlichkeit = new RueckzahlungsWahrscheinlichkeit(new Prozentwert(59)); // < 60%
 
-        assertTrue(rueckzahlungsWahrscheinlichkeit.bestimmeKoKriterien().anzahl() == 1, "Rückzahlungswahrscheinlichkeit < 60% sollte ein KO-Kriterium sein.");
+        assertEquals(1, rueckzahlungsWahrscheinlichkeit.bestimmeKoKriterien().anzahl(), "Rückzahlungswahrscheinlichkeit < 60% sollte ein KO-Kriterium sein.");
     }
 
     @Test

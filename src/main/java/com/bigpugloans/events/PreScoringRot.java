@@ -1,16 +1,13 @@
 package com.bigpugloans.events;
 
+import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
 
 public class PreScoringRot implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
-    private String antragsnummer;
-    private Date datum = new Date();
-
-    private PreScoringRot() {
-    }
+    private final String antragsnummer;
 
     public PreScoringRot(String antragsnummer) {
         this.antragsnummer = antragsnummer;
@@ -20,7 +17,4 @@ public class PreScoringRot implements Serializable {
         return antragsnummer;
     }
 
-    public Date getDatum() {
-        return datum;
-    }
 }

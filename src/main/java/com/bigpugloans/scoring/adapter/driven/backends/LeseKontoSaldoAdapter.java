@@ -1,6 +1,5 @@
 package com.bigpugloans.scoring.adapter.driven.backends;
 
-import com.bigpugloans.scoring.application.model.AuskunfteiErgebnis;
 import com.bigpugloans.scoring.application.ports.driven.LeseKontoSaldo;
 import com.bigpugloans.scoring.domain.model.Waehrungsbetrag;
 import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
@@ -16,7 +15,7 @@ import java.util.Random;
 @InfrastructureRing
 @SecondaryAdapter
 public class LeseKontoSaldoAdapter implements LeseKontoSaldo {
-    private HashSet<Waehrungsbetrag> kontoSalden = new HashSet<>();
+    private final HashSet<Waehrungsbetrag> kontoSalden = new HashSet<>();
 
     public LeseKontoSaldoAdapter() {
         kontoSalden.add(new Waehrungsbetrag(1000));

@@ -7,5 +7,5 @@ import org.jmolecules.architecture.onion.classical.ApplicationServiceRing;
 @ApplicationServiceRing
 @PrimaryPort
 public interface PreScoringStart {
-    public void startePreScoring(ScoringDatenAusAntrag antrag);
+    void startePreScoring(ScoringDatenAusAntrag antrag);
 }

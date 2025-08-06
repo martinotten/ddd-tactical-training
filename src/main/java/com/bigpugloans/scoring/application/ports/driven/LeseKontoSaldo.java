@@ -7,5 +7,5 @@ import org.jmolecules.architecture.onion.classical.ApplicationServiceRing;
 @ApplicationServiceRing
 @SecondaryPort
 public interface LeseKontoSaldo {
-    public Waehrungsbetrag leseKontoSaldo(String kundennummer);
+    Waehrungsbetrag leseKontoSaldo(String kundennummer);
 }

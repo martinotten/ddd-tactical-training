@@ -1,5 +1,6 @@
 package com.bigpugloans.scoring.adapter.driven.immobilienFinanzierungsCluster;
 
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import org.jmolecules.architecture.onion.classical.InfrastructureRing;
 import org.springframework.data.annotation.Id;
@@ -13,7 +14,7 @@ public class ImmobilienFinanzierungsClusterDocument {
     private String id;
 
     @Indexed(unique = true)
-    private String antragsnummer;
+    private ScoringId scoringId;
 
     private ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster;
 
@@ -25,12 +26,12 @@ public class ImmobilienFinanzierungsClusterDocument {
         this.id = id;
     }
 
-    public String getAntragsnummer() {
-        return antragsnummer;
+    public ScoringId getScoringId() {
+        return scoringId;
     }
 
-    public void setAntragsnummer(String antragsnummer) {
-        this.antragsnummer = antragsnummer;
+    public void setScoringId(ScoringId scoringId) {
+        this.scoringId = scoringId;
     }
 
     public ImmobilienFinanzierungsCluster getImmobilienFinanzierungsCluster() {

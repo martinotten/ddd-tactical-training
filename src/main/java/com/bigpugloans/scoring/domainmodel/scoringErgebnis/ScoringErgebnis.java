@@ -40,29 +40,4 @@ public class ScoringErgebnis {
         }
     }
 
-    public void auskunfteiErgebnisClusterHinzufuegen(ClusterGescored clusterGescored) {
-        this.auskunfteiClusterErgebnis = clusterGescored;
-        this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
-        this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
-    }
-
-
-    public void antragstellerClusterHinzufuegen(ClusterGescored clusterGescored) {
-        this.antragstellerClusterErgebnis = clusterGescored;
-        this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
-        this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
-    }
-
-    public void immobilienFinanzierungClusterHinzufuegen(ClusterGescored clusterGescored) {
-        this.immobilienFinanzierungsClusterErgebnis = clusterGescored;
-        this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
-        this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
-    }
-
-
-    public void monatlicheFinansituationClusterHinzufuegen(ClusterGescored clusterGescored) {
-        this.monatlicherHaushaltsueberschussClusterErgebnis = clusterGescored;
-        this.gesamtPunkte = gesamtPunkte.plus(clusterGescored.punkte());
-        this.koKriterien = new KoKriterien(this.koKriterien.anzahl() + clusterGescored.koKriterien().anzahl());
-    }
 }

@@ -1,5 +1,6 @@
 package com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster;
 
+import com.bigpugloans.scoring.domainmodel.Eigenkapitalanteil;
 import com.bigpugloans.scoring.domainmodel.Prozentwert;
 import com.bigpugloans.scoring.domainmodel.Punkte;
 import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
@@ -10,10 +11,8 @@ public class ImmobilienFinanzierungsCluster {
     private Waehrungsbetrag eigenmittel;
     private Waehrungsbetrag marktwertImmobilie;
     private Waehrungsbetrag kaufnebenkosten;
-
-    private Prozentwert eigenkapitalanteil;
+    private Eigenkapitalanteil eigenkapitalanteil;
     private boolean marktwertDurchschnittlich;
-
 
     public ImmobilienFinanzierungsCluster() {
         this.summeDarlehen = new Waehrungsbetrag(0);
@@ -21,13 +20,7 @@ public class ImmobilienFinanzierungsCluster {
         this.eigenmittel = new Waehrungsbetrag(0);
         this.marktwertImmobilie = new Waehrungsbetrag(0);
         this.kaufnebenkosten = new Waehrungsbetrag(0);
-        this.eigenkapitalanteil = new Prozentwert(0);
-    }
-    public void setMarktwertDurchschnittlich(boolean marktwertDurchschnittlich) {
-        this.marktwertDurchschnittlich = marktwertDurchschnittlich;
-    }
-    public void setEigenkapitalanteil(Prozentwert eigenkapitalanteil) {
-        this.eigenkapitalanteil = eigenkapitalanteil;
+        this.eigenkapitalanteil = new Eigenkapitalanteil(new Prozentwert(0));
     }
 
     public void setSummeDarlehen(Waehrungsbetrag summeDarlehen) {
@@ -50,23 +43,26 @@ public class ImmobilienFinanzierungsCluster {
         this.kaufnebenkosten = kaufnebenkosten;
     }
 
+    public boolean koKriteriumIstErfuellt() {
+        return summeDarlehen.groesserAls(beleihungswert) || !summeDarlehen.plus(eigenmittel).equals(marktwertImmobilie.plus(kaufnebenkosten));
+    }
+
     public boolean pruefeKoKriterium() {
         return summeDarlehen.groesserAls(beleihungswert) || !summeDarlehen.plus(eigenmittel).equals(marktwertImmobilie.plus(kaufnebenkosten));
     }
 
     public Punkte berechnePunkte() {
-        Punkte ergebnis = new Punkte(0);
-        if (eigenkapitalanteil.zwischen(new Prozentwert(15), new Prozentwert(20))) {
-            ergebnis = ergebnis.plus(new Punkte(5));
-        } else if (eigenkapitalanteil.zwischen(new Prozentwert(20), new Prozentwert(30))) {
-            ergebnis = ergebnis.plus(new Punkte(10));
-        } else if (eigenkapitalanteil.groesserAls(new Prozentwert(30))) {
-            ergebnis = ergebnis.plus(new Punkte(15));
-        }
+        int punkteEigenkapital = eigenkapitalanteil.berechnePunkte().getPunkte();
+        int ergebnis = punkteEigenkapital + (marktwertDurchschnittlich ? 10 : 0);
 
-        if(marktwertDurchschnittlich) {
-            ergebnis = ergebnis.plus(new Punkte(15));
-        }
-        return ergebnis;
+        return new Punkte(ergebnis);
+    }
+
+    public void setEigenkapitalanteil(Prozentwert eigenkapitalanteil) {
+        this.eigenkapitalanteil = new Eigenkapitalanteil(eigenkapitalanteil);
+    }
+
+    public void setMarktwertDurchschnittlich(boolean durchschnittlicherMarktwert) {
+        this.marktwertDurchschnittlich = durchschnittlicherMarktwert;
     }
 }

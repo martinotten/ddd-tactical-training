@@ -1,6 +1,7 @@
 package com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster;
 
 import com.bigpugloans.scoring.domainmodel.*;
+import com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,7 +58,7 @@ public class ImmobilienFinanzierungsClusterTest {
     @Test
     void marktwertDerImmobilieImDurchschnittGibt15Punkte() {
         ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster();
-        immobilienFinanzierungsCluster.marktwertVerlgeichHinzufuegen(true);
+        immobilienFinanzierungsCluster.marktwertVerlgeichImDurchschnitt(true);
         ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren();
         assertEquals(new Punkte(15), ergebnis.punkte(), "Ein durchschnittlicher Marktwert der Immobilie sollte 15 Punkte geben.");
     }

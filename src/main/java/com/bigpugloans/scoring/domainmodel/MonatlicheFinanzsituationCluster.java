@@ -1,7 +1,4 @@
-package com.bigpugloans.scoring.domainmodel.monatlicheFinanzsituationCluster;
-
-import com.bigpugloans.scoring.domainmodel.Punkte;
-import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
+package com.bigpugloans.scoring.domainmodel;
 
 public class MonatlicheFinanzsituationCluster {
     private Waehrungsbetrag monatlicheEinnahmen;
@@ -48,7 +45,7 @@ public class MonatlicheFinanzsituationCluster {
         this.monatlicheSparen = monatlicheSparen;
     }
 
-    public boolean pruefeKoKriterium() {
+    public boolean koKriteriumIstErfuellt() {
         return monatlicheEinnahmen.minus(monatlicheAusgaben).minus(monatlicheDarlehensBelastungen).minus(monatlicheRate).minus(monatlicheSparen).kleinerAls(new Waehrungsbetrag(0));
     }
 

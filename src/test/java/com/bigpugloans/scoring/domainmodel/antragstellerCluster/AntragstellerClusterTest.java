@@ -1,5 +1,6 @@
 package com.bigpugloans.scoring.domainmodel.antragstellerCluster;
 
+import com.bigpugloans.scoring.domainmodel.ClusterGescored;
 import com.bigpugloans.scoring.domainmodel.Punkte;
 import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
 import org.junit.jupiter.api.Test;
@@ -10,16 +11,25 @@ public class AntragstellerClusterTest {
     @Test
     void antragstellerAusMuenchenUndHamburgBekommen5PunkteMehr() {
         AntragstellerCluster antragstellerCluster = new AntragstellerCluster();
-        antragstellerCluster.setWohnort("München");
-        Punkte punkte = antragstellerCluster.berechnePunkte();
-        assertEquals(new Punkte(5), punkte, "Antragsteller aus München sollten 5 Punkte mehr bekommen.");
+        antragstellerCluster.wohnortHinzufuegen("München");
+        ClusterGescored ergebnis = antragstellerCluster.scoren();
+        assertEquals(new Punkte(5), ergebnis.punkte(), "Antragsteller aus München sollten 5 Punkte mehr bekommen.");
     }
 
     @Test
     void bestandskundenMitGuthabenUeber10000Bekommen5PunkteMehr() {
         AntragstellerCluster antragstellerCluster = new AntragstellerCluster();
-        antragstellerCluster.setGuthabenBeiMopsBank(new Waehrungsbetrag(12000));
-        Punkte punkte = antragstellerCluster.berechnePunkte();
-        assertEquals(new Punkte(5), punkte, "Bestandskunden mit Guthaben > 10.000 EUR sollten 5 Punkte mehr bekommen.");
+        antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(12000));
+        ClusterGescored ergebnis = antragstellerCluster.scoren();
+        assertEquals(new Punkte(5), ergebnis.punkte(), "Bestandskunden mit Guthaben > 10.000 EUR sollten 5 Punkte mehr bekommen.");
+    }
+
+    @Test
+    void antragstellerAusMuenchenUndHamburgMitGuthabenUeber10000Bekommen10PunkteMehr() {
+        AntragstellerCluster antragstellerCluster = new AntragstellerCluster();
+        antragstellerCluster.wohnortHinzufuegen("München");
+        antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(12000));
+        ClusterGescored ergebnis = antragstellerCluster.scoren();
+        assertEquals(new Punkte(10), ergebnis.punkte(), "Antragsteller aus München mit Guthaben > 10.000 EUR sollten 10 Punkte mehr bekommen.");
     }
 }

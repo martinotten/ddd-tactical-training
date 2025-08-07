@@ -5,6 +5,10 @@ import java.math.BigDecimal;
 public class Prozentwert {
     private final BigDecimal wert;
 
+    public Prozentwert(BigDecimal wert) {
+        this.wert = wert;
+    }
+
     public BigDecimal getWert() {
         return wert;
     }

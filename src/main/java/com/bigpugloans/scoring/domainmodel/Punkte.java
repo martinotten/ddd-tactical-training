@@ -33,4 +33,11 @@ public class Punkte {
     public int hashCode() {
         return Objects.hash(punkte);
     }
+
+    @Override
+    public String toString() {
+        return "Punkte{" +
+                "punkte=" + punkte +
+                '}';
+    }
 }

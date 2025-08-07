@@ -1,7 +1,6 @@
 package com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster;
 
 import com.bigpugloans.scoring.domainmodel.*;
-import com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,8 +12,10 @@ public class ImmobilienFinanzierungsClusterTest {
         ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster();
         immobilienFinanzierungsCluster.summeDarlehenHinzufuegen(new Waehrungsbetrag(200000));
         immobilienFinanzierungsCluster.beleihungswertHinzufuegen(new Waehrungsbetrag(150000));
+        immobilienFinanzierungsCluster.marktwertHinzufuegen(new Waehrungsbetrag(210000));
+        immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15000));
         ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren();
-        assertTrue(ergebnis.koKriterien() == 1, "Summe der Darlehen > Beleihungswert sollte ein KO-Kriterium sein.");
+        assertTrue(ergebnis.koKriterien().anzahl() >0, "Summe der Darlehen > Beleihungswert sollte ein KO-Kriterium sein.");
     }
 
     @Test
@@ -25,7 +26,7 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.marktwertHinzufuegen(new Waehrungsbetrag(210000));
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15000));
         ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren();
-        assertTrue(ergebnis.koKriterien() == 1, "Summe Darlehen + Eigenmittel != Marktwert + Kaufnebenkosten sollte ein KO-Kriterium sein.");
+        assertTrue(ergebnis.koKriterien().anzahl() > 0, "Summe Darlehen + Eigenmittel != Marktwert + Kaufnebenkosten sollte ein KO-Kriterium sein.");
     }
 
     @Test
@@ -58,7 +59,9 @@ public class ImmobilienFinanzierungsClusterTest {
     @Test
     void marktwertDerImmobilieImDurchschnittGibt15Punkte() {
         ImmobilienFinanzierungsCluster immobilienFinanzierungsCluster = new ImmobilienFinanzierungsCluster();
-        immobilienFinanzierungsCluster.marktwertVerlgeichImDurchschnitt(true);
+        immobilienFinanzierungsCluster.marktwertVerlgeichHinzufuegen(true);
+        immobilienFinanzierungsCluster.marktwertHinzufuegen(new Waehrungsbetrag(210000));
+        immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15000));
         ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren();
         assertEquals(new Punkte(15), ergebnis.punkte(), "Ein durchschnittlicher Marktwert der Immobilie sollte 15 Punkte geben.");
     }

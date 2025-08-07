@@ -1,5 +1,6 @@
 package com.bigpugloans.scoring.domainmodel.scoringErgebnis;
 
+import com.bigpugloans.scoring.domainmodel.ClusterGescored;
 import com.bigpugloans.scoring.domainmodel.Punkte;
 import com.bigpugloans.scoring.domainmodel.ScoringFarbe;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ public class ScoringErgebnisTest {
         assertEquals(ScoringFarbe.ROT, scoringErgebnis.berechneErgebnis(), "Ein KO Kriterium sollte immer ein rotes Scoring-Ergebnis liefern, egal wie viele Punkte.");
 
         // Fall 2: KO Kriterium vorhanden, aber wenige Punkte
-        ScoringErgebnis scoringErgebnis = new ScoringErgebnis();
+        scoringErgebnis = new ScoringErgebnis();
         scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new Punkte(30), 0));
         scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Punkte(30), 1));
         scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new Punkte(20), 1));

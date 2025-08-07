@@ -1,5 +1,6 @@
 package com.bigpugloans.scoring.domainmodel.antragstellerCluster;
 
+import com.bigpugloans.scoring.domainmodel.ClusterGescored;
 import com.bigpugloans.scoring.domainmodel.Punkte;
 import com.bigpugloans.scoring.domainmodel.Waehrungsbetrag;
 import org.junit.jupiter.api.Test;

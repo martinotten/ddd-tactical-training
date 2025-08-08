@@ -16,7 +16,7 @@ public class MonatlicheFinanzsituationClusterTest {
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(2500));
         ClusterGescored ergebnis = monatlicheFinanzsituationCluster.scoren();
-        assertTrue(ergebnis.koKriterien().anzahl() == 1, "Monatliche Darlehensbelastungen > (Einnahmen - Ausgaben) sollte ein KO-Kriterium sein.");
+        assertEquals(1, ergebnis.koKriterien().anzahl(), "Monatliche Darlehensbelastungen > (Einnahmen - Ausgaben) sollte ein KO-Kriterium sein.");
     }
     @Test
     void monatlicherHaushaltsueberschussOhneTilgungenUeber1500Gibt15Punkte() {

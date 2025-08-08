@@ -7,7 +7,6 @@ import com.bigpugloans.scoring.domain.model.*;
 import com.bigpugloans.scoring.domain.service.AntragHinzufuegenDomainService;
 import com.bigpugloans.scoring.domain.service.AuskunfteiHinzufuegenDomainService;
 import com.bigpugloans.scoring.domain.service.KontosaldoHinzufuegenDomainService;
-import com.bigpugloans.scoring.domain.service.ScoringDomainService;
 import com.bigpugloans.scoring.testutils.*;
 import org.junit.jupiter.api.Test;
 
@@ -18,10 +17,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class EingereicherAntragVerarbeitenApplicationServiceTest {
 
-    private static class FakeKonditionsAbfrageService implements KonditionsAbfrageService {
-        private final AuskunfteiErgebnis ergebnis;
-        FakeKonditionsAbfrageService(AuskunfteiErgebnis ergebnis) { this.ergebnis = ergebnis; }
-        @Override public AuskunfteiErgebnis konditionsAbfrage(Antrag antrag) { return ergebnis; }
+    private record MockKonditionsAbfrageService(AuskunfteiErgebnis ergebnis) implements KonditionsAbfrageService {
+        @Override
+        public AuskunfteiErgebnis konditionsAbfrage(Antrag antrag) {
+            return ergebnis;
+        }
     }
 
     private static class FakeLeseKontoSaldo implements LeseKontoSaldo {
@@ -57,7 +57,6 @@ public class EingereicherAntragVerarbeitenApplicationServiceTest {
                 LocalDate.of(1970, 2, 1)
         );
 
-        // In-memory repos and real domain services
         var antragRepo = new InMemoryAntragstellerClusterRepository();
         var monatRepo = new InMemoryMonatlicheFinanzsituationClusterRepository();
         var immoRepo = new InMemoryImmobilienFinanzierungClusterRepository();
@@ -67,7 +66,7 @@ public class EingereicherAntragVerarbeitenApplicationServiceTest {
         var auskService = new AuskunfteiHinzufuegenDomainService(auskRepo);
         var kontoService = new KontosaldoHinzufuegenDomainService(antragRepo);
 
-        var fakeKonditions = new FakeKonditionsAbfrageService(new AuskunfteiErgebnis(2, 0, 70));
+        var fakeKonditions = new MockKonditionsAbfrageService(new AuskunfteiErgebnis(2, 0, 70));
         var fakeLeseSaldo = new FakeLeseKontoSaldo(new Waehrungsbetrag(2000));
         var recordingScoring = new RecordingScoringService();
 

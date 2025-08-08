@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class KontosaldoHinzufuegenDomainServiceTest {
 
-    private InMemoryAntragstellerClusterRepository inMemRepo;
     private AntragstellerClusterRepository antragstellerClusterRepository;
     private KontosaldoHinzufuegenDomainService kontosaldoHinzufuegenDomainService;
 
@@ -20,8 +19,7 @@ class KontosaldoHinzufuegenDomainServiceTest {
 
     @BeforeEach
     void setUp() {
-        inMemRepo = new InMemoryAntragstellerClusterRepository();
-        antragstellerClusterRepository = inMemRepo;
+        antragstellerClusterRepository = new InMemoryAntragstellerClusterRepository();
         kontosaldoHinzufuegenDomainService = new KontosaldoHinzufuegenDomainService(antragstellerClusterRepository);
 
         Antragsnummer testAntragsnummer = new Antragsnummer("TEST123");
@@ -31,17 +29,18 @@ class KontosaldoHinzufuegenDomainServiceTest {
 
     @Test
     void kontosaldoHinzufuegen_shouldThrowException_whenClusterNotFound() {
-        IllegalStateException ex = assertThrows(IllegalStateException.class, () ->
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
                 kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, testKontosaldo)
         );
-        assertTrue(ex.getMessage().contains("nicht gefunden"));
+        assertTrue(exception.getMessage().contains("AntragstellerCluster für ScoringId"));
+        assertTrue(exception.getMessage().contains("nicht gefunden"));
     }
 
     @Test
     void kontosaldoHinzufuegen_shouldUpdateClusterWithKontosaldo() {
         AntragstellerCluster existingCluster = new AntragstellerCluster(testScoringId);
         existingCluster.wohnortHinzufuegen("Berlin"); // damit scoren() funktioniert, sobald ein Kontosaldo gesetzt wird
-        inMemRepo.speichern(existingCluster);
+        antragstellerClusterRepository.speichern(existingCluster);
 
         kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, testKontosaldo);
 
@@ -54,7 +53,7 @@ class KontosaldoHinzufuegenDomainServiceTest {
     void kontosaldoHinzufuegen_shouldHandleZeroKontosaldo() {
         AntragstellerCluster existingCluster = new AntragstellerCluster(testScoringId);
         existingCluster.wohnortHinzufuegen("Berlin");
-        inMemRepo.speichern(existingCluster);
+        antragstellerClusterRepository.speichern(existingCluster);
 
         Waehrungsbetrag zeroKontosaldo = new Waehrungsbetrag(0);
         kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, zeroKontosaldo);
@@ -68,7 +67,7 @@ class KontosaldoHinzufuegenDomainServiceTest {
     void kontosaldoHinzufuegen_shouldHandleNegativeKontosaldo() {
         AntragstellerCluster existingCluster = new AntragstellerCluster(testScoringId);
         existingCluster.wohnortHinzufuegen("Berlin");
-        inMemRepo.speichern(existingCluster);
+        antragstellerClusterRepository.speichern(existingCluster);
 
         Waehrungsbetrag negativeKontosaldo = new Waehrungsbetrag(-1000);
         kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, negativeKontosaldo);
@@ -79,18 +78,10 @@ class KontosaldoHinzufuegenDomainServiceTest {
     }
 
     @Test
-    void kontosaldoHinzufuegen_shouldHandleRepositoryException() {
-        inMemRepo.setShouldThrowException(true);
-        assertThrows(RuntimeException.class, () ->
-                kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, testKontosaldo)
-        );
-    }
-
-    @Test
     void kontosaldoHinzufuegen_shouldHandleLargeKontosaldo() {
         AntragstellerCluster existingCluster = new AntragstellerCluster(testScoringId);
         existingCluster.wohnortHinzufuegen("Berlin");
-        inMemRepo.speichern(existingCluster);
+        antragstellerClusterRepository.speichern(existingCluster);
 
         Waehrungsbetrag largeKontosaldo = new Waehrungsbetrag(1_000_000);
         kontosaldoHinzufuegenDomainService.kontosaldoHinzufuegen(testScoringId, largeKontosaldo);

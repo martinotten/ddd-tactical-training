@@ -28,11 +28,6 @@ class ScoringDomainServiceTest {
     private InMemoryImmobilienFinanzierungClusterRepository inMemImmobilienRepo;
     private InMemoryAuskunfteiErgebnisClusterRepository inMemAuskunfteiRepo;
 
-    private AntragstellerClusterRepository antragstellerClusterRepository;
-    private MonatlicheFinanzsituationClusterRepository monatlicheFinanzsituationClusterRepository;
-    private ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository;
-    private AuskunfteiErgebnisClusterRepository auskunfteiErgebnisClusterRepository;
-
     private ScoringDomainService scoringDomainService;
 
     private ScoringId testScoringId;
@@ -44,10 +39,10 @@ class ScoringDomainServiceTest {
         inMemImmobilienRepo = new InMemoryImmobilienFinanzierungClusterRepository();
         inMemAuskunfteiRepo = new InMemoryAuskunfteiErgebnisClusterRepository();
 
-        antragstellerClusterRepository = inMemAntragstellerRepo;
-        monatlicheFinanzsituationClusterRepository = inMemMonatlicheRepo;
-        immobilienFinanzierungClusterRepository = inMemImmobilienRepo;
-        auskunfteiErgebnisClusterRepository = inMemAuskunfteiRepo;
+        AntragstellerClusterRepository antragstellerClusterRepository = inMemAntragstellerRepo;
+        MonatlicheFinanzsituationClusterRepository monatlicheFinanzsituationClusterRepository = inMemMonatlicheRepo;
+        ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository = inMemImmobilienRepo;
+        AuskunfteiErgebnisClusterRepository auskunfteiErgebnisClusterRepository = inMemAuskunfteiRepo;
 
         scoringDomainService = new ScoringDomainService(
                 antragstellerClusterRepository,

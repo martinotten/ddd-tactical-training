@@ -2,6 +2,7 @@ package com.bigpugloans.scoring.application.service;
 
 import com.bigpugloans.scoring.application.model.ImmobilienBewertung;
 import com.bigpugloans.scoring.domain.model.*;
+import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import com.bigpugloans.scoring.domain.service.ImmobilienBewertungHinzufuegenDomainService;
 import com.bigpugloans.scoring.testutils.InMemoryImmobilienFinanzierungClusterRepository;
 import org.junit.jupiter.api.Test;
@@ -23,36 +24,36 @@ public class VerarbeitungImmobilienBewertungApplicationServiceTest {
     void testVerarbeiteImmobilienBewertung() {
         var immoRepo = new InMemoryImmobilienFinanzierungClusterRepository();
         var serviceDomain = new ImmobilienBewertungHinzufuegenDomainService(immoRepo);
-        var scoring = new RecordingScoringService();
+        var recordingScoringService = new RecordingScoringService();
 
-        var app = new VerarbeitungImmobilienBewertungApplicationService(serviceDomain, scoring);
+        var app = new VerarbeitungImmobilienBewertungApplicationService(serviceDomain, recordingScoringService);
 
         // Cluster vorab anlegen, da der Domain-Service diesen voraussetzt
         ScoringId expected = new ScoringId(new Antragsnummer("123"), ScoringArt.PRE);
-        immoRepo.speichern(new com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster(expected));
+        immoRepo.speichern(new ImmobilienFinanzierungsCluster(expected));
 
         ImmobilienBewertung immobilienBewertung = new ImmobilienBewertung("123", 1000, 2000, 5000, 2600, 2800);
         app.verarbeiteImmobilienBewertung(immobilienBewertung);
 
-        assertNotNull(scoring.lastScoringId());
-        assertEquals(ScoringArt.PRE, scoring.lastScoringId().scoringArt());
+        assertNotNull(recordingScoringService.lastScoringId());
+        assertEquals(ScoringArt.PRE, recordingScoringService.lastScoringId().scoringArt());
     }
 
     @Test
     void testVerarbeiteImmobilienBewertungMitFertigemScoring() {
         var immoRepo = new InMemoryImmobilienFinanzierungClusterRepository();
         var serviceDomain = new ImmobilienBewertungHinzufuegenDomainService(immoRepo);
-        var scoring = new RecordingScoringService();
+        var recordingScoringService = new RecordingScoringService();
 
-        var app = new VerarbeitungImmobilienBewertungApplicationService(serviceDomain, scoring);
+        var app = new VerarbeitungImmobilienBewertungApplicationService(serviceDomain, recordingScoringService);
 
         ScoringId expected = new ScoringId(new Antragsnummer("123"), ScoringArt.PRE);
-        immoRepo.speichern(new com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster(expected));
+        immoRepo.speichern(new ImmobilienFinanzierungsCluster(expected));
 
         ImmobilienBewertung immobilienBewertung = new ImmobilienBewertung("123", 1000, 2000, 5000, 2600, 2800);
         app.verarbeiteImmobilienBewertung(immobilienBewertung);
 
-        assertNotNull(scoring.lastScoringId());
-        assertEquals(expected, scoring.lastScoringId());
+        assertNotNull(recordingScoringService.lastScoringId());
+        assertEquals(expected, recordingScoringService.lastScoringId());
     }
 }

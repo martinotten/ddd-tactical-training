@@ -4,11 +4,18 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 import org.jmolecules.architecture.onion.classical.DomainModelRing;
 import org.jmolecules.ddd.annotation.ValueObject;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @DomainModelRing
 @ValueObject
-public record StarteAntragCommand(
+public record EinkommenErfassenCommand(
     @TargetAggregateIdentifier UUID antragsnummer,
-    String benutzerId
+    BigDecimal nettoEinkommen,
+    BigDecimal urlaubsgeld,
+    BigDecimal weihnachtsgeld,
+    BigDecimal mieteinnahmen,
+    BigDecimal kapitalertraege,
+    BigDecimal sonstigeEinkommen,
+    Beschaeftigungsverhaeltnis beschaeftigungsverhaeltnis
 ) {}

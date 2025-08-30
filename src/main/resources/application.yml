@@ -1,0 +1,14 @@
+axon:
+  axonserver:
+    enabled: false
+    
+spring:
+  application:
+    name: antragserfassung
+  thymeleaf:
+    enabled: true
+    
+logging:
+  level:
+    org.axonframework: INFO
+    com.bigpugloans: DEBUG

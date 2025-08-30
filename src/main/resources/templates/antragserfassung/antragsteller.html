@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigPug Loans - Antragsteller erfassen</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="bi bi-building text-primary me-2"></i>
+                BigPug Loans
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/antragserfassung}">
+                    <i class="bi bi-file-earmark-plus me-1"></i>
+                    Antragserfassung
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+    
+    <div class="row">
+        <!-- Progress Sidebar -->
+        <div class="col-lg-3">
+            <div class="step-indicator">
+                <h6 class="text-muted mb-3">Fortschritt</h6>
+                <div class="step-item">
+                    <div class="step-number step-active">1</div>
+                    <div><strong>Antragsteller</strong></div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number step-pending">2</div>
+                    <div>Finanzierungsobjekt</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number step-pending">3</div>
+                    <div>Ausgaben</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number step-pending">4</div>
+                    <div>Einkommen</div>
+                </div>
+                <div class="step-item mb-0">
+                    <div class="step-number step-pending">5</div>
+                    <div>Abschluss</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Form -->
+        <div class="col-lg-9">
+            <div class="card card-custom">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person me-2"></i>
+                        Schritt 1: Antragsteller erfassen
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <form th:action="@{'/antragserfassung/' + ${antragsnummer} + '/antragsteller'}" 
+                          method="post" 
+                          th:object="${antragstellerForm}"
+                          novalidate>
+                        
+                        <!-- Personal Information -->
+                        <div class="mb-5">
+                            <h5 class="text-primary mb-3">
+                                <i class="bi bi-person-lines-fill me-2"></i>
+                                Persönliche Daten
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="vorname" class="form-label">
+                                        Vorname <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="vorname" 
+                                           th:field="*{vorname}"
+                                           placeholder="Max"
+                                           required>
+                                    <div class="invalid-feedback">
+                                        Bitte geben Sie Ihren Vornamen ein.
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="nachname" class="form-label">
+                                        Nachname <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="nachname" 
+                                           th:field="*{nachname}"
+                                           placeholder="Mustermann"
+                                           required>
+                                    <div class="invalid-feedback">
+                                        Bitte geben Sie Ihren Nachnamen ein.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="geburtsdatum" class="form-label">
+                                        Geburtsdatum <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" 
+                                           class="form-control" 
+                                           id="geburtsdatum" 
+                                           th:field="*{geburtsdatum}"
+                                           required>
+                                    <div class="invalid-feedback">
+                                        Bitte geben Sie Ihr Geburtsdatum ein.
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="familienstand" class="form-label">
+                                        Familienstand
+                                    </label>
+                                    <select class="form-select" 
+                                            id="familienstand" 
+                                            th:field="*{familienstand}">
+                                        <option value="">Bitte wählen...</option>
+                                        <option th:each="status : ${familienstaende}" 
+                                                th:value="${status}" 
+                                                th:text="${status == T(com.bigpugloans.antragserfassung.domain.model.Familienstand).LEDIG} ? 'Ledig' : 
+                                                         (${status == T(com.bigpugloans.antragserfassung.domain.model.Familienstand).VERHEIRATET} ? 'Verheiratet' :
+                                                         (${status == T(com.bigpugloans.antragserfassung.domain.model.Familienstand).GESCHIEDEN} ? 'Geschieden' :
+                                                         (${status == T(com.bigpugloans.antragserfassung.domain.model.Familienstand).VERWITWET} ? 'Verwitwet' : 'Lebenspartnerschaft')))">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="anzahlKinder" class="form-label">
+                                        Anzahl Kinder
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="anzahlKinder" 
+                                           th:field="*{anzahlKinder}"
+                                           placeholder="0"
+                                           min="0"
+                                           max="20">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="mb-5">
+                            <h5 class="text-primary mb-3">
+                                <i class="bi bi-telephone me-2"></i>
+                                Kontaktdaten
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="telefonnummer" class="form-label">
+                                        Telefonnummer
+                                    </label>
+                                    <input type="tel" 
+                                           class="form-control" 
+                                           id="telefonnummer" 
+                                           th:field="*{telefonnummer}"
+                                           placeholder="+49 123 456789">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="emailAdresse" class="form-label">
+                                        E-Mail-Adresse
+                                    </label>
+                                    <input type="email" 
+                                           class="form-control" 
+                                           id="emailAdresse" 
+                                           th:field="*{emailAdresse}"
+                                           placeholder="max@example.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="mb-5">
+                            <h5 class="text-primary mb-3">
+                                <i class="bi bi-geo-alt me-2"></i>
+                                Anschrift <span class="text-danger">*</span>
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label for="strasse" class="form-label">
+                                        Straße <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="strasse" 
+                                           th:field="*{strasse}"
+                                           placeholder="Musterstraße"
+                                           required>
+                                    <div class="invalid-feedback">
+                                        Bitte geben Sie Ihre Straße ein.
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="hausnummer" class="form-label">
+                                        Hausnummer <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="hausnummer" 
+                                           th:field="*{hausnummer}"
+                                           placeholder="123"
+                                           required>
+                                    <div class="invalid-feedback">
+                                        Bitte geben Sie Ihre Hausnummer ein.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="postleitzahl" class="form-label">
+                                        Postleitzahl <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="postleitzahl" 
+                                           th:field="*{postleitzahl}"
+                                           placeholder="12345"
+                                           pattern="[0-9]{5}"
+                                           required>
+                                    <div class="invalid-feedback">
+                                        Bitte geben Sie eine gültige 5-stellige Postleitzahl ein.
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="ort" class="form-label">
+                                        Ort <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="ort" 
+                                           th:field="*{ort}"
+                                           placeholder="Musterstadt"
+                                           required>
+                                    <div class="invalid-feedback">
+                                        Bitte geben Sie Ihren Wohnort ein.
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mb-3">
+                                    <label for="land" class="form-label">
+                                        Land
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="land" 
+                                           th:field="*{land}"
+                                           readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-between">
+                            <a th:href="@{/antragserfassung}" 
+                               class="btn btn-outline-secondary btn-custom">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Zur Übersicht
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-custom">
+                                <i class="bi bi-arrow-right me-2"></i>
+                                Weiter zum Finanzierungsobjekt
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @DomainModelRing
 @ValueObject
-public record StarteAntragCommand(
+public record AntragserfassungAbschliessenCommand(
     @TargetAggregateIdentifier UUID antragsnummer,
-    String benutzerId
+    String benutzerKommentar
 ) {}

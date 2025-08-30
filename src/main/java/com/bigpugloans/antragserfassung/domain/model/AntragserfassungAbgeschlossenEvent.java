@@ -5,8 +5,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 @DomainModelRing
-public record AntragGestartetEvent(
+public record AntragserfassungAbgeschlossenEvent(
     UUID antragsnummer,
-    String benutzerId,
+    String benutzerKommentar,
     Instant zeitpunkt
 ) {}

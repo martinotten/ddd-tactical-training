@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigPug Loans - Antragsdetails</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .card-custom {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-custom {
+            border-radius: 8px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .step-indicator {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .step-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.75rem;
+            color: white;
+        }
+        
+        .step-completed {
+            background-color: var(--success-color);
+        }
+        
+        .step-active {
+            background-color: var(--primary-color);
+        }
+        
+        .step-pending {
+            background-color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="bi bi-building text-primary me-2"></i>
+                BigPug Loans
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/antragserfassung}">
+                    <i class="bi bi-file-earmark-plus me-1"></i>
+                    Antragserfassung
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+    
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 text-primary">
+                <i class="bi bi-file-earmark-text me-2"></i>
+                Antragsdetails
+            </h1>
+            <p class="text-muted mb-0">
+                Antragsnummer: <code th:text="${#strings.substring(antrag.antragsnummer.toString(), 0, 8)}">12345678</code>
+            </p>
+        </div>
+        <div class="text-end">
+            <span th:class="${antrag.status.name() == 'ABGESCHLOSSEN'} ? 'badge bg-success fs-6' : 'badge bg-warning fs-6'" 
+                  th:text="${antrag.status.name() == 'ABGESCHLOSSEN'} ? 'Abgeschlossen' : 'In Bearbeitung'">
+                Status
+            </span>
+        </div>
+    </div>
+
+    <!-- Progress Overview -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card card-custom">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="text-primary mb-0">Bearbeitungsfortschritt</h6>
+                        <span class="badge bg-primary" 
+                              th:text="${antrag.antragstellerDetails != null and antrag.finanzierungsobjektDetails != null and antrag.ausgabenDetails != null and antrag.einkommenDetails != null} ? '100%' : 
+                                       (${antrag.antragstellerDetails != null and antrag.finanzierungsobjektDetails != null and antrag.ausgabenDetails != null} ? '75%' :
+                                       (${antrag.antragstellerDetails != null and antrag.finanzierungsobjektDetails != null} ? '50%' :
+                                       (${antrag.antragstellerDetails != null} ? '25%' : '0%')))">
+                            100%
+                        </span>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <div class="step-item">
+                                <div th:class="${antrag.antragstellerDetails != null} ? 'step-number step-completed' : 'step-number step-pending'">1</div>
+                                <div class="small">
+                                    <strong>Antragsteller</strong>
+                                    <br><small class="text-muted" th:text="${antrag.antragstellerDetails != null} ? 'Erfasst' : 'Ausstehend'">Status</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="step-item">
+                                <div th:class="${antrag.finanzierungsobjektDetails != null} ? 'step-number step-completed' : 'step-number step-pending'">2</div>
+                                <div class="small">
+                                    <strong>Finanzierungsobjekt</strong>
+                                    <br><small class="text-muted" th:text="${antrag.finanzierungsobjektDetails != null} ? 'Erfasst' : 'Ausstehend'">Status</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="step-item">
+                                <div th:class="${antrag.ausgabenDetails != null} ? 'step-number step-completed' : 'step-number step-pending'">3</div>
+                                <div class="small">
+                                    <strong>Ausgaben</strong>
+                                    <br><small class="text-muted" th:text="${antrag.ausgabenDetails != null} ? 'Erfasst' : 'Ausstehend'">Status</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="step-item">
+                                <div th:class="${antrag.einkommenDetails != null} ? 'step-number step-completed' : 'step-number step-pending'">4</div>
+                                <div class="small">
+                                    <strong>Einkommen</strong>
+                                    <br><small class="text-muted" th:text="${antrag.einkommenDetails != null} ? 'Erfasst' : 'Ausstehend'">Status</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Tabs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-custom">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Übersicht
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation" th:if="${antrag.antragstellerDetails != null}">
+                            <button class="nav-link" id="applicant-tab" data-bs-toggle="tab" data-bs-target="#applicant" type="button" role="tab">
+                                <i class="bi bi-person me-1"></i>
+                                Antragsteller
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation" th:if="${antrag.finanzierungsobjektDetails != null}">
+                            <button class="nav-link" id="object-tab" data-bs-toggle="tab" data-bs-target="#object" type="button" role="tab">
+                                <i class="bi bi-house me-1"></i>
+                                Objekt
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation" th:if="${antrag.ausgabenDetails != null or antrag.einkommenDetails != null}">
+                            <button class="nav-link" id="finances-tab" data-bs-toggle="tab" data-bs-target="#finances" type="button" role="tab">
+                                <i class="bi bi-calculator me-1"></i>
+                                Finanzen
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        
+                        <!-- Overview Tab -->
+                        <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="text-primary mb-3">Antragsinformationen</h6>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td><strong>Antragsnummer:</strong></td>
+                                            <td><code th:text="${antrag.antragsnummer}">UUID</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Benutzer-ID:</strong></td>
+                                            <td th:text="${antrag.benutzerId}">testuser</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Status:</strong></td>
+                                            <td>
+                                                <span th:class="${antrag.status.name() == 'ABGESCHLOSSEN'} ? 'badge bg-success' : 'badge bg-warning'" 
+                                                      th:text="${antrag.status.name() == 'ABGESCHLOSSEN'} ? 'Abgeschlossen' : 'In Bearbeitung'">
+                                                    Status
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Gestartet am:</strong></td>
+                                            <td th:text="${#temporals.format(antrag.gestartetAm, 'dd.MM.yyyy HH:mm')}">01.01.2024 10:00</td>
+                                        </tr>
+                                        <tr th:if="${antrag.abgeschlossenAm != null}">
+                                            <td><strong>Abgeschlossen am:</strong></td>
+                                            <td th:text="${#temporals.format(antrag.abgeschlossenAm, 'dd.MM.yyyy HH:mm')}">01.01.2024 15:30</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-primary mb-3">Bearbeitungsstand</h6>
+                                    <div class="list-group list-group-flush">
+                                        <div th:class="${antrag.antragstellerDetails != null} ? 'list-group-item d-flex justify-content-between align-items-center' : 'list-group-item d-flex justify-content-between align-items-center text-muted'">
+                                            Antragsteller erfasst
+                                            <i th:class="${antrag.antragstellerDetails != null} ? 'bi bi-check-circle text-success' : 'bi bi-circle text-muted'"></i>
+                                        </div>
+                                        <div th:class="${antrag.finanzierungsobjektDetails != null} ? 'list-group-item d-flex justify-content-between align-items-center' : 'list-group-item d-flex justify-content-between align-items-center text-muted'">
+                                            Finanzierungsobjekt erfasst
+                                            <i th:class="${antrag.finanzierungsobjektDetails != null} ? 'bi bi-check-circle text-success' : 'bi bi-circle text-muted'"></i>
+                                        </div>
+                                        <div th:class="${antrag.ausgabenDetails != null} ? 'list-group-item d-flex justify-content-between align-items-center' : 'list-group-item d-flex justify-content-between align-items-center text-muted'">
+                                            Ausgaben erfasst
+                                            <i th:class="${antrag.ausgabenDetails != null} ? 'bi bi-check-circle text-success' : 'bi bi-circle text-muted'"></i>
+                                        </div>
+                                        <div th:class="${antrag.einkommenDetails != null} ? 'list-group-item d-flex justify-content-between align-items-center' : 'list-group-item d-flex justify-content-between align-items-center text-muted'">
+                                            Einkommen erfasst
+                                            <i th:class="${antrag.einkommenDetails != null} ? 'bi bi-check-circle text-success' : 'bi bi-circle text-muted'"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4" th:if="${antrag.benutzerKommentar != null and !#strings.isEmpty(antrag.benutzerKommentar)}">
+                                <h6 class="text-primary">Benutzerkommentar</h6>
+                                <div class="alert alert-light">
+                                    <i class="bi bi-chat-text me-2"></i>
+                                    <span th:text="${antrag.benutzerKommentar}">Kommentar</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Applicant Tab -->
+                        <div class="tab-pane fade" id="applicant" role="tabpanel" th:if="${antrag.antragstellerDetails != null}">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="text-primary mb-3">Persönliche Daten</h6>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td><strong>Name:</strong></td>
+                                            <td th:text="${antrag.antragstellerDetails.vorname + ' ' + antrag.antragstellerDetails.nachname}">Max Mustermann</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Geburtsdatum:</strong></td>
+                                            <td th:text="${#temporals.format(antrag.antragstellerDetails.geburtsdatum, 'dd.MM.yyyy')}">01.01.1990</td>
+                                        </tr>
+                                        <tr th:if="${antrag.antragstellerDetails.familienstand != null}">
+                                            <td><strong>Familienstand:</strong></td>
+                                            <td th:text="${antrag.antragstellerDetails.familienstand}">Verheiratet</td>
+                                        </tr>
+                                        <tr th:if="${antrag.antragstellerDetails.anzahlKinder != null and antrag.antragstellerDetails.anzahlKinder > 0}">
+                                            <td><strong>Anzahl Kinder:</strong></td>
+                                            <td th:text="${antrag.antragstellerDetails.anzahlKinder}">2</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-primary mb-3">Kontakt & Anschrift</h6>
+                                    <table class="table table-sm">
+                                        <tr th:if="${antrag.antragstellerDetails.telefonnummer != null}">
+                                            <td><strong>Telefon:</strong></td>
+                                            <td th:text="${antrag.antragstellerDetails.telefonnummer}">+49 123 456789</td>
+                                        </tr>
+                                        <tr th:if="${antrag.antragstellerDetails.emailAdresse != null}">
+                                            <td><strong>E-Mail:</strong></td>
+                                            <td th:text="${antrag.antragstellerDetails.emailAdresse}">max@example.com</td>
+                                        </tr>
+                                        <tr th:if="${antrag.antragstellerDetails.anschrift != null}">
+                                            <td><strong>Anschrift:</strong></td>
+                                            <td>
+                                                <span th:text="${antrag.antragstellerDetails.anschrift.strasse + ' ' + antrag.antragstellerDetails.anschrift.hausnummer}">Musterstraße 123</span><br>
+                                                <span th:text="${antrag.antragstellerDetails.anschrift.postleitzahl + ' ' + antrag.antragstellerDetails.anschrift.ort}">12345 Musterstadt</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Object Tab -->
+                        <div class="tab-pane fade" id="object" role="tabpanel" th:if="${antrag.finanzierungsobjektDetails != null}">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="text-primary mb-3">Objektdaten</h6>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td><strong>Objektart:</strong></td>
+                                            <td th:text="${antrag.finanzierungsobjektDetails.objektart}">Eigentumswohnung</td>
+                                        </tr>
+                                        <tr th:if="${antrag.finanzierungsobjektDetails.nutzungsart != null}">
+                                            <td><strong>Nutzungsart:</strong></td>
+                                            <td th:text="${antrag.finanzierungsobjektDetails.nutzungsart}">Eigennutzung</td>
+                                        </tr>
+                                        <tr th:if="${antrag.finanzierungsobjektDetails.baujahr != null}">
+                                            <td><strong>Baujahr:</strong></td>
+                                            <td th:text="${antrag.finanzierungsobjektDetails.baujahr}">2020</td>
+                                        </tr>
+                                        <tr th:if="${antrag.finanzierungsobjektDetails.wohnflaeche != null}">
+                                            <td><strong>Wohnfläche:</strong></td>
+                                            <td th:text="${antrag.finanzierungsobjektDetails.wohnflaeche + ' m²'}">85.5 m²</td>
+                                        </tr>
+                                        <tr th:if="${antrag.finanzierungsobjektDetails.anzahlZimmer != null}">
+                                            <td><strong>Zimmer:</strong></td>
+                                            <td th:text="${antrag.finanzierungsobjektDetails.anzahlZimmer}">3</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-primary mb-3">Standort & Finanzen</h6>
+                                    <table class="table table-sm">
+                                        <tr th:if="${antrag.finanzierungsobjektDetails.objektAdresse != null}">
+                                            <td><strong>Objektadresse:</strong></td>
+                                            <td>
+                                                <span th:text="${antrag.finanzierungsobjektDetails.objektAdresse.strasse + ' ' + antrag.finanzierungsobjektDetails.objektAdresse.hausnummer}">Objektstraße 456</span><br>
+                                                <span th:text="${antrag.finanzierungsobjektDetails.objektAdresse.postleitzahl + ' ' + antrag.finanzierungsobjektDetails.objektAdresse.ort}">54321 Objektstadt</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Kaufpreis:</strong></td>
+                                            <td><strong class="text-primary" th:text="${antrag.finanzierungsobjektDetails != null && antrag.finanzierungsobjektDetails.kaufpreis != null ? #numbers.formatDecimal(antrag.finanzierungsobjektDetails.kaufpreis, 0, 'COMMA') + ' €' : 'Nicht angegeben'}">300.000 €</strong></td>
+                                        </tr>
+                                        <tr th:if="${antrag.finanzierungsobjektDetails != null && antrag.finanzierungsobjektDetails.nebenkosten != null}">
+                                            <td><strong>Nebenkosten:</strong></td>
+                                            <td th:text="${antrag.finanzierungsobjektDetails != null && antrag.finanzierungsobjektDetails.nebenkosten != null ? #numbers.formatDecimal(antrag.finanzierungsobjektDetails.nebenkosten, 0, 'COMMA') + ' €' : 'Nicht angegeben'}">15.000 €</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Finances Tab -->
+                        <div class="tab-pane fade" id="finances" role="tabpanel" th:if="${antrag.ausgabenDetails != null or antrag.einkommenDetails != null}">
+                            <div class="row">
+                                <div class="col-md-6" th:if="${antrag.einkommenDetails != null}">
+                                    <h6 class="text-success mb-3">
+                                        <i class="bi bi-plus-circle me-1"></i>
+                                        Einkommen (monatlich)
+                                    </h6>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <td>Netto-Einkommen:</td>
+                                            <td class="text-end" th:text="${antrag.einkommenDetails != null && antrag.einkommenDetails.nettoEinkommen != null ? #numbers.formatDecimal(antrag.einkommenDetails.nettoEinkommen, 0, 'COMMA') + ' €' : 'Nicht angegeben'}">3.500 €</td>
+                                        </tr>
+                                        <tr th:if="${antrag.einkommenDetails.urlaubsgeld != null and antrag.einkommenDetails.urlaubsgeld.signum() > 0}">
+                                            <td>Urlaubsgeld (⌀ monatlich):</td>
+                                            <td class="text-end" th:text="${#numbers.formatDecimal(antrag.einkommenDetails.urlaubsgeld.divide(12), 0, 'COMMA')} + ' €'">167 €</td>
+                                        </tr>
+                                        <tr th:if="${antrag.einkommenDetails.weihnachtsgeld != null and antrag.einkommenDetails.weihnachtsgeld.signum() > 0}">
+                                            <td>Weihnachtsgeld (⌀ monatlich):</td>
+                                            <td class="text-end" th:text="${#numbers.formatDecimal(antrag.einkommenDetails.weihnachtsgeld.divide(12), 0, 'COMMA')} + ' €'">208 €</td>
+                                        </tr>
+                                        <tr th:if="${antrag.einkommenDetails.mieteinnahmen != null and antrag.einkommenDetails.mieteinnahmen.signum() > 0}">
+                                            <td>Mieteinnahmen:</td>
+                                            <td class="text-end" th:text="${#numbers.formatDecimal(antrag.einkommenDetails.mieteinnahmen, 0, 'COMMA')} + ' €'">800 €</td>
+                                        </tr>
+                                        <tr th:if="${antrag.einkommenDetails.sonstigeEinkommen != null and antrag.einkommenDetails.sonstigeEinkommen.signum() > 0}">
+                                            <td>Sonstige Einkommen:</td>
+                                            <td class="text-end" th:text="${#numbers.formatDecimal(antrag.einkommenDetails.sonstigeEinkommen, 0, 'COMMA')} + ' €'">300 €</td>
+                                        </tr>
+                                        <tr class="table-success">
+                                            <td><strong>Gesamteinkommen:</strong></td>
+                                            <td class="text-end"><strong th:text="${antrag.einkommenDetails != null ? #numbers.formatDecimal(antrag.einkommenDetails.gesamteinkommenBerechnen(), 0, 'COMMA') + ' €' : 'Nicht angegeben'}">4.500 €</strong></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-6" th:if="${antrag.ausgabenDetails != null}">
+                                    <h6 class="text-danger mb-3">
+                                        <i class="bi bi-dash-circle me-1"></i>
+                                        Ausgaben (monatlich)
+                                    </h6>
+                                    <table class="table table-sm">
+                                        <tr th:if="${antrag.ausgabenDetails.lebenshaltungskosten != null and antrag.ausgabenDetails.lebenshaltungskosten.signum() > 0}">
+                                            <td>Lebenshaltungskosten:</td>
+                                            <td class="text-end" th:text="${#numbers.formatDecimal(antrag.ausgabenDetails.lebenshaltungskosten, 0, 'COMMA')} + ' €'">1.500 €</td>
+                                        </tr>
+                                        <tr th:if="${antrag.ausgabenDetails.miete != null and antrag.ausgabenDetails.miete.signum() > 0}">
+                                            <td>Miete:</td>
+                                            <td class="text-end" th:text="${#numbers.formatDecimal(antrag.ausgabenDetails.miete, 0, 'COMMA')} + ' €'">800 €</td>
+                                        </tr>
+                                        <tr th:if="${antrag.ausgabenDetails.privateKrankenversicherung != null and antrag.ausgabenDetails.privateKrankenversicherung.signum() > 0}">
+                                            <td>Private Krankenversicherung:</td>
+                                            <td class="text-end" th:text="${#numbers.formatDecimal(antrag.ausgabenDetails.privateKrankenversicherung, 0, 'COMMA')} + ' €'">400 €</td>
+                                        </tr>
+                                        <tr th:if="${antrag.ausgabenDetails.kreditraten != null and antrag.ausgabenDetails.kreditraten.signum() > 0}">
+                                            <td>Kreditraten:</td>
+                                            <td class="text-end" th:text="${#numbers.formatDecimal(antrag.ausgabenDetails.kreditraten, 0, 'COMMA')} + ' €'">250 €</td>
+                                        </tr>
+                                        <tr th:if="${antrag.ausgabenDetails.sonstigeAusgaben != null and antrag.ausgabenDetails.sonstigeAusgaben.signum() > 0}">
+                                            <td>Sonstige Ausgaben:</td>
+                                            <td class="text-end" th:text="${#numbers.formatDecimal(antrag.ausgabenDetails.sonstigeAusgaben, 0, 'COMMA')} + ' €'">200 €</td>
+                                        </tr>
+                                        <tr class="table-danger">
+                                            <td><strong>Gesamtausgaben:</strong></td>
+                                            <td class="text-end"><strong th:text="${#numbers.formatDecimal(antrag.ausgabenDetails.gesamtausgabenBerechnen(), 0, 'COMMA')} + ' €'">2.800 €</strong></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Financial Summary -->
+                            <div class="mt-4" th:if="${antrag.ausgabenDetails != null and antrag.einkommenDetails != null}">
+                                <div class="alert alert-light">
+                                    <h6 class="mb-2">
+                                        <i class="bi bi-calculator me-1"></i>
+                                        Finanzielle Zusammenfassung
+                                    </h6>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-success">Gesamteinkommen:</span>
+                                                <strong class="text-success" th:text="${antrag.einkommenDetails != null ? #numbers.formatDecimal(antrag.einkommenDetails.gesamteinkommenBerechnen(), 0, 'COMMA') + ' €' : 'Nicht angegeben'}">4.500 €</strong>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-danger">Gesamtausgaben:</span>
+                                                <strong class="text-danger" th:text="${antrag.ausgabenDetails != null ? #numbers.formatDecimal(antrag.ausgabenDetails.gesamtausgabenBerechnen(), 0, 'COMMA') + ' €' : 'Nicht angegeben'}">2.800 €</strong>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Verfügbarer Betrag:</span>
+                                                <strong th:if="${antrag.einkommenDetails != null && antrag.ausgabenDetails != null}"
+                                                        th:classappend="${antrag.einkommenDetails.gesamteinkommenBerechnen().subtract(antrag.ausgabenDetails.gesamtausgabenBerechnen()).signum() >= 0} ? 'text-success' : 'text-danger'"
+                                                        th:text="${#numbers.formatDecimal(antrag.einkommenDetails.gesamteinkommenBerechnen().subtract(antrag.ausgabenDetails.gesamtausgabenBerechnen()), 0, 'COMMA')} + ' €'">
+                                                    1.700 €
+                                                </strong>
+                                                <strong th:unless="${antrag.einkommenDetails != null && antrag.ausgabenDetails != null}" class="text-muted">
+                                                    Nicht berechenbar
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="d-flex justify-content-between mt-4">
+        <a th:href="@{/antragserfassung}" class="btn btn-outline-secondary btn-custom">
+            <i class="bi bi-arrow-left me-2"></i>
+            Zurück zur Übersicht
+        </a>
+        <div>
+            <button onclick="window.print()" class="btn btn-outline-primary btn-custom me-2">
+                <i class="bi bi-printer me-2"></i>
+                Drucken
+            </button>
+            <div class="btn-group" th:if="${antrag.status.name() != 'ABGESCHLOSSEN'}">
+                <a th:href="@{'/antragserfassung/' + ${antrag.antragsnummer} + ${naechsterSchritt}}" 
+                   class="btn btn-primary btn-custom">
+                    <i class="bi bi-pencil me-2"></i>
+                    Bearbeitung fortsetzen
+                </a>
+            </div>
+        </div>
+    </div>
+
+    
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Tab-Funktionalität -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Alle Bootstrap Tab-Triggers finden und aktivieren
+            const triggerTabList = document.querySelectorAll('[data-bs-toggle="tab"]');
+            
+            triggerTabList.forEach(function (triggerEl) {
+                const tabTrigger = new bootstrap.Tab(triggerEl);
+                
+                triggerEl.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    tabTrigger.show();
+                });
+            });
+            
+            // Debug: Prüfe ob Tabs gefunden wurden
+            console.log('Bootstrap Tabs initialisiert:', triggerTabList.length, 'Tabs gefunden');
+        });
+    </script>
+</body>
+</html>

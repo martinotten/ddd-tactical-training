@@ -4,11 +4,19 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 import org.jmolecules.architecture.onion.classical.DomainModelRing;
 import org.jmolecules.ddd.annotation.ValueObject;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @DomainModelRing
 @ValueObject
-public record StarteAntragCommand(
+public record AntragstellerErfassenCommand(
     @TargetAggregateIdentifier UUID antragsnummer,
-    String benutzerId
+    String vorname,
+    String nachname,
+    LocalDate geburtsdatum,
+    String telefonnummer,
+    String emailAdresse,
+    Anschrift anschrift,
+    Familienstand familienstand,
+    Integer anzahlKinder
 ) {}

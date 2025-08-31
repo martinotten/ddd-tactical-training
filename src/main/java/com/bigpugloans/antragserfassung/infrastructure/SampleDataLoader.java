@@ -32,15 +32,11 @@ public class SampleDataLoader implements ApplicationRunner {
         logger.info("Lade Beispieldaten für Antragserfassung...");
         
         try {
-            UUID beispielAntragsnummer = UUID.randomUUID();
             String beispielBenutzerId = "demo.user";
             
             // 1. Antrag starten
-            StarteAntragCommand starteAntrag = new StarteAntragCommand(
-                beispielAntragsnummer, 
-                beispielBenutzerId
-            );
-            commandGateway.sendAndWait(starteAntrag);
+            StarteAntragCommand starteAntrag = new StarteAntragCommand(beispielBenutzerId);
+            UUID beispielAntragsnummer = commandGateway.sendAndWait(starteAntrag);
             logger.info("Beispiel-Antrag gestartet: {}", beispielAntragsnummer);
             
             // 2. Antragsteller erfassen
@@ -133,11 +129,10 @@ public class SampleDataLoader implements ApplicationRunner {
     }
     
     private void createAbgeschlossenenAntrag() throws Exception {
-        UUID abgeschlossenerAntragsnummer = UUID.randomUUID();
         String benutzerId = "demo.user";
         
         // Antrag starten
-        commandGateway.sendAndWait(new StarteAntragCommand(abgeschlossenerAntragsnummer, benutzerId));
+        UUID abgeschlossenerAntragsnummer = commandGateway.sendAndWait(new StarteAntragCommand(benutzerId));
         
         // Antragsteller
         Anschrift anschrift2 = new Anschrift("Beispielweg", "7", "67890", "Beispielort", "Deutschland");
@@ -177,11 +172,10 @@ public class SampleDataLoader implements ApplicationRunner {
     }
     
     private void createPartiellenAntrag() throws Exception {
-        UUID partiellerAntragsnummer = UUID.randomUUID();
         String benutzerId = "demo.user";
         
         // Antrag starten
-        commandGateway.sendAndWait(new StarteAntragCommand(partiellerAntragsnummer, benutzerId));
+        UUID partiellerAntragsnummer = commandGateway.sendAndWait(new StarteAntragCommand(benutzerId));
         
         // Nur Antragsteller erfassen - Rest bleibt leer
         Anschrift anschrift3 = new Anschrift("Teilstraße", "15", "11111", "Teilstadt", "Deutschland");

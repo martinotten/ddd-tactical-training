@@ -40,12 +40,11 @@ class AntragserfassungIntegrationTest {
     @Test
     void sollteKompleteAntragserfassungDurchlaufenKoennen() throws Exception {
         // Given
-        UUID antragsnummer = UUID.randomUUID();
         String benutzerId = "testBenutzer";
 
         // When: Antrag starten
-        StarteAntragCommand starteCommand = new StarteAntragCommand(antragsnummer, benutzerId);
-        commandGateway.sendAndWait(starteCommand);
+        StarteAntragCommand starteCommand = new StarteAntragCommand(benutzerId);
+        UUID antragsnummer = commandGateway.sendAndWait(starteCommand);
 
         // Then: Antrag sollte in Übersicht erscheinen
         Thread.sleep(100); // Kurz warten für Event-Verarbeitung
@@ -171,7 +170,7 @@ class AntragserfassungIntegrationTest {
         UUID antragsnummer = UUID.randomUUID();
         
         fixture.given()
-            .when(new StarteAntragCommand(antragsnummer, "testBenutzer"))
+            .when(new StarteAntragCommand("testBenutzer"))
             .expectEvents(new AntragGestartetEvent(antragsnummer, "testBenutzer", null));
 
         // When/Then: Abschließen ohne alle Schritte sollte fehlschlagen

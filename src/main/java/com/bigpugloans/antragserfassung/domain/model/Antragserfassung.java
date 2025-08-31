@@ -36,18 +36,20 @@ public class Antragserfassung {
 
     @CommandHandler
     public Antragserfassung(StarteAntragCommand command) {
-        if (command.antragsnummer() == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
-        }
+        System.out.println("StarteAntragCommand im Aggregate empfangen: " + command);
         if (command.benutzerId() == null || command.benutzerId().trim().isEmpty()) {
             throw new IllegalArgumentException("BenutzerID darf nicht leer sein");
         }
         
+        UUID antragsnummer = UUID.randomUUID();
+        System.out.println("Neue Antragsnummer generiert: " + antragsnummer);
+        
         AggregateLifecycle.apply(new AntragGestartetEvent(
-            command.antragsnummer(),
+            antragsnummer,
             command.benutzerId(),
             Instant.now()
         ));
+        System.out.println("AntragGestartetEvent angewendet für Antragsnummer: " + antragsnummer);
     }
 
     @CommandHandler

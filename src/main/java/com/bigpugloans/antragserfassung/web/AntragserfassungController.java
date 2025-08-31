@@ -70,10 +70,12 @@ public class AntragserfassungController {
     @PostMapping("/starten")
     public String antragStarten(@ModelAttribute AntragStartForm form, RedirectAttributes redirectAttributes) {
         try {
-            UUID antragsnummer = UUID.randomUUID();
+            System.out.println("Starte neuen Antrag für Benutzer: " + form.getBenutzerId());
             
-            StarteAntragCommand command = new StarteAntragCommand(antragsnummer, form.getBenutzerId());
-            commandGateway.sendAndWait(command);
+            StarteAntragCommand command = new StarteAntragCommand(form.getBenutzerId());
+            System.out.println("Sende Command: " + command);
+            UUID antragsnummer = commandGateway.sendAndWait(command);
+            System.out.println("Command erfolgreich gesendet, Antragsnummer: " + antragsnummer);
             
             redirectAttributes.addFlashAttribute("success", "Antrag erfolgreich gestartet");
             return "redirect:/antragserfassung/" + antragsnummer + "/antragsteller";

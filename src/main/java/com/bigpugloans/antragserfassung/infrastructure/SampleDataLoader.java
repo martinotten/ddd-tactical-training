@@ -57,7 +57,12 @@ public class SampleDataLoader implements ApplicationRunner {
                 "max.mustermann@example.com",
                 anschrift,
                 Familienstand.VERHEIRATET,
-                2
+                2,
+                "KUNDE123",
+                Branche.INDUSTRIE,
+                Berufsart.ANGESTELLT,
+                "Beispiel GmbH",
+                LocalDate.of(2020, 1, 15)
             );
             commandGateway.sendAndWait(antragstellerCommand);
             logger.info("Antragsteller erfasst");
@@ -139,7 +144,8 @@ public class SampleDataLoader implements ApplicationRunner {
         commandGateway.sendAndWait(new AntragstellerErfassenCommand(
             abgeschlossenerAntragsnummer, "Anna", "Schmidt", LocalDate.of(1990, 3, 22),
             "+49 987 654321", "anna.schmidt@example.com", anschrift2,
-            Familienstand.LEDIG, 0
+            Familienstand.LEDIG, 0, "KUNDE456", Branche.BANK, Berufsart.ANGESTELLT,
+            "Deutsche Bank AG", LocalDate.of(2018, 8, 1)
         ));
         
         // Finanzierungsobjekt
@@ -182,7 +188,8 @@ public class SampleDataLoader implements ApplicationRunner {
         commandGateway.sendAndWait(new AntragstellerErfassenCommand(
             partiellerAntragsnummer, "Julia", "Weber", LocalDate.of(1988, 11, 5),
             "+49 555 123456", "julia.weber@example.com", anschrift3,
-            Familienstand.GESCHIEDEN, 1
+            Familienstand.GESCHIEDEN, 1, "KUNDE789", Branche.SONSTIGE, Berufsart.SELBSTAENDIG,
+            "Weber Consulting", LocalDate.of(2015, 4, 1)
         ));
         
         logger.info("Dritter Beispiel-Antrag (nur Antragsteller erfasst) erstellt: {}", partiellerAntragsnummer);

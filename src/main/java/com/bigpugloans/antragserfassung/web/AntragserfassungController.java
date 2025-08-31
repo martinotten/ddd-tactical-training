@@ -133,6 +133,8 @@ public class AntragserfassungController {
             model.addAttribute("antragsnummer", antragsnummer);
             model.addAttribute("antragstellerForm", form);
             model.addAttribute("familienstaende", Familienstand.values());
+            model.addAttribute("branchen", Branche.values());
+            model.addAttribute("berufsarten", Berufsart.values());
             return "antragserfassung/antragsteller";
         } catch (Exception e) {
             model.addAttribute("error", "Fehler beim Laden des Formulars: " + e.getMessage());
@@ -164,7 +166,12 @@ public class AntragserfassungController {
                 form.getEmailAdresse(),
                 anschrift,
                 form.getFamilienstand(),
-                form.getAnzahlKinder()
+                form.getAnzahlKinder(),
+                form.getKundennummer(),
+                form.getBranche(),
+                form.getBerufsart(),
+                form.getArbeitgeber(),
+                form.getBeschaeftigtSeit()
             );
             
             commandGateway.sendAndWait(command);

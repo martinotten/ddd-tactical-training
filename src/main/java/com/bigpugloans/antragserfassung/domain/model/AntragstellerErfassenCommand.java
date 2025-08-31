@@ -18,5 +18,10 @@ public record AntragstellerErfassenCommand(
     String emailAdresse,
     Anschrift anschrift,
     Familienstand familienstand,
-    Integer anzahlKinder
+    Integer anzahlKinder,
+    String kundennummer,
+    Branche branche,
+    Berufsart berufsart,
+    String arbeitgeber,
+    LocalDate beschaeftigtSeit
 ) {}

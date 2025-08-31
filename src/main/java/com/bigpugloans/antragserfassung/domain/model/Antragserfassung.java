@@ -79,6 +79,11 @@ public class Antragserfassung {
             command.anschrift(),
             command.familienstand(),
             command.anzahlKinder(),
+            command.kundennummer(),
+            command.branche(),
+            command.berufsart(),
+            command.arbeitgeber(),
+            command.beschaeftigtSeit(),
             Instant.now()
         ));
     }

@@ -39,7 +39,12 @@ public class AntragsdetailProjection {
                 event.emailAdresse(),
                 event.anschrift(),
                 event.familienstand(),
-                event.anzahlKinder()
+                event.anzahlKinder(),
+                event.kundennummer(),
+                event.branche(),
+                event.berufsart(),
+                event.arbeitgeber(),
+                event.beschaeftigtSeit()
             );
             AntragsdetailView updatedView = existingView.withAntragstellerDetails(antragstellerDetails);
             antraege.put(event.antragsnummer(), updatedView);

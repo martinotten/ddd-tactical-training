@@ -1,6 +1,8 @@
 package com.bigpugloans.antragserfassung.web;
 
 import com.bigpugloans.antragserfassung.domain.model.Familienstand;
+import com.bigpugloans.antragserfassung.domain.model.Branche;
+import com.bigpugloans.antragserfassung.domain.model.Berufsart;
 import com.bigpugloans.antragserfassung.query.AntragstellerDetails;
 import org.jmolecules.architecture.onion.classical.InfrastructureRing;
 
@@ -20,6 +22,11 @@ public class AntragstellerForm {
     private String land = "Deutschland";
     private Familienstand familienstand;
     private Integer anzahlKinder;
+    private String kundennummer;
+    private Branche branche;
+    private Berufsart berufsart;
+    private String arbeitgeber;
+    private LocalDate beschaeftigtSeit;
 
     public AntragstellerForm() {
     }
@@ -39,6 +46,11 @@ public class AntragstellerForm {
         }
         this.familienstand = details.familienstand();
         this.anzahlKinder = details.anzahlKinder();
+        this.kundennummer = details.kundennummer();
+        this.branche = details.branche();
+        this.berufsart = details.berufsart();
+        this.arbeitgeber = details.arbeitgeber();
+        this.beschaeftigtSeit = details.beschaeftigtSeit();
     }
 
     // Getters and Setters
@@ -77,4 +89,19 @@ public class AntragstellerForm {
     
     public Integer getAnzahlKinder() { return anzahlKinder; }
     public void setAnzahlKinder(Integer anzahlKinder) { this.anzahlKinder = anzahlKinder; }
+    
+    public String getKundennummer() { return kundennummer; }
+    public void setKundennummer(String kundennummer) { this.kundennummer = kundennummer; }
+    
+    public Branche getBranche() { return branche; }
+    public void setBranche(Branche branche) { this.branche = branche; }
+    
+    public Berufsart getBerufsart() { return berufsart; }
+    public void setBerufsart(Berufsart berufsart) { this.berufsart = berufsart; }
+    
+    public String getArbeitgeber() { return arbeitgeber; }
+    public void setArbeitgeber(String arbeitgeber) { this.arbeitgeber = arbeitgeber; }
+    
+    public LocalDate getBeschaeftigtSeit() { return beschaeftigtSeit; }
+    public void setBeschaeftigtSeit(LocalDate beschaeftigtSeit) { this.beschaeftigtSeit = beschaeftigtSeit; }
 }

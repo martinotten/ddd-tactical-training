@@ -16,5 +16,10 @@ public record AntragstellerErfasstEvent(
     Anschrift anschrift,
     Familienstand familienstand,
     Integer anzahlKinder,
+    String kundennummer,
+    Branche branche,
+    Berufsart berufsart,
+    String arbeitgeber,
+    LocalDate beschaeftigtSeit,
     Instant zeitpunkt
 ) {}

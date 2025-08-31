@@ -48,7 +48,12 @@ class AntragserfassungAggregateTest {
                 "max@example.com",
                 anschrift,
                 Familienstand.VERHEIRATET,
-                2
+                2,
+                "KUNDE123",
+                Branche.INDUSTRIE,
+                Berufsart.ANGESTELLT,
+                "Test GmbH",
+                LocalDate.of(2020, 1, 1)
             ))
             .expectEvents(new AntragstellerErfasstEvent(
                 antragsnummer,
@@ -60,6 +65,11 @@ class AntragserfassungAggregateTest {
                 anschrift,
                 Familienstand.VERHEIRATET,
                 2,
+                "KUNDE123",
+                Branche.INDUSTRIE,
+                Berufsart.ANGESTELLT,
+                "Test GmbH",
+                LocalDate.of(2020, 1, 1),
                 null  // Zeitpunkt wird automatisch gesetzt
             ));
     }
@@ -71,7 +81,7 @@ class AntragserfassungAggregateTest {
         
         fixture.given(
             new AntragGestartetEvent(antragsnummer, "testBenutzer", Instant.now()),
-            new AntragstellerErfasstEvent(antragsnummer, "Max", "Mustermann", LocalDate.now(), null, null, anschrift, null, null, Instant.now())
+            new AntragstellerErfasstEvent(antragsnummer, "Max", "Mustermann", LocalDate.now(), null, null, anschrift, null, null, null, null, null, null, null, Instant.now())
         )
         .when(new FinanzierungsobjektErfassenCommand(
             antragsnummer,
@@ -105,7 +115,7 @@ class AntragserfassungAggregateTest {
         
         fixture.given(
             new AntragGestartetEvent(antragsnummer, "testBenutzer", Instant.now()),
-            new AntragstellerErfasstEvent(antragsnummer, "Max", "Test", LocalDate.now(), null, null, anschrift, null, null, Instant.now()),
+            new AntragstellerErfasstEvent(antragsnummer, "Max", "Test", LocalDate.now(), null, null, anschrift, null, null, null, null, null, null, null, Instant.now()),
             new FinanzierungsobjektErfasstEvent(antragsnummer, Objektart.EIGENTUMSWOHNUNG, anschrift, new BigDecimal("300000"), null, null, null, null, null, Instant.now())
         )
         .when(new AusgabenErfassenCommand(
@@ -136,7 +146,7 @@ class AntragserfassungAggregateTest {
         
         fixture.given(
             new AntragGestartetEvent(antragsnummer, "testBenutzer", Instant.now()),
-            new AntragstellerErfasstEvent(antragsnummer, "Max", "Test", LocalDate.now(), null, null, anschrift, null, null, Instant.now()),
+            new AntragstellerErfasstEvent(antragsnummer, "Max", "Test", LocalDate.now(), null, null, anschrift, null, null, null, null, null, null, null, Instant.now()),
             new FinanzierungsobjektErfasstEvent(antragsnummer, Objektart.EIGENTUMSWOHNUNG, anschrift, new BigDecimal("300000"), null, null, null, null, null, Instant.now()),
             new AusgabenErfasstEvent(antragsnummer, new BigDecimal("2000"), null, null, null, null, null, Instant.now())
         )
@@ -170,7 +180,7 @@ class AntragserfassungAggregateTest {
         
         fixture.given(
             new AntragGestartetEvent(antragsnummer, "testBenutzer", Instant.now()),
-            new AntragstellerErfasstEvent(antragsnummer, "Max", "Test", LocalDate.now(), null, null, anschrift, null, null, Instant.now()),
+            new AntragstellerErfasstEvent(antragsnummer, "Max", "Test", LocalDate.now(), null, null, anschrift, null, null, null, null, null, null, null, Instant.now()),
             new FinanzierungsobjektErfasstEvent(antragsnummer, Objektart.EIGENTUMSWOHNUNG, anschrift, new BigDecimal("300000"), null, null, null, null, null, Instant.now()),
             new AusgabenErfasstEvent(antragsnummer, new BigDecimal("2000"), null, null, null, null, null, Instant.now()),
             new EinkommenErfasstEvent(antragsnummer, new BigDecimal("4000"), null, null, null, null, null, null, Instant.now())
@@ -203,7 +213,8 @@ class AntragserfassungAggregateTest {
                 "",  // Leerer Vorname
                 "Mustermann",
                 LocalDate.now(),
-                null, null, anschrift, null, null
+                null, null, anschrift, null, null,
+                null, null, null, null, null
             ))
             .expectException(IllegalArgumentException.class);
     }
@@ -215,7 +226,7 @@ class AntragserfassungAggregateTest {
         
         fixture.given(
             new AntragGestartetEvent(antragsnummer, "testBenutzer", Instant.now()),
-            new AntragstellerErfasstEvent(antragsnummer, "Max", "Test", LocalDate.now(), null, null, anschrift, null, null, Instant.now())
+            new AntragstellerErfasstEvent(antragsnummer, "Max", "Test", LocalDate.now(), null, null, anschrift, null, null, null, null, null, null, null, Instant.now())
         )
         .when(new FinanzierungsobjektErfassenCommand(
             antragsnummer,
@@ -251,7 +262,7 @@ class AntragserfassungAggregateTest {
         
         fixture.given(
             new AntragGestartetEvent(antragsnummer, "testBenutzer", Instant.now()),
-            new AntragstellerErfasstEvent(antragsnummer, "Max", "Test", LocalDate.now(), null, null, anschrift, null, null, Instant.now()),
+            new AntragstellerErfasstEvent(antragsnummer, "Max", "Test", LocalDate.now(), null, null, anschrift, null, null, null, null, null, null, null, Instant.now()),
             new FinanzierungsobjektErfasstEvent(antragsnummer, Objektart.EIGENTUMSWOHNUNG, anschrift, new BigDecimal("300000"), null, null, null, null, null, Instant.now()),
             new AusgabenErfasstEvent(antragsnummer, new BigDecimal("2000"), null, null, null, null, null, Instant.now()),
             new EinkommenErfasstEvent(antragsnummer, new BigDecimal("4000"), null, null, null, null, null, null, Instant.now()),
@@ -262,7 +273,8 @@ class AntragserfassungAggregateTest {
             "Neuer",
             "Name",
             LocalDate.now(),
-            null, null, anschrift, null, null
+            null, null, anschrift, null, null,
+            null, null, null, null, null
         ))
         .expectException(IllegalStateException.class);
     }

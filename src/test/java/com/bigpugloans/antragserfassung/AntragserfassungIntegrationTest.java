@@ -74,7 +74,12 @@ class AntragserfassungIntegrationTest {
             "max@example.com",
             anschrift,
             Familienstand.LEDIG,
-            0
+            0,
+            "KUNDE123",
+            Branche.SONSTIGE,
+            Berufsart.ANGESTELLT,
+            "Test GmbH",
+            LocalDate.of(2020, 1, 1)
         );
         commandGateway.sendAndWait(antragstellerCommand);
 
@@ -204,14 +209,14 @@ class AntragserfassungIntegrationTest {
         // When: Vollständiger Ablauf
         fixture.given(
             new AntragGestartetEvent(antragsnummer, "testBenutzer", null),
-            new AntragstellerErfasstEvent(antragsnummer, "Max", "Mustermann", LocalDate.now(), null, null, anschrift, null, null, null),
+            new AntragstellerErfasstEvent(antragsnummer, "Max", "Mustermann", LocalDate.now(), null, null, anschrift, null, null, null, null, null, null, null, null),
             new FinanzierungsobjektErfasstEvent(antragsnummer, Objektart.EIGENTUMSWOHNUNG, anschrift, new BigDecimal("300000"), null, null, null, null, null, null),
             new AusgabenErfasstEvent(antragsnummer, new BigDecimal("2000"), null, null, null, null, null, null),
             new EinkommenErfasstEvent(antragsnummer, new BigDecimal("4000"), null, null, null, null, null, null, null),
             new AntragserfassungAbgeschlossenEvent(antragsnummer, "Test", null)
         )
         // Then: Weitere Bearbeitung sollte fehlschlagen
-        .when(new AntragstellerErfassenCommand(antragsnummer, "Neuer", "Name", LocalDate.now(), null, null, anschrift, null, null))
+        .when(new AntragstellerErfassenCommand(antragsnummer, "Neuer", "Name", LocalDate.now(), null, null, anschrift, null, null, null, null, null, null, null))
         .expectException(IllegalStateException.class);
     }
 }

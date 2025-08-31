@@ -7,6 +7,15 @@ spring:
     name: antragserfassung
   thymeleaf:
     enabled: true
+  docker:
+    compose:
+      enabled: true
+      file: docker-compose.yml
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: bigpugloans
     
 logging:
   level:

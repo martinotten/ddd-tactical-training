@@ -154,7 +154,7 @@
                                     <p class="mb-1">
                                         <strong th:text="${antrag.finanzierungsobjektDetails.objektart}">Eigentumswohnung</strong>
                                     </p>
-                                    <small class="text-muted" th:text="${#numbers.formatDecimal(antrag.finanzierungsobjektDetails.kaufpreis, 0, 'COMMA')} + ' €'">300.000 €</small>
+                                    <small class="text-muted" th:text="${#numbers.formatDecimal(antrag.finanzierungsobjektDetails.kaufpreis, 0, 0)} + ' €'">300.000 €</small>
                                 </div>
                             </div>
                         </div>
@@ -176,7 +176,7 @@
                                             <i class="bi bi-plus-circle me-1"></i>
                                             Gesamteinkommen:
                                         </span>
-                                        <strong class="text-success" th:text="${#numbers.formatDecimal(antrag.einkommenDetails.gesamteinkommenBerechnen(), 0, 'COMMA')} + ' €'">4.500 €</strong>
+                                        <strong class="text-success" th:text="${#numbers.formatDecimal(antrag.einkommenDetails.gesamteinkommenBerechnen(), 0, 0)} + ' €'">4.500 €</strong>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -185,7 +185,7 @@
                                             <i class="bi bi-dash-circle me-1"></i>
                                             Gesamtausgaben:
                                         </span>
-                                        <strong class="text-danger" th:text="${#numbers.formatDecimal(antrag.ausgabenDetails.gesamtausgabenBerechnen(), 0, 'COMMA')} + ' €'">2.800 €</strong>
+                                        <strong class="text-danger" th:text="${#numbers.formatDecimal(antrag.ausgabenDetails.gesamtausgabenBerechnen(), 0, 0)} + ' €'">2.800 €</strong>
                                     </div>
                                 </div>
                             </div>
@@ -197,7 +197,7 @@
                                 </span>
                                 <strong class="fs-5" 
                                         th:classappend="${antrag.einkommenDetails.gesamteinkommenBerechnen().subtract(antrag.ausgabenDetails.gesamtausgabenBerechnen()).signum() >= 0} ? 'text-success' : 'text-danger'"
-                                        th:text="${#numbers.formatDecimal(antrag.einkommenDetails.gesamteinkommenBerechnen().subtract(antrag.ausgabenDetails.gesamtausgabenBerechnen()), 0, 'COMMA')} + ' €'">
+                                        th:text="${#numbers.formatDecimal(antrag.einkommenDetails.gesamteinkommenBerechnen().subtract(antrag.ausgabenDetails.gesamtausgabenBerechnen()), 0, 0)} + ' €'">
                                     1.700 €
                                 </strong>
                             </div>

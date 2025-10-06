@@ -1,37 +1,39 @@
 package com.bigpugloans.scoring.domainmodel.antragstellerCluster;
 
 import com.bigpugloans.scoring.domainmodel.*;
-
 import java.util.Objects;
+import java.util.Optional;
 
 public class AntragstellerCluster {
+
     private final Antragsnummer antragsnummer;
 
     private Wohnort wohnort;
     private Guthaben guthabenBeiMopsBank;
 
-
     public AntragstellerCluster(Antragsnummer antragsnummer) {
-        if(antragsnummer == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein.");
+        if (antragsnummer == null) {
+            throw new IllegalArgumentException(
+                "Antragsnummer darf nicht null sein."
+            );
         }
         this.antragsnummer = antragsnummer;
         this.guthabenBeiMopsBank = new Guthaben(0);
     }
 
-    public ClusterScoringEvent scoren() {
-        if(wohnort == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Ohne Wohnort kann nicht gescort werden.");
+    public Optional<ClusterGescored> scoren() {
+        if (wohnort == null) {
+            return Optional.empty();
         }
         if (guthabenBeiMopsBank == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Ohne Guthaben kann nicht gescort werden.");
+            return Optional.empty();
         }
 
         Punkte ergebnis = new Punkte(0);
         ergebnis = ergebnis.plus(wohnort.berechnePunkte());
         ergebnis = ergebnis.plus(guthabenBeiMopsBank.berechnePunkte());
 
-        return new ClusterGescored(this.antragsnummer, ergebnis);
+        return Optional.of(new ClusterGescored(this.antragsnummer, ergebnis));
     }
 
     public Antragsnummer antragsnummer() {

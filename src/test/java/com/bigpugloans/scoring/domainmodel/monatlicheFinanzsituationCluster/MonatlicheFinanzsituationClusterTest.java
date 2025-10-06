@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Optional;
+
 public class MonatlicheFinanzsituationClusterTest {
     @Test
     void monatlicheFinanzsituationClusterOhneAntragsnummerWirftException() {
@@ -18,9 +20,9 @@ public class MonatlicheFinanzsituationClusterTest {
         MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(new Antragsnummer("123"));
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(10));
-        ClusterScoringEvent ergebnis = monatlicheFinanzsituationCluster.scoren();
+        Optional<ClusterGescored> ergebnis = monatlicheFinanzsituationCluster.scoren();
 
-        assertEquals(ClusterKonnteNochNichtGescoredWerden.class, ergebnis.getClass(),"Kein Scoring ohne Einnahmen");
+        assertTrue(ergebnis.isEmpty(),"Kein Scoring ohne Einnahmen");
     }
 
     @Test
@@ -28,9 +30,9 @@ public class MonatlicheFinanzsituationClusterTest {
         MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(new Antragsnummer("123"));
         monatlicheFinanzsituationCluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(10));
-        ClusterScoringEvent ergebnis = monatlicheFinanzsituationCluster.scoren();
+        Optional<ClusterGescored> ergebnis = monatlicheFinanzsituationCluster.scoren();
 
-        assertEquals(ClusterKonnteNochNichtGescoredWerden.class, ergebnis.getClass(),"Kein Scoring ohne Einnahmen");
+        assertTrue(ergebnis.isEmpty(),"Kein Scoring ohne Einnahmen");
     }
 
     @Test
@@ -38,9 +40,9 @@ public class MonatlicheFinanzsituationClusterTest {
         MonatlicheFinanzsituationCluster monatlicheFinanzsituationCluster = new MonatlicheFinanzsituationCluster(new Antragsnummer("123"));
         monatlicheFinanzsituationCluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(10));
-        ClusterScoringEvent ergebnis = monatlicheFinanzsituationCluster.scoren();
+        Optional<ClusterGescored> ergebnis = monatlicheFinanzsituationCluster.scoren();
 
-        assertEquals(ClusterKonnteNochNichtGescoredWerden.class, ergebnis.getClass(),"Kein Scoring ohne Einnahmen");
+        assertTrue(ergebnis.isEmpty(),"Kein Scoring ohne Einnahmen");
     }
 
     @Test
@@ -65,7 +67,7 @@ public class MonatlicheFinanzsituationClusterTest {
         monatlicheFinanzsituationCluster.monatlicheEinnahmenHinzufuegen(new Waehrungsbetrag(3000));
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(2500));
-        ClusterGescored ergebnis = (ClusterGescored) monatlicheFinanzsituationCluster.scoren();
+        ClusterGescored ergebnis = monatlicheFinanzsituationCluster.scoren().orElseThrow();
         assertTrue(ergebnis.koKriterien().anzahl() == 1, "Monatliche Darlehensbelastungen > (Einnahmen - Ausgaben) sollte ein KO-Kriterium sein.");
     }
     @Test
@@ -75,7 +77,7 @@ public class MonatlicheFinanzsituationClusterTest {
         monatlicheFinanzsituationCluster.monatlicheAusgabenHinzufuegen(new Waehrungsbetrag(1000));
         monatlicheFinanzsituationCluster.monatlicheDarlehensbelastungenHinzufuegen(new Waehrungsbetrag(1500));
 
-        ClusterGescored ergebnis = (ClusterGescored) monatlicheFinanzsituationCluster.scoren();
+        ClusterGescored ergebnis = monatlicheFinanzsituationCluster.scoren().orElseThrow();
         assertEquals(new Punkte(15), ergebnis.punkte(), "Ein monatlicher Haushaltsüberschuss ohne Tilgungen > 1.500 EUR sollte 15 Punkte geben.");
     }
 }

@@ -11,8 +11,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static org.axonframework.test.matchers.Matchers.andNoMore;
-import static org.axonframework.test.matchers.Matchers.exactSequenceOf;
+import static org.axonframework.test.matchers.Matchers.*;
+import static org.hamcrest.Matchers.*;
 
 class AntragserfassungAggregateTest {
 
@@ -55,23 +55,25 @@ class AntragserfassungAggregateTest {
                 "Test GmbH",
                 LocalDate.of(2020, 1, 1)
             ))
-            .expectEvents(new AntragstellerErfasstEvent(
-                antragsnummer,
-                "Max",
-                "Mustermann", 
-                LocalDate.of(1990, 1, 1),
-                "0123456789",
-                "max@example.com",
-                anschrift,
-                Familienstand.VERHEIRATET,
-                2,
-                "KUNDE123",
-                Branche.INDUSTRIE,
-                Berufsart.ANGESTELLT,
-                "Test GmbH",
-                LocalDate.of(2020, 1, 1),
-                null  // Zeitpunkt wird automatisch gesetzt
-            ));
+            .expectEventsMatching(payloadsMatching(exactSequenceOf(
+                matches(event -> event instanceof AntragstellerErfasstEvent e &&
+                    e.antragsnummer().equals(antragsnummer) &&
+                    e.vorname().equals("Max") &&
+                    e.nachname().equals("Mustermann") &&
+                    e.geburtsdatum().equals(LocalDate.of(1990, 1, 1)) &&
+                    e.telefonnummer().equals("0123456789") &&
+                    e.emailAdresse().equals("max@example.com") &&
+                    e.anschrift().equals(anschrift) &&
+                    e.familienstand().equals(Familienstand.VERHEIRATET) &&
+                    e.anzahlKinder() == 2 &&
+                    e.kundennummer().equals("KUNDE123") &&
+                    e.branche().equals(Branche.INDUSTRIE) &&
+                    e.berufsart().equals(Berufsart.ANGESTELLT) &&
+                    e.arbeitgeber().equals("Test GmbH") &&
+                    e.beschaeftigtSeit().equals(LocalDate.of(2020, 1, 1)) &&
+                    e.zeitpunkt() != null
+                )
+            )));
     }
 
     @Test
@@ -94,18 +96,20 @@ class AntragserfassungAggregateTest {
             4,
             Nutzungsart.EIGENNUTZUNG
         ))
-        .expectEvents(new FinanzierungsobjektErfasstEvent(
-            antragsnummer,
-            Objektart.EINFAMILIENHAUS,
-            anschrift,
-            new BigDecimal("450000"),
-            new BigDecimal("25000"),
-            2015,
-            120.5,
-            4,
-            Nutzungsart.EIGENNUTZUNG,
-            null
-        ));
+        .expectEventsMatching(payloadsMatching(exactSequenceOf(
+            matches(event -> event instanceof FinanzierungsobjektErfasstEvent e &&
+                e.antragsnummer().equals(antragsnummer) &&
+                e.objektart().equals(Objektart.EINFAMILIENHAUS) &&
+                e.objektAdresse().equals(anschrift) &&
+                e.kaufpreis().equals(new BigDecimal("450000")) &&
+                e.nebenkosten().equals(new BigDecimal("25000")) &&
+                e.baujahr().equals(2015) &&
+                e.wohnflaeche().equals(120.5) &&
+                e.anzahlZimmer().equals(4) &&
+                e.nutzungsart().equals(Nutzungsart.EIGENNUTZUNG) &&
+                e.zeitpunkt() != null
+            )
+        )));
     }
 
     @Test
@@ -127,16 +131,18 @@ class AntragserfassungAggregateTest {
             new BigDecimal("600"),
             new BigDecimal("180")
         ))
-        .expectEvents(new AusgabenErfasstEvent(
-            antragsnummer,
-            new BigDecimal("1800"),
-            new BigDecimal("1200"),
-            new BigDecimal("350"),
-            new BigDecimal("120"),
-            new BigDecimal("600"),
-            new BigDecimal("180"),
-            null
-        ));
+        .expectEventsMatching(payloadsMatching(exactSequenceOf(
+            matches(event -> event instanceof AusgabenErfasstEvent e &&
+                e.antragsnummer().equals(antragsnummer) &&
+                e.lebenshaltungskosten().equals(new BigDecimal("1800")) &&
+                e.miete().equals(new BigDecimal("1200")) &&
+                e.privateKrankenversicherung().equals(new BigDecimal("350")) &&
+                e.sonstigeVersicherungen().equals(new BigDecimal("120")) &&
+                e.kreditraten().equals(new BigDecimal("600")) &&
+                e.sonstigeAusgaben().equals(new BigDecimal("180")) &&
+                e.zeitpunkt() != null
+            )
+        )));
     }
 
     @Test
@@ -160,17 +166,19 @@ class AntragserfassungAggregateTest {
             new BigDecimal("300"),
             Beschaeftigungsverhaeltnis.ANGESTELLT
         ))
-        .expectEvents(new EinkommenErfasstEvent(
-            antragsnummer,
-            new BigDecimal("5200"),
-            new BigDecimal("4000"),
-            new BigDecimal("3500"),
-            new BigDecimal("800"),
-            new BigDecimal("150"),
-            new BigDecimal("300"),
-            Beschaeftigungsverhaeltnis.ANGESTELLT,
-            null
-        ));
+        .expectEventsMatching(payloadsMatching(exactSequenceOf(
+            matches(event -> event instanceof EinkommenErfasstEvent e &&
+                e.antragsnummer().equals(antragsnummer) &&
+                e.nettoEinkommen().equals(new BigDecimal("5200")) &&
+                e.urlaubsgeld().equals(new BigDecimal("4000")) &&
+                e.weihnachtsgeld().equals(new BigDecimal("3500")) &&
+                e.mieteinnahmen().equals(new BigDecimal("800")) &&
+                e.kapitalertraege().equals(new BigDecimal("150")) &&
+                e.sonstigeEinkommen().equals(new BigDecimal("300")) &&
+                e.beschaeftigungsverhaeltnis().equals(Beschaeftigungsverhaeltnis.ANGESTELLT) &&
+                e.zeitpunkt() != null
+            )
+        )));
     }
 
     @Test
@@ -186,11 +194,13 @@ class AntragserfassungAggregateTest {
             new EinkommenErfasstEvent(antragsnummer, new BigDecimal("4000"), null, null, null, null, null, null, Instant.now())
         )
         .when(new AntragserfassungAbschliessenCommand(antragsnummer, "Vollständig erfasst und geprüft"))
-        .expectEvents(new AntragserfassungAbgeschlossenEvent(
-            antragsnummer,
-            "Vollständig erfasst und geprüft",
-            null
-        ));
+        .expectEventsMatching(payloadsMatching(exactSequenceOf(
+            matches(event -> event instanceof AntragserfassungAbgeschlossenEvent e &&
+                e.antragsnummer().equals(antragsnummer) &&
+                e.benutzerKommentar().equals("Vollständig erfasst und geprüft") &&
+                e.zeitpunkt() != null
+            )
+        )));
     }
 
     @Test

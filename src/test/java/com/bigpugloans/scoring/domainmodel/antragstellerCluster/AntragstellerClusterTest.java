@@ -35,7 +35,7 @@ public class AntragstellerClusterTest {
         AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new Antragsnummer("123"));
         antragstellerCluster.wohnortHinzufuegen("München");
         antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(12000));
-        ClusterGescored ergebnis = antragstellerCluster.scoren();
+        ClusterGescored ergebnis = antragstellerCluster.scoren().orElseThrow();
         assertEquals(new Punkte(10), ergebnis.punkte(), "Antragsteller aus München mit Guthaben > 10.000 EUR sollten 10 Punkte mehr bekommen.");
     }
 
@@ -44,7 +44,7 @@ public class AntragstellerClusterTest {
         AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new Antragsnummer("123"));
         antragstellerCluster.wohnortHinzufuegen("München");
         antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(9000));
-        ClusterGescored ergebnis = antragstellerCluster.scoren();
+        ClusterGescored ergebnis = antragstellerCluster.scoren().orElseThrow();
         assertEquals(new Punkte(5), ergebnis.punkte(), "Antragsteller aus München mit Guthaben 9.000 EUR sollten 5 Punkte mehr bekommen.");
     }
 
@@ -53,7 +53,7 @@ public class AntragstellerClusterTest {
         AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new Antragsnummer("123"));
         antragstellerCluster.wohnortHinzufuegen("Dortmund");
         antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(12000));
-        ClusterGescored ergebnis = antragstellerCluster.scoren();
+        ClusterGescored ergebnis = antragstellerCluster.scoren().orElseThrow();
         assertEquals(new Punkte(5), ergebnis.punkte(), "Antragsteller aus Dortmund mit Guthaben > 10.000 EUR sollten 5 Punkte mehr bekommen.");
     }
     @Test
@@ -61,7 +61,7 @@ public class AntragstellerClusterTest {
         AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new Antragsnummer("123"));
         antragstellerCluster.wohnortHinzufuegen("Dortmund");
         antragstellerCluster.guthabenHinzufuegen(new Waehrungsbetrag(10000));
-        ClusterGescored ergebnis = antragstellerCluster.scoren();
+        ClusterGescored ergebnis = antragstellerCluster.scoren().orElseThrow();
         assertEquals(new Punkte(0), ergebnis.punkte(), "Antragsteller aus Dortmund mit Guthaben <= 10.000 EUR sollten 0 Punkte mehr bekommen.");
     }
 }

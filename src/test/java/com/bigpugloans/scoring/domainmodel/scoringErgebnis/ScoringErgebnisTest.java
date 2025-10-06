@@ -1,127 +1,133 @@
-package com.bigpugloans.scoring.domainmodel.auskunfteiErgebnisCluster;
+package com.bigpugloans.scoring.domainmodel.scoringErgebnis;
 
 import com.bigpugloans.scoring.domainmodel.*;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class AuskunfteiErgebnisClusterTest {
-
+public class ScoringErgebnisTest {
     @Test
-    void antragsnummerNullWirftException() {
+    void scoringErgebnisOhneAntragsnummerWirftException() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new AuskunfteiErgebnisCluster(null, new AntragstellerID.Builder("Michael", "Ploed")
-                    .postleitzahl("40789")
-                    .stadt("Monheim")
-                    .strasse("Krischerstrasse 100")
-                    .geburtsdatum(new Date(1970, 1, 1))
-                    .build());
+            new ScoringErgebnis(null);
         });
     }
 
     @Test
-    void antragsstellerIDNullWirftException() {
+    void auskunfteiErgebnisClusterMitAndererAntragsnummerWirftException() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new AuskunfteiErgebnisCluster(new Antragsnummer("123"), null);
+            ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("123"));
+            scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new Antragsnummer("456"), new Punkte(30), 0));
         });
     }
-    @Test
-    void ohneRueckzahlungswahrscheinlichkeitKeinScoring() {
-        AntragstellerID antragstellerID = new AntragstellerID.Builder("Michael", "Ploed")
-                .postleitzahl("40789")
-                .stadt("Monheim")
-                .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
-                .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new Antragsnummer("123"), antragstellerID);
-        assertEquals(ClusterKonnteNochNichtGescoredWerden.class, auskunfteiErgebnisCluster.scoren().getClass());
+
+    void antragstellerClusterMitAndererAntragsnummerWirftException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("123"));
+            scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("456"), new Punkte(30), 0));
+        });
     }
+
+    void monatlicheFinansituationClusterMitAndererAntragsnummerWirftException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("123"));
+            scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new Antragsnummer("456"), new Punkte(30), 0));
+        });
+    }
+
+    void immobilienFinanzierungClusterMitAndererAntragsnummerWirftException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("123"));
+            scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new Antragsnummer("456"), new Punkte(30), 0));
+        });
+    }
+
     @Test
-    void auskunfteiErgebnisClusterMitGleicherAntragsnummerUndAntragstellerIDsindGleich() {
-        AntragstellerID antragstellerID = new AntragstellerID.Builder("Michael", "Ploed")
-                .postleitzahl("40789")
-                .stadt("Monheim")
-                .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
-                .build();
+    void fehlendeTeilergebnisseFuehrenZuClusterKonnteNichtGescoredWerden() {
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("123"));
+        AntragScoringEvent ergebnis = scoringErgebnis.berechneErgebnis();
+        assertEquals(AntragKonnteNichtGescoredWerden.class, ergebnis.getClass(), "Fehlende Teilergebnisse sollten zu einem AntragKonnteNichtGescoredWerden führen.");
+
+        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        ergebnis = scoringErgebnis.berechneErgebnis();
+        assertEquals(AntragKonnteNichtGescoredWerden.class, ergebnis.getClass(), "Fehlende Teilergebnisse sollten zu einem AntragKonnteNichtGescoredWerden führen.");
+
+        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        ergebnis = scoringErgebnis.berechneErgebnis();
+        assertEquals(AntragKonnteNichtGescoredWerden.class, ergebnis.getClass(), "Fehlende Teilergebnisse sollten zu einem AntragKonnteNichtGescoredWerden führen.");
+
+        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        ergebnis = scoringErgebnis.berechneErgebnis();
+        assertEquals(AntragKonnteNichtGescoredWerden.class, ergebnis.getClass(), "Fehlende Teilergebnisse sollten zu einem AntragKonnteNichtGescoredWerden führen.");
+
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        ergebnis = scoringErgebnis.berechneErgebnis();
+        assertEquals(AntragErfolgreichGescored.class, ergebnis.getClass(), "Alle Teilergebnisse vorhanden sollten zu einem AntragErfolgreichGescored führen.");
+    }
+
+    @Test
+    void scoringErgebnisseMitGleicherAntragsnummerSindGleich() {
         Antragsnummer antragsnummer = new Antragsnummer("123");
+        ScoringErgebnis scoringErgebnis1 = new ScoringErgebnis(antragsnummer);
+        scoringErgebnis1.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        scoringErgebnis1.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        scoringErgebnis1.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        scoringErgebnis1.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
 
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster1 = new AuskunfteiErgebnisCluster(antragsnummer, antragstellerID);
-        auskunfteiErgebnisCluster1.warnungenHinzufuegen(3);
-        auskunfteiErgebnisCluster1.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
+        ScoringErgebnis scoringErgebnis2 = new ScoringErgebnis(antragsnummer);
+        scoringErgebnis2.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(20), 0));
+        scoringErgebnis2.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 1));
+        scoringErgebnis2.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 2));
 
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster2 = new AuskunfteiErgebnisCluster(antragsnummer, antragstellerID);
-        auskunfteiErgebnisCluster2.negativMerkmaleHinzufuegen(2);
-        auskunfteiErgebnisCluster2.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(93));
-
-        assertEquals(auskunfteiErgebnisCluster1, auskunfteiErgebnisCluster2, "Beide AuskunfteiErgebnisCluster sollten gleich sein.");
-        assertEquals(auskunfteiErgebnisCluster1.hashCode(), auskunfteiErgebnisCluster2.hashCode(), "Beide Hashcodes sollten gleich sein.");
-    }
-    @Test
-    void dreiWarnungenKeinNegativUnd80WahrscheinlichkeitIst80Punkte() {
-        AntragstellerID antragstellerID = new AntragstellerID.Builder("Michael", "Ploed")
-                .postleitzahl("40789")
-                .stadt("Monheim")
-                .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
-                .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new Antragsnummer("123"), antragstellerID);
-        auskunfteiErgebnisCluster.warnungenHinzufuegen(3);
-        auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
-        ClusterGescored clusterGescored = (ClusterGescored) auskunfteiErgebnisCluster.scoren();
-        assertEquals(80, clusterGescored.punkte().getPunkte(), "3 Warnungen und 80% = 80 Punkte und kein KO");
-        assertEquals(0, clusterGescored.koKriterien().anzahl(), "3 Warnungen und 80% = 80 Punkte und kein KO");
+        assertEquals(scoringErgebnis1, scoringErgebnis2, "Beide ScoringErgebnisse sollten gleich sein.");
     }
 
     @Test
-    void vierWarnungenZweiNegativ80WahrscheinlichkeitIst80PunkteUndKo() {
-        AntragstellerID antragstellerID = new AntragstellerID.Builder("Michael", "Ploed")
-                .postleitzahl("40789")
-                .stadt("Monheim")
-                .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
-                .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new Antragsnummer("123"), antragstellerID);
-        auskunfteiErgebnisCluster.warnungenHinzufuegen(4);
-        auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(2);
-        auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
-        ClusterGescored clusterGescored = (ClusterGescored) auskunfteiErgebnisCluster.scoren();
-        assertEquals(80, clusterGescored.punkte().getPunkte(), "4 Warnungen, 2 Negativ und 80% = 80 Punkte und 2 KO");
-        assertEquals(2, clusterGescored.koKriterien().anzahl(), "4 Warnungen, 2 Negativ und 80% = 80 Punkte und 2 KO");
+    void punkteGroesserGleich120ErgibtGruenesScoringErgebnis() {
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("123"));
+        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        ScoringFarbe farbe = ((AntragErfolgreichGescored) scoringErgebnis.berechneErgebnis()).farbe();
+        assertEquals(ScoringFarbe.GRUEN, farbe, "120 oder mehr Punkte sollten ein grünes Scoring-Ergebnis liefern.");
+
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(50), 0));  // mehr als 120 Punkte
+        farbe = ((AntragErfolgreichGescored) scoringErgebnis.berechneErgebnis()).farbe();
+        assertEquals(ScoringFarbe.GRUEN, farbe, "Mehr als 120 Punkte sollten ein grünes Scoring-Ergebnis liefern.");
     }
 
     @Test
-    void keineWarnungenEinNegativ80WahrscheinlichkeitIst80PunkteUndKo() {
-        AntragstellerID antragstellerID = new AntragstellerID.Builder("Michael", "Ploed")
-                .postleitzahl("40789")
-                .stadt("Monheim")
-                .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
-                .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new Antragsnummer("123"), antragstellerID);
-        auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(1);
-        auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
-        ClusterGescored clusterGescored = (ClusterGescored) auskunfteiErgebnisCluster.scoren();
-        assertEquals(80, clusterGescored.punkte().getPunkte(), "0 Warnungen, 1 Negativ und 80% = 80 Punkte und 1 KO");
-        assertEquals(1, clusterGescored.koKriterien().anzahl(), "0 Warnungen, 1 Negativ und 80% = 80 Punkte und 1 KO");
+    void punkteWenigerAls120ErgibtRotesScoringErgebnis() {
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("123"));
+        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(29), 0));
+        ScoringFarbe farbe = ((AntragErfolgreichGescored) scoringErgebnis.berechneErgebnis()).farbe();
+        assertEquals(ScoringFarbe.ROT, farbe, "Weniger als 120 Punkte sollten ein rotes Scoring-Ergebnis liefern.");
     }
 
     @Test
-    void keineWarnungenKeinNegativ50WahrscheinlichkeitIst50PunkteUndKo() {
-        AntragstellerID antragstellerID = new AntragstellerID.Builder("Michael", "Ploed")
-                .postleitzahl("40789")
-                .stadt("Monheim")
-                .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
-                .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new Antragsnummer("123"), antragstellerID);
-        auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(50));
-        ClusterGescored clusterGescored = (ClusterGescored) auskunfteiErgebnisCluster.scoren();
-        assertEquals(50, clusterGescored.punkte().getPunkte(), "0 Warnungen, 0 Negativ und 50% = 50 Punkte und 1 KO");
-        assertEquals(1, clusterGescored.koKriterien().anzahl(), "0 Warnungen, 0 Negativ und 50% = 50 Punkte und 1 KO");
-    }
+    void koKriteriumErgibtImmerRotesScoringErgebnisUnabhaengigVonPunkten() {
+        // Fall 1: KO Kriterium vorhanden, aber viele Punkte
+        ScoringErgebnis scoringErgebnis = new ScoringErgebnis(new Antragsnummer("123"));
+        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(60), 1));
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
 
+        ScoringFarbe farbe = ((AntragErfolgreichGescored) scoringErgebnis.berechneErgebnis()).farbe();
+        assertEquals(ScoringFarbe.ROT, farbe, "Ein KO Kriterium sollte immer ein rotes Scoring-Ergebnis liefern, egal wie viele Punkte.");
+
+        // Fall 2: KO Kriterium vorhanden, aber wenige Punkte
+        scoringErgebnis = new ScoringErgebnis(new Antragsnummer("123"));
+        scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 0));
+        scoringErgebnis.antragstellerClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(30), 1));
+        scoringErgebnis.immobilienFinanzierungClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(20), 1));
+        scoringErgebnis.monatlicheFinansituationClusterHinzufuegen(new ClusterGescored(new Antragsnummer("123"), new Punkte(20), 0));
+        farbe = ((AntragErfolgreichGescored) scoringErgebnis.berechneErgebnis()).farbe();
+        assertEquals(ScoringFarbe.ROT, farbe, "Ein KO Kriterium sollte immer ein rotes Scoring-Ergebnis liefern, unabhängig von den Punkten.");
+    }
 }

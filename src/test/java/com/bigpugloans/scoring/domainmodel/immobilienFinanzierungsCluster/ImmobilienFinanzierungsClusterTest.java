@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Optional;
+
 public class ImmobilienFinanzierungsClusterTest {
 
     @Test
@@ -43,8 +45,8 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.marktwertVerlgeichHinzufuegen(new Waehrungsbetrag(100000), new Waehrungsbetrag(300000), new Waehrungsbetrag(200000), new Waehrungsbetrag(250000));
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15120));
         immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(15020));
-        ClusterScoringEvent ergebnis = immobilienFinanzierungsCluster.scoren();
-        assertEquals(ClusterKonnteNochNichtGescoredWerden.class, ergebnis.getClass(), "Fehlende Summe Darlehen sollte zu einem AntragKonnteNichtGescoredWerden führen.");
+        Optional<ClusterGescored> ergebnis = immobilienFinanzierungsCluster.scoren();
+        assertTrue(ergebnis.isEmpty(), "Fehlende Summe Darlehen sollte zu einem AntragKonnteNichtGescoredWerden führen.");
     }
 
     @Test
@@ -55,8 +57,8 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.marktwertVerlgeichHinzufuegen(new Waehrungsbetrag(100000), new Waehrungsbetrag(300000), new Waehrungsbetrag(200000), new Waehrungsbetrag(250000));
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15120));
         immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(15020));
-        ClusterScoringEvent ergebnis = immobilienFinanzierungsCluster.scoren();
-        assertEquals(ClusterKonnteNochNichtGescoredWerden.class, ergebnis.getClass(), "Fehlende Summe Darlehen sollte zu einem AntragKonnteNichtGescoredWerden führen.");
+        Optional<ClusterGescored> ergebnis = immobilienFinanzierungsCluster.scoren();
+        assertTrue(ergebnis.isEmpty(), "Fehlende Summe Darlehen sollte zu einem AntragKonnteNichtGescoredWerden führen.");
     }
 
     @Test
@@ -67,8 +69,8 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.marktwertVerlgeichHinzufuegen(new Waehrungsbetrag(100000), new Waehrungsbetrag(300000), new Waehrungsbetrag(200000), new Waehrungsbetrag(250000));
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15120));
         immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(15020));
-        ClusterScoringEvent ergebnis = immobilienFinanzierungsCluster.scoren();
-        assertEquals(ClusterKonnteNochNichtGescoredWerden.class, ergebnis.getClass(), "Fehlende Summe Darlehen sollte zu einem AntragKonnteNichtGescoredWerden führen.");
+        Optional<ClusterGescored> ergebnis = immobilienFinanzierungsCluster.scoren();
+        assertTrue(ergebnis.isEmpty(), "Fehlende Summe Darlehen sollte zu einem AntragKonnteNichtGescoredWerden führen.");
     }
 
     @Test
@@ -79,8 +81,8 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.marktwertHinzufuegen(new Waehrungsbetrag(250000));
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15120));
         immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(15020));
-        ClusterScoringEvent ergebnis = immobilienFinanzierungsCluster.scoren();
-        assertEquals(ClusterKonnteNochNichtGescoredWerden.class, ergebnis.getClass(), "Fehlende Summe Darlehen sollte zu einem AntragKonnteNichtGescoredWerden führen.");
+        Optional<ClusterGescored> ergebnis = immobilienFinanzierungsCluster.scoren();
+        assertTrue(ergebnis.isEmpty(), "Fehlende Summe Darlehen sollte zu einem AntragKonnteNichtGescoredWerden führen.");
     }
 
     @Test
@@ -91,8 +93,8 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.marktwertHinzufuegen(new Waehrungsbetrag(250000));
         immobilienFinanzierungsCluster.marktwertVerlgeichHinzufuegen(new Waehrungsbetrag(100000), new Waehrungsbetrag(300000), new Waehrungsbetrag(200000), new Waehrungsbetrag(250000));
         immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(15020));
-        ClusterScoringEvent ergebnis = immobilienFinanzierungsCluster.scoren();
-        assertEquals(ClusterKonnteNochNichtGescoredWerden.class, ergebnis.getClass(), "Fehlende Summe Darlehen sollte zu einem AntragKonnteNichtGescoredWerden führen.");
+        Optional<ClusterGescored> ergebnis = immobilienFinanzierungsCluster.scoren();
+        assertTrue(ergebnis.isEmpty(), "Fehlende Summe Darlehen sollte zu einem AntragKonnteNichtGescoredWerden führen.");
     }
 
     @Test
@@ -103,8 +105,8 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.marktwertHinzufuegen(new Waehrungsbetrag(250000));
         immobilienFinanzierungsCluster.marktwertVerlgeichHinzufuegen(new Waehrungsbetrag(100000), new Waehrungsbetrag(300000), new Waehrungsbetrag(200000), new Waehrungsbetrag(250000));
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15020));
-        ClusterScoringEvent ergebnis = immobilienFinanzierungsCluster.scoren();
-        assertEquals(ClusterKonnteNochNichtGescoredWerden.class, ergebnis.getClass(), "Fehlende Summe Darlehen sollte zu einem AntragKonnteNichtGescoredWerden führen.");
+        Optional<ClusterGescored> ergebnis = immobilienFinanzierungsCluster.scoren();
+        assertTrue(ergebnis.isEmpty(), "Fehlende Summe Darlehen sollte zu einem AntragKonnteNichtGescoredWerden führen.");
     }
 
     @Test
@@ -117,7 +119,7 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15000));
         immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(15000));
 
-        ClusterGescored ergebnis = (ClusterGescored) immobilienFinanzierungsCluster.scoren();
+        ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren().orElseThrow();
         assertTrue(ergebnis.koKriterien().anzahl() >0, "Summe der Darlehen > Beleihungswert sollte ein KO-Kriterium sein.");
     }
 
@@ -131,7 +133,7 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15000));
         immobilienFinanzierungsCluster.summeEigenmittelHinzufuegen(new Waehrungsbetrag(15000));
         immobilienFinanzierungsCluster.beleihungswertHinzufuegen(new Waehrungsbetrag(200000));
-        ClusterGescored ergebnis = (ClusterGescored) immobilienFinanzierungsCluster.scoren();
+        ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren().orElseThrow();
         assertTrue(ergebnis.koKriterien().anzahl() > 0, "Summe Darlehen + Eigenmittel != Marktwert + Kaufnebenkosten sollte ein KO-Kriterium sein.");
     }
 
@@ -144,7 +146,7 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15000));
         immobilienFinanzierungsCluster.beleihungswertHinzufuegen(new Waehrungsbetrag(150000));
         immobilienFinanzierungsCluster.marktwertVerlgeichHinzufuegen(new Waehrungsbetrag(100000), new Waehrungsbetrag(300000), new Waehrungsbetrag(200000), new Waehrungsbetrag(250000));
-        ClusterGescored ergebnis = (ClusterGescored) immobilienFinanzierungsCluster.scoren();
+        ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren().orElseThrow();
         assertEquals(new Punkte(5), ergebnis.punkte(), "Ein Eigenkapitalanteil von 15-20% sollte 5 Punkte geben.");
     }
 
@@ -157,7 +159,7 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.summeDarlehenHinzufuegen(new Waehrungsbetrag(75000));
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15000));
         immobilienFinanzierungsCluster.beleihungswertHinzufuegen(new Waehrungsbetrag(150000));
-        ClusterGescored ergebnis = (ClusterGescored) immobilienFinanzierungsCluster.scoren();
+        ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren().orElseThrow();
         assertEquals(new Punkte(10), ergebnis.punkte(), "Ein Eigenkapitalanteil > 20% sollte 10 Punkte geben.");
     }
 
@@ -170,7 +172,7 @@ public class ImmobilienFinanzierungsClusterTest {
         immobilienFinanzierungsCluster.summeDarlehenHinzufuegen(new Waehrungsbetrag(75000));
         immobilienFinanzierungsCluster.kaufnebenkostenHinzufuegen(new Waehrungsbetrag(15000));
         immobilienFinanzierungsCluster.beleihungswertHinzufuegen(new Waehrungsbetrag(150000));
-        ClusterGescored ergebnis = (ClusterGescored) immobilienFinanzierungsCluster.scoren();
+        ClusterGescored ergebnis = immobilienFinanzierungsCluster.scoren().orElseThrow();
         assertEquals(new Punkte(15), ergebnis.punkte(), "Ein Eigenkapitalanteil > 30% sollte 15 Punkte geben.");
     }
 

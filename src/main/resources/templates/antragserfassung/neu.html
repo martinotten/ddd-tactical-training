@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigPug Loans - Neuer Antrag</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="bi bi-building text-primary me-2"></i>
+                BigPug Loans
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/antragserfassung}">
+                    <i class="bi bi-file-earmark-plus me-1"></i>
+                    Antragserfassung
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            
+            <div class="text-center mb-5">
+                <i class="bi bi-file-earmark-plus display-1 text-primary"></i>
+                <h1 class="h2 text-primary mt-3">Neuen Antrag starten</h1>
+                <p class="text-muted">Beginnen Sie Ihren Finanzierungsantrag in wenigen einfachen Schritten.</p>
+            </div>
+
+            <div class="card card-custom">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-play-circle me-2"></i>
+                        Antrag initialisieren
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <!-- Process Overview -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-3">Ihr Weg zur Finanzierung:</h6>
+                            <div class="step-indicator">
+                                <div class="step-item">
+                                    <div class="step-number step-active">1</div>
+                                    <div>
+                                        <strong>Antragsteller erfassen</strong>
+                                        <br><small class="text-muted">Ihre persönlichen Daten</small>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number step-pending">2</div>
+                                    <div>
+                                        <strong>Finanzierungsobjekt</strong>
+                                        <br><small class="text-muted">Details zur Immobilie</small>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number step-pending">3</div>
+                                    <div>
+                                        <strong>Ausgaben erfassen</strong>
+                                        <br><small class="text-muted">Ihre monatlichen Kosten</small>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-number step-pending">4</div>
+                                    <div>
+                                        <strong>Einkommen erfassen</strong>
+                                        <br><small class="text-muted">Ihre Einnahmen</small>
+                                    </div>
+                                </div>
+                                <div class="step-item mb-0">
+                                    <div class="step-number step-pending">5</div>
+                                    <div>
+                                        <strong>Antrag abschließen</strong>
+                                        <br><small class="text-muted">Prüfung und Übermittlung</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/antragserfassung/starten}" 
+                          method="post" 
+                          th:object="${antragStartForm}"
+                          novalidate>
+                        
+                        <div class="mb-4">
+                            <label for="benutzerId" class="form-label">
+                                <i class="bi bi-person me-1"></i>
+                                Benutzer-ID <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="benutzerId" 
+                                   th:field="*{benutzerId}"
+                                   placeholder="Ihre eindeutige Benutzer-ID eingeben..."
+                                   required>
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Diese ID wird zur Zuordnung und späteren Bearbeitung Ihrer Anträge verwendet.
+                            </div>
+                            <div class="invalid-feedback">
+                                Bitte geben Sie eine Benutzer-ID ein.
+                            </div>
+                        </div>
+
+                        <!-- Information Cards -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-clock me-2"></i>
+                                    <strong>Dauer:</strong> ca. 10-15 Minuten
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-success">
+                                    <i class="bi bi-shield-check me-2"></i>
+                                    <strong>Sicher:</strong> Ihre Daten sind geschützt
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <a th:href="@{/antragserfassung}" class="btn btn-outline-secondary btn-custom me-3">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Zurück zur Übersicht
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-custom">
+                                <i class="bi bi-rocket me-2"></i>
+                                Antrag starten
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Help Section -->
+            <div class="card card-custom mt-4">
+                <div class="card-body">
+                    <h6 class="text-primary">
+                        <i class="bi bi-question-circle me-2"></i>
+                        Haben Sie Fragen?
+                    </h6>
+                    <p class="mb-2">Unsere Experten helfen Ihnen gerne weiter:</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <i class="bi bi-telephone me-2 text-primary"></i>
+                            <strong>Telefon:</strong> +49 (0) 123 456-7890
+                        </div>
+                        <div class="col-md-6">
+                            <i class="bi bi-envelope me-2 text-primary"></i>
+                            <strong>E-Mail:</strong> support@bigpugloans.com
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

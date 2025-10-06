@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigPug Loans - Ausgaben erfassen</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="bi bi-building text-primary me-2"></i>
+                BigPug Loans
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/antragserfassung}">
+                    <i class="bi bi-file-earmark-plus me-1"></i>
+                    Antragserfassung
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+    
+    <div class="row">
+        <!-- Progress Sidebar -->
+        <div class="col-lg-3">
+            <div class="step-indicator">
+                <h6 class="text-muted mb-3">Fortschritt</h6>
+                <div class="step-item">
+                    <div class="step-number step-completed">1</div>
+                    <div>Antragsteller</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number step-completed">2</div>
+                    <div>Finanzierungsobjekt</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number step-active">3</div>
+                    <div><strong>Ausgaben</strong></div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number step-pending">4</div>
+                    <div>Einkommen</div>
+                </div>
+                <div class="step-item mb-0">
+                    <div class="step-number step-pending">5</div>
+                    <div>Abschluss</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Form -->
+        <div class="col-lg-9">
+            <div class="card card-custom">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-wallet me-2"></i>
+                        Schritt 3: Ausgaben erfassen
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Hinweis:</strong> Bitte geben Sie alle monatlichen Ausgaben in Euro an. Diese Angaben helfen uns bei der Bonitätsprüfung.
+                    </div>
+                    
+                    <form th:action="@{'/antragserfassung/' + ${antragsnummer} + '/ausgaben'}" 
+                          method="post" 
+                          th:object="${ausgabenForm}"
+                          novalidate>
+                        
+                        <!-- Living Expenses -->
+                        <div class="mb-5">
+                            <h5 class="text-primary mb-3">
+                                <i class="bi bi-house-heart me-2"></i>
+                                Lebenshaltungskosten
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="lebenshaltungskosten" class="form-label">
+                                        Lebenshaltungskosten (monatlich)
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="lebenshaltungskosten" 
+                                               th:field="*{lebenshaltungskosten}"
+                                               placeholder="1500"
+                                               step="0.01"
+                                               min="0">
+                                        <span class="input-group-text">€</span>
+                                    </div>
+                                    <div class="form-text">
+                                        Lebensmittel, Kleidung, Haushalt, etc.
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="miete" class="form-label">
+                                        Miete (monatlich)
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="miete" 
+                                               th:field="*{miete}"
+                                               placeholder="800"
+                                               step="0.01"
+                                               min="0">
+                                        <span class="input-group-text">€</span>
+                                    </div>
+                                    <div class="form-text">
+                                        Aktuelle Mietkosten (falls zutreffend)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Insurance -->
+                        <div class="mb-5">
+                            <h5 class="text-primary mb-3">
+                                <i class="bi bi-shield-check me-2"></i>
+                                Versicherungen
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="privateKrankenversicherung" class="form-label">
+                                        Private Krankenversicherung
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="privateKrankenversicherung" 
+                                               th:field="*{privateKrankenversicherung}"
+                                               placeholder="400"
+                                               step="0.01"
+                                               min="0">
+                                        <span class="input-group-text">€</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="sonstigeVersicherungen" class="form-label">
+                                        Sonstige Versicherungen
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="sonstigeVersicherungen" 
+                                               th:field="*{sonstigeVersicherungen}"
+                                               placeholder="150"
+                                               step="0.01"
+                                               min="0">
+                                        <span class="input-group-text">€</span>
+                                    </div>
+                                    <div class="form-text">
+                                        Haftpflicht, Hausrat, Auto, etc.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Credits & Other Expenses -->
+                        <div class="mb-5">
+                            <h5 class="text-primary mb-3">
+                                <i class="bi bi-credit-card me-2"></i>
+                                Kredite & Sonstige Ausgaben
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="kreditraten" class="form-label">
+                                        Bestehende Kreditraten
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="kreditraten" 
+                                               th:field="*{kreditraten}"
+                                               placeholder="250"
+                                               step="0.01"
+                                               min="0">
+                                        <span class="input-group-text">€</span>
+                                    </div>
+                                    <div class="form-text">
+                                        Autokredit, Konsumkredit, etc.
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="sonstigeAusgaben" class="form-label">
+                                        Sonstige Ausgaben
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="sonstigeAusgaben" 
+                                               th:field="*{sonstigeAusgaben}"
+                                               placeholder="200"
+                                               step="0.01"
+                                               min="0">
+                                        <span class="input-group-text">€</span>
+                                    </div>
+                                    <div class="form-text">
+                                        Abonnements, Sparpläne, etc.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Summary -->
+                        <div class="alert alert-light mb-4">
+                            <h6 class="text-primary mb-2">
+                                <i class="bi bi-calculator me-1"></i>
+                                Ausgaben-Übersicht
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="text-muted">
+                                        Die Summe Ihrer monatlichen Ausgaben wird automatisch für die Bonitätsprüfung berechnet.
+                                    </small>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="text-end">
+                                        <i class="bi bi-info-circle text-primary me-1"></i>
+                                        <small class="text-muted">Alle Angaben sind freiwillig aber empfohlen</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-between">
+                            <a th:href="@{'/antragserfassung/' + ${antragsnummer} + '/finanzierungsobjekt'}" 
+                               class="btn btn-outline-secondary btn-custom">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Zurück zum Objekt
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-custom">
+                                <i class="bi bi-arrow-right me-2"></i>
+                                Weiter zum Einkommen
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

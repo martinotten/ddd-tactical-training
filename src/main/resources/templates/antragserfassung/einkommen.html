@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="de" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigPug Loans - Einkommen erfassen</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="bi bi-building text-primary me-2"></i>
+                BigPug Loans
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/antragserfassung}">
+                    <i class="bi bi-file-earmark-plus me-1"></i>
+                    Antragserfassung
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4">
+    
+    <div class="row">
+        <!-- Progress Sidebar -->
+        <div class="col-lg-3">
+            <div class="step-indicator">
+                <h6 class="text-muted mb-3">Fortschritt</h6>
+                <div class="step-item">
+                    <div class="step-number step-completed">1</div>
+                    <div>Antragsteller</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number step-completed">2</div>
+                    <div>Finanzierungsobjekt</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number step-completed">3</div>
+                    <div>Ausgaben</div>
+                </div>
+                <div class="step-item">
+                    <div class="step-number step-active">4</div>
+                    <div><strong>Einkommen</strong></div>
+                </div>
+                <div class="step-item mb-0">
+                    <div class="step-number step-pending">5</div>
+                    <div>Abschluss</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Form -->
+        <div class="col-lg-9">
+            <div class="card card-custom">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-cash-coin me-2"></i>
+                        Schritt 4: Einkommen erfassen
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Hinweis:</strong> Bitte geben Sie alle Einkommenswerte in Euro an. Jahresbeträge werden automatisch auf Monate umgerechnet.
+                    </div>
+                    
+                    <form th:action="@{'/antragserfassung/' + ${antragsnummer} + '/einkommen'}" 
+                          method="post" 
+                          th:object="${einkommenForm}"
+                          novalidate>
+                        
+                        <!-- Employment & Main Income -->
+                        <div class="mb-5">
+                            <h5 class="text-primary mb-3">
+                                <i class="bi bi-briefcase me-2"></i>
+                                Beschäftigung & Haupteinkommen
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="beschaeftigungsverhaeltnis" class="form-label">
+                                        Beschäftigungsverhältnis
+                                    </label>
+                                    <select class="form-select" 
+                                            id="beschaeftigungsverhaeltnis" 
+                                            th:field="*{beschaeftigungsverhaeltnis}">
+                                        <option value="">Bitte wählen...</option>
+                                        <option th:each="verhaeltnis : ${beschaeftigungsverhaeltnisse}" 
+                                                th:value="${verhaeltnis}" 
+                                                th:text="${verhaeltnis == T(com.bigpugloans.antragserfassung.domain.model.Beschaeftigungsverhaeltnis).ANGESTELLT} ? 'Angestellt' :
+                                                         (${verhaeltnis == T(com.bigpugloans.antragserfassung.domain.model.Beschaeftigungsverhaeltnis).SELBSTSTAENDIG} ? 'Selbstständig' :
+                                                         (${verhaeltnis == T(com.bigpugloans.antragserfassung.domain.model.Beschaeftigungsverhaeltnis).BEAMTER} ? 'Beamter' :
+                                                         (${verhaeltnis == T(com.bigpugloans.antragserfassung.domain.model.Beschaeftigungsverhaeltnis).FREIBERUFLER} ? 'Freiberufler' :
+                                                         (${verhaeltnis == T(com.bigpugloans.antragserfassung.domain.model.Beschaeftigungsverhaeltnis).RENTNER} ? 'Rentner' :
+                                                         (${verhaeltnis == T(com.bigpugloans.antragserfassung.domain.model.Beschaeftigungsverhaeltnis).ARBEITSLOS} ? 'Arbeitslos' : 'Student')))))">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="nettoEinkommen" class="form-label">
+                                        Netto-Einkommen (monatlich) <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="nettoEinkommen" 
+                                               th:field="*{nettoEinkommen}"
+                                               placeholder="3500"
+                                               step="0.01"
+                                               min="0"
+                                               required>
+                                        <span class="input-group-text">€</span>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        Bitte geben Sie Ihr monatliches Netto-Einkommen ein.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Annual Income -->
+                        <div class="mb-5">
+                            <h5 class="text-primary mb-3">
+                                <i class="bi bi-calendar-check me-2"></i>
+                                Zusätzliche Jahreseinkünfte
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="urlaubsgeld" class="form-label">
+                                        Urlaubsgeld (jährlich)
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="urlaubsgeld" 
+                                               th:field="*{urlaubsgeld}"
+                                               placeholder="2000"
+                                               step="0.01"
+                                               min="0">
+                                        <span class="input-group-text">€</span>
+                                    </div>
+                                    <div class="form-text">
+                                        Wird automatisch auf 12 Monate umgerechnet
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="weihnachtsgeld" class="form-label">
+                                        Weihnachtsgeld (jährlich)
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="weihnachtsgeld" 
+                                               th:field="*{weihnachtsgeld}"
+                                               placeholder="2500"
+                                               step="0.01"
+                                               min="0">
+                                        <span class="input-group-text">€</span>
+                                    </div>
+                                    <div class="form-text">
+                                        Wird automatisch auf 12 Monate umgerechnet
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Other Income Sources -->
+                        <div class="mb-5">
+                            <h5 class="text-primary mb-3">
+                                <i class="bi bi-graph-up me-2"></i>
+                                Weitere Einkommensquellen
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="mieteinnahmen" class="form-label">
+                                        Mieteinnahmen (monatlich)
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="mieteinnahmen" 
+                                               th:field="*{mieteinnahmen}"
+                                               placeholder="800"
+                                               step="0.01"
+                                               min="0">
+                                        <span class="input-group-text">€</span>
+                                    </div>
+                                    <div class="form-text">
+                                        Aus Vermietung und Verpachtung
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="kapitalertraege" class="form-label">
+                                        Kapitalerträge (monatlich)
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="kapitalertraege" 
+                                               th:field="*{kapitalertraege}"
+                                               placeholder="150"
+                                               step="0.01"
+                                               min="0">
+                                        <span class="input-group-text">€</span>
+                                    </div>
+                                    <div class="form-text">
+                                        Zinsen, Dividenden, etc.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="sonstigeEinkommen" class="form-label">
+                                        Sonstige Einkommen (monatlich)
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control" 
+                                               id="sonstigeEinkommen" 
+                                               th:field="*{sonstigeEinkommen}"
+                                               placeholder="300"
+                                               step="0.01"
+                                               min="0">
+                                        <span class="input-group-text">€</span>
+                                    </div>
+                                    <div class="form-text">
+                                        Rente, Unterhalt, Nebentätigkeiten, etc.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Summary -->
+                        <div class="alert alert-light mb-4">
+                            <h6 class="text-primary mb-2">
+                                <i class="bi bi-calculator me-1"></i>
+                                Einkommen-Übersicht
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <small class="text-muted">
+                                        Ihr Gesamteinkommen wird automatisch berechnet und für die Bonitätsprüfung verwendet. 
+                                        Jahresbeträge werden durch 12 geteilt und zum monatlichen Einkommen addiert.
+                                    </small>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-end">
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            Fast geschafft!
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-between">
+                            <a th:href="@{'/antragserfassung/' + ${antragsnummer} + '/ausgaben'}" 
+                               class="btn btn-outline-secondary btn-custom">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                Zurück zu Ausgaben
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-custom">
+                                <i class="bi bi-arrow-right me-2"></i>
+                                Zum Abschluss
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

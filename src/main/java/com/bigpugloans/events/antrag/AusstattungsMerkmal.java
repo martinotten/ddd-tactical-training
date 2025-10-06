@@ -1,0 +1,5 @@
+package com.bigpugloans.events.antrag;
+
+public enum AusstattungsMerkmal {
+    SOLARANLAGE, PHOTOVOLTAIK, WELLNESSBEREICH, MEHR_ALS_EIN_BAD, LADESTATION_E_AUTO, SWIMMINGPOOL, GARTENHAUS, SATELLITEN_EMPFANG
+}

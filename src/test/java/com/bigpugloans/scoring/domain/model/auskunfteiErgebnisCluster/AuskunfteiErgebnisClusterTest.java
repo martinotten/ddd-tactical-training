@@ -3,8 +3,10 @@ package com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster;
 import com.bigpugloans.scoring.domain.model.*;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -12,21 +14,17 @@ public class AuskunfteiErgebnisClusterTest {
 
     @Test
     void antragsnummerNullWirftException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new AuskunfteiErgebnisCluster(null, new AntragstellerID.Builder("Michael", "Ploed")
-                    .postleitzahl("40789")
-                    .stadt("Monheim")
-                    .strasse("Krischerstrasse 100")
-                    .geburtsdatum(new Date(1970, 1, 1))
-                    .build());
-        });
+        assertThrows(IllegalArgumentException.class, () -> new AuskunfteiErgebnisCluster(null, new AntragstellerID.Builder("Michael", "Ploed")
+                .postleitzahl("40789")
+                .stadt("Monheim")
+                .strasse("Krischerstrasse 100")
+                .geburtsdatum(LocalDate.of(1970, 1, 1))
+                .build()));
     }
 
     @Test
     void antragsstellerIDNullWirftException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new AuskunfteiErgebnisCluster(new Antragsnummer("123"), null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> new AuskunfteiErgebnisCluster(ScoringId.mainScoringIdAusAntragsnummer("123"), null));
     }
     @Test
     void ohneRueckzahlungswahrscheinlichkeitKeinScoring() {
@@ -34,10 +32,10 @@ public class AuskunfteiErgebnisClusterTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new Antragsnummer("123"), antragstellerID);
-        assertEquals(ClusterKonnteNochNichtGescoredWerden.class, auskunfteiErgebnisCluster.scoren().getClass());
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(ScoringId.mainScoringIdAusAntragsnummer("123"), antragstellerID);
+        assertThat(auskunfteiErgebnisCluster.scoren()).isEmpty();
     }
     @Test
     void auskunfteiErgebnisClusterMitGleicherAntragsnummerUndAntragstellerIDsindGleich() {
@@ -45,15 +43,15 @@ public class AuskunfteiErgebnisClusterTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        Antragsnummer antragsnummer = new Antragsnummer("123");
+        ScoringId scoringId = ScoringId.mainScoringIdAusAntragsnummer("123");
 
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster1 = new AuskunfteiErgebnisCluster(antragsnummer, antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster1 = new AuskunfteiErgebnisCluster(scoringId, antragstellerID);
         auskunfteiErgebnisCluster1.warnungenHinzufuegen(3);
         auskunfteiErgebnisCluster1.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
 
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster2 = new AuskunfteiErgebnisCluster(antragsnummer, antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster2 = new AuskunfteiErgebnisCluster(scoringId, antragstellerID);
         auskunfteiErgebnisCluster2.negativMerkmaleHinzufuegen(2);
         auskunfteiErgebnisCluster2.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(93));
 
@@ -66,14 +64,18 @@ public class AuskunfteiErgebnisClusterTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new Antragsnummer("123"), antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(ScoringId.mainScoringIdAusAntragsnummer("123"), antragstellerID);
         auskunfteiErgebnisCluster.warnungenHinzufuegen(3);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
-        ClusterGescored clusterGescored = (ClusterGescored) auskunfteiErgebnisCluster.scoren();
-        assertEquals(80, clusterGescored.punkte().getPunkte(), "3 Warnungen und 80% = 80 Punkte und kein KO");
-        assertEquals(0, clusterGescored.koKriterien().anzahl(), "3 Warnungen und 80% = 80 Punkte und kein KO");
+        assertThat(auskunfteiErgebnisCluster.scoren())
+            .isPresent()
+            .get()
+            .satisfies(clusterGescored -> {
+                assertEquals(80, clusterGescored.punkte().getPunkte(), "3 Warnungen und 80% = 80 Punkte und kein KO");
+                assertEquals(0, clusterGescored.koKriterien().anzahl(), "3 Warnungen und 80% = 80 Punkte und kein KO");
+            });
     }
 
     @Test
@@ -82,15 +84,19 @@ public class AuskunfteiErgebnisClusterTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new Antragsnummer("123"), antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(ScoringId.mainScoringIdAusAntragsnummer("123"), antragstellerID);
         auskunfteiErgebnisCluster.warnungenHinzufuegen(4);
         auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(2);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
-        ClusterGescored clusterGescored = (ClusterGescored) auskunfteiErgebnisCluster.scoren();
-        assertEquals(80, clusterGescored.punkte().getPunkte(), "4 Warnungen, 2 Negativ und 80% = 80 Punkte und 2 KO");
-        assertEquals(2, clusterGescored.koKriterien().anzahl(), "4 Warnungen, 2 Negativ und 80% = 80 Punkte und 2 KO");
+        assertThat(auskunfteiErgebnisCluster.scoren())
+            .isPresent()
+            .get()
+            .satisfies(clusterGescored -> {
+                assertEquals(80, clusterGescored.punkte().getPunkte(), "4 Warnungen, 2 Negativ und 80% = 80 Punkte und 2 KO");
+                assertEquals(2, clusterGescored.koKriterien().anzahl(), "4 Warnungen, 2 Negativ und 80% = 80 Punkte und 2 KO");
+            });
     }
 
     @Test
@@ -99,14 +105,18 @@ public class AuskunfteiErgebnisClusterTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new Antragsnummer("123"), antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(ScoringId.mainScoringIdAusAntragsnummer("123"), antragstellerID);
         auskunfteiErgebnisCluster.negativMerkmaleHinzufuegen(1);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(80));
-        ClusterGescored clusterGescored = (ClusterGescored) auskunfteiErgebnisCluster.scoren();
-        assertEquals(80, clusterGescored.punkte().getPunkte(), "0 Warnungen, 1 Negativ und 80% = 80 Punkte und 1 KO");
-        assertEquals(1, clusterGescored.koKriterien().anzahl(), "0 Warnungen, 1 Negativ und 80% = 80 Punkte und 1 KO");
+        assertThat(auskunfteiErgebnisCluster.scoren())
+            .isPresent()
+            .get()
+            .satisfies(clusterGescored -> {
+                assertEquals(80, clusterGescored.punkte().getPunkte(), "0 Warnungen, 1 Negativ und 80% = 80 Punkte und 1 KO");
+                assertEquals(1, clusterGescored.koKriterien().anzahl(), "0 Warnungen, 1 Negativ und 80% = 80 Punkte und 1 KO");
+            });
     }
 
     @Test
@@ -115,13 +125,17 @@ public class AuskunfteiErgebnisClusterTest {
                 .postleitzahl("40789")
                 .stadt("Monheim")
                 .strasse("Krischerstrasse 100")
-                .geburtsdatum(new Date(1970, 1, 1))
+                .geburtsdatum(LocalDate.of(1970, 2, 1))
                 .build();
-        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(new Antragsnummer("123"), antragstellerID);
+        AuskunfteiErgebnisCluster auskunfteiErgebnisCluster = new AuskunfteiErgebnisCluster(ScoringId.mainScoringIdAusAntragsnummer("123"), antragstellerID);
         auskunfteiErgebnisCluster.rueckzahlungsWahrscheinlichkeitHinzufuegen(new Prozentwert(50));
-        ClusterGescored clusterGescored = (ClusterGescored) auskunfteiErgebnisCluster.scoren();
-        assertEquals(50, clusterGescored.punkte().getPunkte(), "0 Warnungen, 0 Negativ und 50% = 50 Punkte und 1 KO");
-        assertEquals(1, clusterGescored.koKriterien().anzahl(), "0 Warnungen, 0 Negativ und 50% = 50 Punkte und 1 KO");
+        assertThat(auskunfteiErgebnisCluster.scoren())
+            .isPresent()
+            .get()
+            .satisfies(clusterGescored -> {
+                assertEquals(50, clusterGescored.punkte().getPunkte(), "0 Warnungen, 0 Negativ und 50% = 50 Punkte und 1 KO");
+                assertEquals(1, clusterGescored.koKriterien().anzahl(), "0 Warnungen, 0 Negativ und 50% = 50 Punkte und 1 KO");
+            });
     }
 
 }

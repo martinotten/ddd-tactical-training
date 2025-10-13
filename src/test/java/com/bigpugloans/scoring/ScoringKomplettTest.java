@@ -3,10 +3,30 @@ package com.bigpugloans.scoring;
 import com.bigpugloans.events.AntragEingereicht;
 import com.bigpugloans.events.ImmobilieBewertet;
 import com.bigpugloans.events.antrag.*;
+import com.bigpugloans.scoring.domain.model.Antrag;
+import com.bigpugloans.scoring.adapter.driven.backends.KonditionsAbfrageAdapter;
+import com.bigpugloans.scoring.adapter.driven.backends.KonditionsAbfrageServiceAdapter;
+import com.bigpugloans.scoring.adapter.driven.backends.LeseKontoSaldoAdapter;
+import com.bigpugloans.scoring.adapter.driven.messaging.ScoringErgebnisVeroeffentlichenAdapter;
+import com.bigpugloans.scoring.adapter.driving.AntragEingereichtMessageListener;
+import com.bigpugloans.scoring.adapter.driving.ImmobilieBewertetMessageListener;
 import com.bigpugloans.scoring.application.model.ScoringDatenAusAntrag;
-import com.bigpugloans.scoring.application.model.ImmobilienBewertung;
+import com.bigpugloans.scoring.application.service.EingereicherAntragVerarbeitenApplicationService;
+import com.bigpugloans.scoring.application.service.ScoringAusfuehrenUndVeroeffentlichenApplicationService;
+import com.bigpugloans.scoring.application.service.VerarbeitungImmobilienBewertungApplicationService;
+import com.bigpugloans.scoring.domain.model.ImmobilienBewertung;
 import com.bigpugloans.scoring.application.ports.driving.PreScoringStart;
 import com.bigpugloans.scoring.application.ports.driving.VerarbeitungImmobilienBewertung;
+import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerClusterRepository;
+import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
+import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisClusterRepository;
+import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungClusterRepository;
+import com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster.MonatlicheFinanzsituationClusterRepository;
+import com.bigpugloans.scoring.domain.model.scoringErgebnis.ScoringErgebnisRepository;
+import com.bigpugloans.scoring.domain.service.*;
+import com.bigpugloans.scoring.testinfrastructure.*;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,37 +41,64 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@SpringBootTest
-@Testcontainers
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 public class ScoringKomplettTest {
 
-    @Autowired
-    private ApplicationEventPublisher applicationEventPublisher;
+    private AntragstellerClusterRepository antragstellerClusterRepository = new InMemoryAntragstellerClusterRepository();
+    private MonatlicheFinanzsituationClusterRepository monatlicheFinanzsituationClusterRepository = new InMemoryMonatlicheFinanzsituationClusterRepository();
 
-    @Container
-    static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:5.0.7");
-    @DynamicPropertySource
-    static void mongoDbProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
-    }
+    private ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository = new InMemoryImmobilienFinanzierungClusterRepository();
+    private AuskunfteiErgebnisClusterRepository auskunfteiErgebnisClusterRepository = new InMemoryAuskunfteiErgebnisClusterRepository();
+    private ScoringErgebnisRepository scoringErgebnisRepository = new InMemoryScoringErgebnisRepository();
 
     @Test
     void testeKomplettestPreScoring() {
-       Antrag antrag = antrag();
-       AntragEingereicht antragEingereicht = new AntragEingereicht();
-       antragEingereicht.setAntrag(antrag);
-       antragEingereicht.setAntragsnummer(antrag.getAntragsnummer());
-       antragEingereicht.setTimestamp(new Date());
-       applicationEventPublisher.publishEvent(antragEingereicht);
+        ApplicationEventPublisher applicationEventPublisher = new ApplicationEventPublisher() {
+            @Override
+            public void publishEvent(@NotNull Object event) {
+                if (event instanceof AntragEingereicht) {
+                    new AntragEingereichtMessageListener(new EingereicherAntragVerarbeitenApplicationService(
+                            new AntragHinzufuegenDomainService(antragstellerClusterRepository, monatlicheFinanzsituationClusterRepository, immobilienFinanzierungClusterRepository, auskunfteiErgebnisClusterRepository),
+                            new AuskunfteiHinzufuegenDomainService(auskunfteiErgebnisClusterRepository),
+                            new KonditionsAbfrageServiceAdapter(new KonditionsAbfrageAdapter()),
+                            new LeseKontoSaldoAdapter(),
+                            new KontosaldoHinzufuegenDomainService(new InMemoryAntragstellerClusterRepository()),
+                            new ScoringAusfuehrenUndVeroeffentlichenApplicationService(new ScoringDomainService(antragstellerClusterRepository, monatlicheFinanzsituationClusterRepository, immobilienFinanzierungClusterRepository, auskunfteiErgebnisClusterRepository), scoringErgebnisRepository, new TestScoringErgebnisVeroeffentlichen())
+                    )).onAntragEingereicht((AntragEingereicht) event);
+                } else if (event instanceof ImmobilieBewertet) {
+                    new ImmobilieBewertetMessageListener(
+                            new VerarbeitungImmobilienBewertungApplicationService(
+                                    new ImmobilienBewertungHinzufuegenDomainService(immobilienFinanzierungClusterRepository),
+                                    new ScoringAusfuehrenUndVeroeffentlichenApplicationService(
+                                            new ScoringDomainService(
+                                                    antragstellerClusterRepository,
+                                                    monatlicheFinanzsituationClusterRepository,
+                                                    immobilienFinanzierungClusterRepository,
+                                                    auskunfteiErgebnisClusterRepository),
+                                            scoringErgebnisRepository,
+                                            new ScoringErgebnisVeroeffentlichenAdapter(Assertions::assertNotNull))))
+                            .onImmobilieBewertet((ImmobilieBewertet) event);
 
-       ImmobilieBewertet immobilieBewertet = new ImmobilieBewertet();
-       immobilieBewertet.setAntragsnummer(antrag.getAntragsnummer());
-       immobilieBewertet.setBeleihungswert(320000);
-       immobilieBewertet.setMinimalerMarktwert(280000);
-       immobilieBewertet.setMaximalerMarktwert(550000);
-       immobilieBewertet.setDurchschnittlicherMarktwertVon(300000);
-       immobilieBewertet.setDurchschnittlicherMarktwertBis(350000);
-       applicationEventPublisher.publishEvent(immobilieBewertet);
+                }
+            }
+        };
+
+        Antrag antrag = antrag();
+        AntragEingereicht antragEingereicht = new AntragEingereicht();
+        antragEingereicht.setAntrag(antrag);
+        antragEingereicht.setAntragsnummer(antrag.getAntragsnummer());
+        antragEingereicht.setTimestamp(new Date());
+        applicationEventPublisher.publishEvent(antragEingereicht);
+
+        ImmobilieBewertet immobilieBewertet = new ImmobilieBewertet();
+        immobilieBewertet.setAntragsnummer(antrag.getAntragsnummer());
+        immobilieBewertet.setBeleihungswert(320000);
+        immobilieBewertet.setMinimalerMarktwert(280000);
+        immobilieBewertet.setMaximalerMarktwert(550000);
+        immobilieBewertet.setDurchschnittlicherMarktwertVon(300000);
+        immobilieBewertet.setDurchschnittlicherMarktwertBis(350000);
+        applicationEventPublisher.publishEvent(immobilieBewertet);
     }
 
     private Antrag antrag() {

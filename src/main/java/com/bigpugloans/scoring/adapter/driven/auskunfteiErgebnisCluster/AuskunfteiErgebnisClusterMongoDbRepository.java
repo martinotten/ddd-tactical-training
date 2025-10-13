@@ -1,19 +1,21 @@
 package com.bigpugloans.scoring.adapter.driven.auskunfteiErgebnisCluster;
 
-import com.bigpugloans.scoring.application.ports.driven.AuskunfteiErgebnisClusterRepository;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisClusterRepository;
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisCluster;
 import org.jmolecules.architecture.hexagonal.SecondaryAdapter;
 import org.jmolecules.architecture.onion.classical.InfrastructureRing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @InfrastructureRing
 @org.jmolecules.ddd.annotation.Repository
 @SecondaryAdapter
 public class AuskunfteiErgebnisClusterMongoDbRepository implements AuskunfteiErgebnisClusterRepository {
-    private AuskunfteiErgebnisClusterSpringDataRepository dao;
+    private final AuskunfteiErgebnisClusterSpringDataRepository dao;
 
     @Autowired
     public AuskunfteiErgebnisClusterMongoDbRepository(AuskunfteiErgebnisClusterSpringDataRepository dao) {
@@ -25,10 +27,10 @@ public class AuskunfteiErgebnisClusterMongoDbRepository implements AuskunfteiErg
         if(auskunfteiErgebnisCluster == null) {
             throw new IllegalArgumentException("AuskunfteiErgebnisCluster darf nicht null sein");
         }
-        AuskunfteiErgebnisClusterDocument document = dao.findByAntragsnummer(auskunfteiErgebnisCluster.antragsnummer().nummer());
+        AuskunfteiErgebnisClusterDocument document = dao.findByScoringId(auskunfteiErgebnisCluster.scoringId());
         if(document == null) {
             document = new AuskunfteiErgebnisClusterDocument();
-            document.setAntragsnummer(auskunfteiErgebnisCluster.antragsnummer().nummer());
+            document.setScoringId(auskunfteiErgebnisCluster.scoringId());
         }
 
         document.setAuskunfteiErgebnisCluster(auskunfteiErgebnisCluster);
@@ -37,14 +39,11 @@ public class AuskunfteiErgebnisClusterMongoDbRepository implements AuskunfteiErg
     }
 
     @Override
-    public AuskunfteiErgebnisCluster lade(Antragsnummer antragsnummer) {
-        if(antragsnummer == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein");
+    public Optional<AuskunfteiErgebnisCluster> lade(ScoringId scoringId) {
+        if(scoringId == null) {
+            throw new IllegalArgumentException("ScoringId darf nicht null sein");
         }
-        AuskunfteiErgebnisClusterDocument clusterEntity = dao.findByAntragsnummer(antragsnummer.nummer());
-        if(clusterEntity == null) {
-            return null;
-        }
-        return clusterEntity.getAuskunfteiErgebnisCluster();
+        AuskunfteiErgebnisClusterDocument clusterEntity = dao.findByScoringId(scoringId);
+        return Optional.of(clusterEntity.getAuskunfteiErgebnisCluster());
     }
 }

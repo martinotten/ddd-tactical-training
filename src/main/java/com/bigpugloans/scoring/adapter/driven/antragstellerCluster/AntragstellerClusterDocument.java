@@ -1,5 +1,6 @@
 package com.bigpugloans.scoring.adapter.driven.antragstellerCluster;
 
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
 import org.jmolecules.architecture.onion.classical.InfrastructureRing;
 import org.springframework.data.annotation.Id;
@@ -13,7 +14,7 @@ public class AntragstellerClusterDocument {
     private String id;
 
     @Indexed(unique = true)
-    private String antragsnummer;
+    private ScoringId scoringId;
 
     private AntragstellerCluster antragstellerCluster;
 
@@ -25,12 +26,12 @@ public class AntragstellerClusterDocument {
         this.id = id;
     }
 
-    public String getAntragsnummer() {
-        return antragsnummer;
+    public ScoringId getScoringId() {
+        return scoringId;
     }
 
-    public void setAntragsnummer(String antragsnummer) {
-        this.antragsnummer = antragsnummer;
+    public void setScoringId(ScoringId scoringId) {
+        this.scoringId = scoringId;
     }
 
     public AntragstellerCluster getAntragstellerCluster() {

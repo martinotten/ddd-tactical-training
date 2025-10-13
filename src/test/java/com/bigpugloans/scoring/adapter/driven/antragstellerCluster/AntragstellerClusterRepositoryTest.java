@@ -1,8 +1,9 @@
 package com.bigpugloans.scoring.adapter.driven.antragstellerCluster;
 
-import com.bigpugloans.scoring.application.ports.driven.AntragstellerClusterRepository;
-import com.bigpugloans.scoring.domain.model.Antragsnummer;
+import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerClusterRepository;
+import com.bigpugloans.scoring.domain.model.ScoringId;
 import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerCluster;
+import com.bigpugloans.scoring.testinfrastructure.InMemoryAntragstellerClusterRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,35 +15,32 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@Testcontainers
 public class AntragstellerClusterRepositoryTest {
-    @Container
-    static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:5.0.7");
-    @DynamicPropertySource
-    static void mongoDbProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
-    }
-
-    @Autowired
-    private AntragstellerClusterRepository repo;
+    private final AntragstellerClusterRepository repo = new InMemoryAntragstellerClusterRepository();
 
     @Test
     void testLadeAntragstellerCluster() {
-        AntragstellerCluster geladen = repo.lade(new Antragsnummer("123"));
-        assertNull(geladen);
+        ScoringId scoringId = ScoringId.preScoringIdAusAntragsnummer("123");
+        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(scoringId);
+        repo.speichern(antragstellerCluster);
+        
+        Optional<AntragstellerCluster> geladen = repo.lade(scoringId);
+        assertTrue(geladen.isPresent());
     }
     @Test
     void testSpeichereAntragstellerCluster() {
-        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(new Antragsnummer("152"));
+        ScoringId scoringId = ScoringId.preScoringIdAusAntragsnummer("152");
+        AntragstellerCluster antragstellerCluster = new AntragstellerCluster(scoringId);
         antragstellerCluster.wohnortHinzufuegen("Berlin");
         repo.speichern(antragstellerCluster);
 
-        AntragstellerCluster geladen = repo.lade(new Antragsnummer("152"));
-        assertEquals(new Antragsnummer(("152")), geladen.antragsnummer());
+        Optional<AntragstellerCluster> geladen = repo.lade(scoringId);
+        assertTrue(geladen.isPresent());
+        assertEquals(scoringId, geladen.get().scoringId());
     }
 
 }

@@ -6,25 +6,26 @@ import org.jmolecules.ddd.annotation.AggregateRoot;
 import org.jmolecules.ddd.annotation.Identity;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @DomainModelRing
 @AggregateRoot
-public class MonatlicheFinanzsituationCluster {
+public class MonatlicheFinanzsituationCluster implements ClusterScoring {
     @Identity
-    private final Antragsnummer antragsnummer;
+    private final ScoringId scoringId;
     private Waehrungsbetrag einnahmen;
     private Waehrungsbetrag ausgaben;
     private Waehrungsbetrag neueDarlehensBelastungen;
 
-    public MonatlicheFinanzsituationCluster(Antragsnummer antragsnummer) {
-        if(antragsnummer == null) {
-            throw new IllegalArgumentException("Antragsnummer darf nicht null sein.");
+    public MonatlicheFinanzsituationCluster(ScoringId scoringId) {
+        if(scoringId == null) {
+            throw new IllegalArgumentException("ScoringId darf nicht null sein.");
         }
-        this.antragsnummer = antragsnummer;
+        this.scoringId = scoringId;
     }
 
-    public Antragsnummer antragsnummer() {
-        return antragsnummer;
+    public ScoringId scoringId() {
+        return scoringId;
     }
 
     public KoKriterien pruefeKoKriterium() {
@@ -47,17 +48,17 @@ public class MonatlicheFinanzsituationCluster {
         }
     }
 
-    public ClusterScoringEvent scoren() {
+    public Optional<ClusterGescored> scoren() {
         if(einnahmen == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Einnahmen fehlen.");
+            return Optional.empty();
         }
         if(ausgaben == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Ausgaben fehlen.");
+            return Optional.empty();
         }
         if(neueDarlehensBelastungen == null) {
-            return new ClusterKonnteNochNichtGescoredWerden(this.antragsnummer, "Neue Darlehensbelastungen fehlen.");
+            return Optional.empty();
         }
-        return new ClusterGescored(this.antragsnummer, berechnePunkte(), pruefeKoKriterium());
+        return Optional.of(new ClusterGescored(this.scoringId, berechnePunkte(), pruefeKoKriterium()));
     }
 
     public void monatlicheEinnahmenHinzufuegen(Waehrungsbetrag monatlicheEinnahmen) {
@@ -77,11 +78,11 @@ public class MonatlicheFinanzsituationCluster {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MonatlicheFinanzsituationCluster that = (MonatlicheFinanzsituationCluster) o;
-        return Objects.equals(antragsnummer, that.antragsnummer);
+        return Objects.equals(scoringId, that.scoringId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(antragsnummer);
+        return Objects.hashCode(scoringId);
     }
 }

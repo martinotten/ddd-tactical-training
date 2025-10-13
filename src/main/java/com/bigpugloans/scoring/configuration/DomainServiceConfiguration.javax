@@ -1,0 +1,57 @@
+package com.bigpugloans.scoring.configuration;
+
+import com.bigpugloans.scoring.domain.model.antragstellerCluster.AntragstellerClusterRepository;
+import com.bigpugloans.scoring.domain.model.auskunfteiErgebnisCluster.AuskunfteiErgebnisClusterRepository;
+import com.bigpugloans.scoring.domain.model.immobilienFinanzierungsCluster.ImmobilienFinanzierungClusterRepository;
+import com.bigpugloans.scoring.domain.model.monatlicheFinanzsituationCluster.MonatlicheFinanzsituationClusterRepository;
+import com.bigpugloans.scoring.domain.service.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class DomainServiceConfiguration {
+
+    @Bean
+    public AntragHinzufuegenDomainService antragHinzufuegenDomainService(
+            AntragstellerClusterRepository antragstellerClusterRepository,
+            MonatlicheFinanzsituationClusterRepository monatlicheFinanzsituationClusterRepository,
+            ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository,
+            AuskunfteiErgebnisClusterRepository auskunfteiErgebnisClusterRepository) {
+        return new AntragHinzufuegenDomainService(
+                antragstellerClusterRepository,
+                monatlicheFinanzsituationClusterRepository,
+                immobilienFinanzierungClusterRepository,
+                auskunfteiErgebnisClusterRepository);
+    }
+
+    @Bean
+    public AuskunfteiHinzufuegenDomainService auskunfteiHinzufuegenDomainService(
+            AuskunfteiErgebnisClusterRepository auskunfteiErgebnisClusterRepository) {
+        return new AuskunfteiHinzufuegenDomainService(auskunfteiErgebnisClusterRepository);
+    }
+
+    @Bean
+    public KontosaldoHinzufuegenDomainService kontosaldoHinzufuegenDomainService(
+            AntragstellerClusterRepository antragstellerClusterRepository) {
+        return new KontosaldoHinzufuegenDomainService(antragstellerClusterRepository);
+    }
+
+    @Bean
+    public ScoringDomainService scoringDomainService(
+            AntragstellerClusterRepository antragstellerClusterRepository,
+            MonatlicheFinanzsituationClusterRepository monatlicheFinanzsituationClusterRepository,
+            ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository,
+            AuskunfteiErgebnisClusterRepository auskunfteiErgebnisClusterRepository) {
+        return new ScoringDomainService(
+                antragstellerClusterRepository,
+                monatlicheFinanzsituationClusterRepository,
+                immobilienFinanzierungClusterRepository,
+                auskunfteiErgebnisClusterRepository);
+    }
+
+    @Bean
+    public ImmobilienBewertungHinzufuegenDomainService immobilienBewertungHinzufuegenDomainService(
+            ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository) {
+        return new ImmobilienBewertungHinzufuegenDomainService(immobilienFinanzierungClusterRepository);
+    }
+}

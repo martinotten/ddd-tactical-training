@@ -9,7 +9,7 @@ import java.util.Objects;
 
 @ValueObject
 class RueckzahlungsWahrscheinlichkeit {
-    private Prozentwert rueckzahlungsWahrscheinlichkeit;
+    private final Prozentwert rueckzahlungsWahrscheinlichkeit;
 
     public RueckzahlungsWahrscheinlichkeit(Prozentwert rueckzahlungsWahrscheinlichkeit) {
         this.rueckzahlungsWahrscheinlichkeit = rueckzahlungsWahrscheinlichkeit;

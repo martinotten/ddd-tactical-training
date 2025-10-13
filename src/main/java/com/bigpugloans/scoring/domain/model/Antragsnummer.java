@@ -6,7 +6,7 @@ import java.util.Objects;
 
 @DomainModelRing
 public class Antragsnummer {
-    private String antragsnummer;
+    private final String antragsnummer;
 
     public Antragsnummer(String antragsnummer) {
         if(antragsnummer == null) {

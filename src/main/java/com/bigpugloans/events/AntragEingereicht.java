@@ -1,6 +1,6 @@
 package com.bigpugloans.events;
 
-import com.bigpugloans.events.antrag.Antrag;
+import com.bigpugloans.scoring.domain.model.Antrag;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -17,10 +17,6 @@ public class AntragEingereicht implements Serializable {
 
     public void setAntragsnummer(String antragsnummer) {
         this.antragsnummer = antragsnummer;
-    }
-
-    public Date getTimestamp() {
-        return timestamp;
     }
 
     public void setTimestamp(Date timestamp) {

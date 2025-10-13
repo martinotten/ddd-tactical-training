@@ -7,5 +7,7 @@ import org.jmolecules.architecture.onion.classical.ApplicationServiceRing;
 @ApplicationServiceRing
 @SecondaryPort
 public interface ScoringErgebnisVeroeffentlichen {
-    public void preScoringErgebnisVeroeffentlichen(AntragErfolgreichGescored gesamtScoringErgebnis);
+    void preScoringErgebnisVeroeffentlichen(AntragErfolgreichGescored gesamtScoringErgebnis);
+
+    void mainScoringErgebnisVeroeffentlichen(AntragErfolgreichGescored gesamtScoringErgebnis);
 }

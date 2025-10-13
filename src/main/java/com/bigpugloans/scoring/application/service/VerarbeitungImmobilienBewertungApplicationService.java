@@ -9,11 +9,13 @@ import com.bigpugloans.scoring.domainmodel.*;
 import com.bigpugloans.scoring.domainmodel.immobilienFinanzierungsCluster.ImmobilienFinanzierungsCluster;
 import com.bigpugloans.scoring.domainmodel.scoringErgebnis.ScoringErgebnis;
 
-public class VerarbeitungImmobilienBewertungApplicationService implements VerarbeitungImmobilienBewertung {
-    private ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository;
-    private ScoringErgebnisRepository scoringErgebnisRepository;
+import java.util.Optional;
 
-    private ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichen;
+public class VerarbeitungImmobilienBewertungApplicationService implements VerarbeitungImmobilienBewertung {
+    private final ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository;
+    private final ScoringErgebnisRepository scoringErgebnisRepository;
+
+    private final ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichen;
 
     public VerarbeitungImmobilienBewertungApplicationService(ImmobilienFinanzierungClusterRepository immobilienFinanzierungClusterRepository, ScoringErgebnisRepository scoringErgebnisRepository, ScoringErgebnisVeroeffentlichen scoringErgebnisVeroeffentlichen) {
         this.immobilienFinanzierungClusterRepository = immobilienFinanzierungClusterRepository;
@@ -30,10 +32,10 @@ public class VerarbeitungImmobilienBewertungApplicationService implements Verarb
                 new Waehrungsbetrag(immobilienBewertung.maximalerMarktwert()),
                 new Waehrungsbetrag(immobilienBewertung.durchschnittlicherMarktwertVon()),
                 new Waehrungsbetrag(immobilienBewertung.durchschnittlicherMarktwertBis()));
-        ClusterScoringEvent immobilienFinanzierungsClusterErgebnis = immobilienFinanzierungsCluster.scoren();
-        if(ClusterGescored.class.equals(immobilienFinanzierungsClusterErgebnis.getClass())) {
+        Optional<ClusterGescored> immobilienFinanzierungsClusterErgebnis = immobilienFinanzierungsCluster.scoren();
+        if(immobilienFinanzierungsClusterErgebnis.isPresent()) {
             ScoringErgebnis scoringErgebnis = scoringErgebnisRepository.lade(new Antragsnummer(immobilienBewertung.antragsnummer()));
-            scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen((ClusterGescored) immobilienFinanzierungsClusterErgebnis);
+            scoringErgebnis.auskunfteiErgebnisClusterHinzufuegen(immobilienFinanzierungsClusterErgebnis.get());
             AntragScoringEvent antragScoringEvent = scoringErgebnis.berechneErgebnis();
             if(AntragErfolgreichGescored.class.equals(antragScoringEvent.getClass())) {
                 scoringErgebnisVeroeffentlichen.preScoringErgebnisVeroeffentlichen((AntragErfolgreichGescored) antragScoringEvent);

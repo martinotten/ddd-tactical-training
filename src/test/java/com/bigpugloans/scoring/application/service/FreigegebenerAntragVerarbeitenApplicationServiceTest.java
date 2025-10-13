@@ -3,7 +3,6 @@ package com.bigpugloans.scoring.application.service;
 import com.bigpugloans.scoring.application.model.Antrag;
 import com.bigpugloans.scoring.application.model.AuskunfteiErgebnis;
 import com.bigpugloans.scoring.application.ports.driven.*;
-import com.bigpugloans.scoring.application.ports.driving.MainScoringStart;
 import com.bigpugloans.scoring.domainmodel.ScoringId;
 import org.junit.jupiter.api.Test;
 

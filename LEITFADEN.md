@@ -15,7 +15,7 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
 - Bei Bedarf kann immer zur Musterlösung zurückgegriffen werden.
 
 ## Voraussetzungen & Setup
-- Java 21, aktuelle Maven‑Version, Docker (für Testcontainer).
+- Java 21, aktuelle Maven‑Version, eine Docker-Runtime (für Testcontainer).
 - IntelliJ IDEA als IDE.
 
 ## Branch‑Übersicht
@@ -46,77 +46,116 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
 | 22 | `origin/18_Architecture_Tests` | Architekturtests (Onion/Hexagonal/DDD) | `origin/17-1_MessagingAdapters_SpringApplicationEvents` |
 | 23 | `origin/19_Antragserfassung_DomainModeling_EventSourced` | Bonus‑Ausblick: Event Sourcing | `origin/18_Architecture_Tests` |
 
----
 
-# Branch: `0_UnitTests_red`
+# Einleitung ins taktische Design
 
-## 1) Ziel & Kontext
-- TDD‑Start: Alle identifizierten fachlichen Regeln werden als Unit‑Tests formuliert, ohne Implementierung.
-- Fokus auf DDD‑Tactical Design: Ubiquitous Language wird durch die Testbegriffe etabliert.
-- Wichtig: In diesem Schritt werden Cluster noch nicht vorausgesetzt; die Regeln liegen bewusst ungruppiert vor.
-> Fokus: Fachbegriffe und Regeln sichtbar machen.
+Wir gehen davon aus, dass Domain-driven Design und im speziellen das Strategische Desgin bekannt sind. Wir haben zu diesem Punkt im Prozess bereits Sub-Domains erkannt und Bounded Contexts definiert. Nun beschäftigen wir uns mit der Umsetzung von Fachlichkeit innerhalb einer Bounded Contexts. Hier können uns die Pattern aus dem taktischen Design helfen.
 
-## 2) Änderungen zum vorherigen Branch
+## Wann wende ich taktischen Design an?
+
+Mit der strategischen Design haben wie bereits einen wichtigen Schritt gemacht. Die Bounded Contexts die wir definiert haben sollten bereits jeweils einen klaren Zweck und klare Grenzen. Wir haben also bereits einen klaren Rahmen in dem wir uns in einem einzelnen Bounded Context bewegen.
+
+Von hier an können wir entscheiden wie wir die Fachlichkeit innerhalb eines Bounded Contexts umsetzen wollen. Wichtig ist, dass wir weiterhin ein gemeinsames Verständnis und eine gemeinsame Sprache mit dem Fachbereich haben und hier eng zusammen arbeiten. Wir wollen gemeinsames Verständnis von Problemen und gemeinsam Lösungen entwickeln und dies auch im Code abbilden. Dies können wir auch ohne die Pattern des taktischen Designes erreichen.
+
+Die Pattern aus dem taktischen Design können helfen komplexität zu reduzieren und beherschbar zu machen. Wir setzen diese Pattern daher vor allem da ein wo wir komplexe Fachlichkeit umsetzen müssen und schnell sein wollen. Also wahrscheinlich eher bei Bounded Contexts aus unseren Core Domains oder komplexen Supporting Domains.
+
+Bei einfacheren Bounded Contexts werden wir eher auf Architekturen und Frameworks zurückgreifen, die uns für den Anwendungsfall die meiste Arbeit abnehmen.
+
+## Das Domain Model ist ein fachliches Regelmodell
+
+Kern einer solchen Anwendung ist das Domain Model, der Logik-Kern unserer Anwendung. Dessen Aufgabe ist es die fachlichen Funktionen umzusetzen und sich auf die Regeln zu konzentrieren. Daher gilt: wir halten das Domain Model so einfach wie möglich und machen es nur so komplex wie nötig. Die Motivation ist schließlich, dass wir hier trotz der Komplexität möglichst wartbaren, anpassbaren, testbaren Code haben wollen, den wir vor allem schnell ändern können. Gerade für die Core Domains ist es wichtig, dass wir die Fachlichkeit schnell und einfach umsetzen können, da wir hier unseren Wettbewerbsvorteil sicherstellen wollen und uns schnell an neue Gegenheiten anpassen müssen.
+
+Das Domain Modell ist daher in erster Linie ein "Regel Modell". Es ist kein UI-Modell oder Persistenzmodell. Jedes Attribut, dass nicht von einer fachlichen Regel abhängt, wollen wir nicht im Domain Model wiederfinden. Also keine Felder die in der UI nur angezeigt werden oder für einen anderen Anwendungsfall in der gleichen Datenbanktabelle gespeichert werden. Hier gibt es oft Missverständnisse, da wir im taktischen Design Entity als Pattern verwenden. Dies ist ein klassischer Fall von Ubiquitous Language und einem anderen Kontext. Unsere DDD-Entity ist eine Regel-Entity und hat erstmal nichts mit der Datenbank-Entity Persistenz-Entity zu tun.
+
+In diesem Beispiel wollen wir ein Domain Modell erstellen, dass uns aufgrund von passenden Eingaben beantwortet, ob ein Scoring Rot (negativ) oder Grün(positiv) ist.
+
+Von allem technischen muss dieses Modell nichts wissen. Keiner Infrastruktur, kein Framework, keine UI,nichts. Somit kann es sich auf seine Aufgabe konzentrieren und ist so auch gut testbar. Hier haben wir nur Unit Tests.
+
+## Die Architektur um eine Domain Modell
+
+Grundsätzlich lässt sich das Domain Modell als Modul unabhängig von einer bestimmten Architektur umsetzen. Es bietet sich aber an dies mit den Konzepten aus der Hexagonalen Architektur und der Onion Architektur zu kombinieren. Beide helfen uns dabei verschiedene Apspekte der Anwendung und externen Abhängigkeiten zu entkoppeln.
+
+### Die Onion Architektur
+
+Die Onion Architektur teilt die Anwendung in mehrere Schichten auf. (wie eine Zwiebel ) Jede Schicht hat ihre eigene Rolle und ist von den anderen Schichten isoliert. Ziel ist es die inneren Schichten von den äußeren Schichten zu trennen. 
+
+Eine typsiche Aufteilung von Innen nach Außen:
+
+1. Domain Model
+	- Entities, Value Objects, Domain Services (wenn wirklich fachlich)
+	- Domain Events (fachlich, nicht technisch)
+	- Invarianten und Regeln (Policy)
+	- Domain Services (optional als Koordination von fachlichen Funktionen zwischen Aggregaten)
+2.	Application Services
+	- Koordinationsschicht, die als Verbindung zwischen Domain und Infrastruktur fungiert
+	- Definiert Ports/Interfaces, die sie braucht (z. B. CustomerRepository, PaymentGateway)
+  - Policies: Wenn -> dann Regeln.
+3.	Infrastructure
+	- Implementiert Interfaces aus den inneren Schichten (z. B. JpaCustomerRepository implements CustomerRepository)
+  - Liefert die konkreten Schnittstellen zur Außenwelt.
+  - Datenbanken, APIs, User Interfaces
+
+Die inneren Schichten dürfen nicht direkt auf die Implementierungen der äußeren Schichten zugreifen. Direkter Zugriff erfolgt nur von außen nach innen. Also Infrastruktur -> Application Services -> Domain Model. Ein Zugriff von innen nach außen ist nur inderekt über Interfaces erlaubt, die die innere Schicht breitstellt. Die Äußere Schicht liefert die konkreten Implementierungen an die inneren Schichten über Dependency Injection. Somit kann ein Application Service ein `KontostandsAbfrageInterface` anbieten, ist aber nicht davon abhängig, ob die Implementierung von einer API oder einer Datenbank kommt. (z.B. `JDBCKontostandsAbfrage` oder `SOAPKontostandsAbfrage`).
+
+Durch diese Isolation wird nicht nur das Testen der inneren Schichten erleichtert. Die Application Services sind ähnlich gut testbar, wie das Domain Model. Die Infrastruktur kann aber auch isoliert getestet werden indem man ihre Funktion mit den externen Abhängigkeiten testet, aber die eigentliche Anwendungslogik nicht mitgetestet wird. Durch die Nutzung von Interfaces kann leicht gemockt werden, z.B. durch eine `TestKontostandsAbfrage`.
+
+# Testen der fachlichen Regeln (Branch: `origin/0_UnitTests_red`)
+
+## Aufgabe
+- Lese dir die fachlichen Scoring-Regeln durch, diese findest du in der Fallstudie.
+- Schreibe Unit-Tests für jede Regel. Nutze dabei die fachlichen Begriffe aus der Formulierung der Regeln.
+- Implementiere die Regeln in der Klasse `BusinessRulesTest`.
+- Gehe davon aus, dass fachliche Begriffe in den Regeln als eigene Klassen implementiert sind.
+- Entscheide zu welchem Begriff die Regel gehört und ordnere ihr die Regel-Funktion zu.
+- Beispiel:
+  - Regel: "Personen ab dem 80ten Lebensjahr bekommen bei uns keinen Kredit."
+  - Code: `Lebensjahr.aus(geburtsdatum).istKoKriteriumErfuellt()`
+- Achtung: Manchmal versteckt sich der eigentliche Begriff zwischen den Zeilen.
+
+## Lösungsweg
+
+### Änderungen zum Ausgangspunkt (`main`)
 - **Kurzfassung:** Einführung von `BusinessRulesTest` mit fachlichen Regeln.
-- **Technisch:** Neue Tests in `src/test/java/.../domainmodel`, aber kein Produktivcode.
+- **Technisch:** Neue Tests in `src/test/java/.../domainmodel`
 - **Fachlich:** Scoring‑Regeln (KO‑Kriterien, Punkte, Schwellen) werden explizit beschrieben.
- - **Hinweis:** Die Regeln sind bewusst nicht gruppiert; die Cluster entstehen erst im nächsten Schritt aus der Fachsicht.
 
-## 3) Warum diese Änderungen?
+### Warum diese Änderungen?
 - Tests dienen als fachliche Spezifikation und Gesprächsgrundlage für das Domänenmodell.
-- Der rote Zustand zwingt zu Modellierungsentscheidungen in den nächsten Schritten.
+- Wir halten uns direkt an die Ubiquitous Language und konzentrieren uns auf die Fachlichkeit.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
-- Baut auf der leeren Basis auf; ergänzt nur Tests, keine Architekturentscheidungen.
- - Die ungruppierten Regeln schaffen eine neutrale Ausgangslage für spätere fachliche Strukturierung.
+### DDD‑Tactical‑Patterns im Detail
+- **Value Object (Kandidaten):** Die fachlichen Begriffe und Regelzuordnungen sind erste Kandidaten für Value Objects. Durch dieses Vorgehen identifizieren wir die kleinst möglichen Kandidaten. Wir können später entscheiden, ob wir sie als Value Objects oder Entities gruppieren.
+- **Versteckte Bezugspunkte**: Bei der Regel für die "Antragssteller aus Hamburg oder München" ist der eigentliche fachliche Bezugspunkt die Stadt oder der Wohnort nicht explizit genannt. Wir müssen hier erkennen, dass der Antragssteller hier nicht passen kann, da er zu grob ist und viel mehr Infomrationen zu diesem gehören werden. Wir wollen schließlich kleinere und präzise Kandidaten für Value Objects oder Entities identifizieren.
 
-## 5) DDD‑Tactical‑Patterns im Detail
-- **Value Object (angelegt):** Konzepte wie `Waehrungsbetrag`, `Prozentwert`, `Punkte` sind in Tests benannt, aber noch nicht implementiert.
-- **Entity/Aggregat/Domain Event/Repository/Factory:** Nicht vorhanden in diesem Schritt.
-
-## 6) Code‑Navigationshilfe
+### Code‑Navigationshilfe
 - Einstiegspunkt: `src/test/java/com/bigpugloans/scoring/domainmodel/BusinessRulesTest.java`
 
-## 7) Übungen / Reflexion
-- Welche Begriffe wirken wie Value Objects, welche eher wie Entities?
-- Welche Invarianten (z. B. KO‑Kriterien) müssen im Modell geschützt werden?
-
-## 8) Zusammenfassung
-- Dieser Branch setzt den fachlichen Rahmen und macht Erwartungen explizit.
-- Der rote Zustand ist bewusst und leitet zur Modellierung im nächsten Schritt über.
-
 ---
 
-# Branch: `1_UnitTests_green`
+# Minimaler Code für grüne Unit-Tests (Branch: `origin/1_UnitTests_green`)
 
-## 1) Ziel & Kontext
-- Minimaler Domain‑Code, um die Tests aus `0_UnitTests_red` zu erfüllen.
-- Fokus: Erste Value Objects und einfache Regelimplementierung, um das Modell schrittweise zu entwickeln.
- - Cluster werden hier noch nicht modelliert; das Ziel ist nur „grün“ mit minimalem Code.
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
+- Minimaler Code, um die Tests aus `0_UnitTests_red` zu erfüllen.
+- Es soll ein Überblick über die fachlichen Regeln geschaffen werden, um die nachfolgenden Gruppierungen und Bildung von Value Objects oder Entities durchführen zu können.
+- Zudem sind die fachlichen Regeln nach diesem Schritt bereits vollständig implementiert.
 > Fokus: Minimaler Code, der Regeln abbildet – ohne Strukturentscheidungen vorwegzunehmen.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Einführung einfacher Domainklassen in `com.bigpugloans.scoring.domainmodel`.
 - **Technisch:** Klassen wie `Waehrungsbetrag`, `Prozentwert`, `Punkte`, `ScoringErgebnis`, `Finanzierung`, `Haushaltsfinanzen` etc.
 - **Fachlich:** KO‑Kriterien, Punktevergabe und Scoring‑Farbe sind erstmals implementiert.
-
-## 3) Warum diese Änderungen?
-- Der rote Testzustand wird mit minimaler Logik in „grün“ überführt.
-- Zweck: Diskussion über Modellqualität, fehlende Invarianten und DDD‑Design‑Schulden.
-
-## 4) Wie baut der Branch auf dem vorherigen auf?
 - Tests bleiben unverändert; es wird nur das Nötigste ergänzt.
 - Der Code spiegelt exakt die im Test beschriebenen Regeln wider.
- - Die ungruppierte Struktur bleibt bestehen, damit der Schritt zur Cluster‑Sicht bewusst im nächsten Branch erfolgt.
+- Die ungruppierte Struktur bleibt bestehen, damit der Schritt zur Cluster‑Sicht bewusst im nächsten Branch erfolgt.
 
-## 5) DDD‑Tactical‑Patterns im Detail
-- **Value Object:**
-  - `Waehrungsbetrag`, `Prozentwert`, `Punkte` kapseln einfache Vergleiche.
-  - Noch kaum Immutability/Validierung (bewusst minimal für den Schritt).
-- **Entity/Aggregat:** Noch keine expliziten Entities oder Aggregatgrenzen.
-- **Domain Event/Repository/Factory:** Nicht vorhanden.
+### 5) DDD‑Tactical‑Patterns 
+  - `Waehrungsbetrag`, `Prozentwert`, `Punkte`, `ScoringErgebnis`, `Finanzierung`, `Haushaltsfinanzen` sind erste Kandidaten für Domänenobjekte.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Implementierungen: `src/main/java/com/bigpugloans/scoring/domainmodel/*`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/Waehrungsbetrag.java`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/Prozentwert.java`
@@ -131,49 +170,45 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/main/java/com/bigpugloans/scoring/domainmodel/Wohnort.java`
 - Tests: `src/test/java/com/bigpugloans/scoring/domainmodel/BusinessRulesTest.java`
 
-## 7) Übungen / Reflexion
-- Wo fehlen fachliche Invarianten (z. B. Währungsgleichheit, Prozentgrenzen)?
-- Welche Klassen sollten Value Objects bleiben, welche brauchen Identität?
-- Welche Regeln gehören in Services/Aggregate statt in „anämischen“ Klassen?
-
-## 8) Zusammenfassung
-- Der Branch liefert einen funktionierenden, aber bewusst simplen Ausgangspunkt.
-- Damit entsteht eine Basis, um in späteren Schritten DDD‑Patterns zu schärfen.
-
 ---
 
-# Branch: `2_RuleGroups_red` (Referenz: `origin/2_RuleGroups_red`)
+# Fachliche Regel-Cluster erkennen (Branch: `origin/2_RuleGroups_red`)
 
-> Didaktischer Übergang: Die Regeln wurden bisher bewusst ungruppiert formuliert. Ab diesem Schritt wird die Fachsicht explizit: Regel‑Cluster werden erkannt, benannt und als Struktur eingeführt.
+Die Regeln wurden bisher bewusst ungruppiert formuliert. Ab diesem Schritt wird die Fachsicht explizit: Regel‑Cluster werden erkannt, benannt und als Struktur eingeführt.
 
-## 1) Ziel & Kontext
-- Fachliche Regeln werden in Cluster gruppiert (z. B. Antragsteller‑, Auskunftei‑, Immobilien‑ und Finanzsituation‑Cluster).
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
+- Fachliche Regeln werden in Cluster gruppiert (Antragsteller‑, Auskunftei‑, Immobilien‑ und Finanzsituation‑Cluster).
 - DDD‑Fokus: Die Sicht des Fachbereichs wird übernommen — Punkte und KO‑Regeln gehören jeweils zu einem Cluster, nicht als globaler Schnitt.
-- Ab diesem Branch werden Cluster explizit erkannt und benannt.
+- Schreibe Tests für die neuen Cluster und ihre Schnittstellen.
+- Jeder Cluster muss Punkte und KO-Regeln überprüfen. Dabei versteckt jeder Cluster bereits weitere Implementierungsdetails. (Information Hiding)
+
 > Fokus: Fachliche Gruppierung als Strukturentscheidung.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Tests wurden in fachliche Cluster aufgeteilt und präzisiert.
 - **Technisch:** Neue Testklassen und Packages, z. B. `.../antragstellerCluster`, `.../auskunfteiErgebnisCluster`, `.../immobilienFinanzierungsCluster`, `.../monatlicheFinanzsituationCluster`, `.../scoringErgebnis`.
 - **Fachlich:** Regeln sind nicht mehr „flach“ in einer Datei, sondern in thematischen Gruppen.
 - **Zusatz:** `junit-jupiter-params` wird für parameterisierte Tests ergänzt.
- - **Hinweis:** `BusinessRulesTest` existiert weiterhin und wird dadurch funktional redundant.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Regelgruppen machen fachliche Zusammenhänge sichtbar und unterstützen spätere Aggregat‑/Bounded‑Context‑Entscheidungen.
 - Der rote Zustand zwingt zur Umstrukturierung des Domänenmodells in Cluster.
  - Das Training verdeutlicht die bewusste Zäsur: erst Regeln sammeln, dann fachlich gruppieren.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Die fachlichen Regeln bleiben gleich, aber die Tests verlangen neue Strukturen (Cluster‑Klassen und Packages).
 - Das bisherige „monolithische“ Testdesign wird bewusst aufgebrochen.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Cluster als Vorstufe zu Aggregaten:** Tests schaffen fachliche Grenzen, ohne bereits echte Aggregat‑Regeln einzuziehen.
-- **Regelzuordnung:** KO‑Kriterien und Punkte sind cluster‑intern gedacht; eine übergreifende Trennung ist fachlich nicht sinnvoll.
+- **Regelzuordnung:** Die fachliche Gruppierung in Regelcluster wird übernommen. Eine Gruppierung nach KO‑Kriterien und Punkte-Regeln ist zwar auf den ersten Blick naheliegend, aber nicht sinnvoll. Die Folge wäre zunächst Kommunikationsprobleme mit dem Fachbereich, der anders denkt. Und das aus gutem Grund, denn bis auf die Art der Regel gibt es insgesamt keinen Zusammenhang zwischen Regeln des selben Typs. Die Folge ist, dass eine solche Gruppierung nach Regeltyp (Punkte/KO) nicht skaliert. In diesem Beispiel sind es nur wenige Regeln, aber in einer realen Anwendung wären es deutlich mehr. Dann hätte eine solche Gruppe vielleicht hunderte Regeln. Da ist es einfacher Cluster von weniger Regeln zu bilden die zumindest fachlich zusammen gehören und die Regeln so in mindestens 5 statt 2 Gruppen aufzuteilen.
 - **Value Objects:** Weiterhin in den Tests benannt (z. B. `Waehrungsbetrag`, `Prozentwert`, `Punkte`), aber die Struktur liegt jetzt in Cluster‑Tests.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Neue Testgruppen:
   - `src/test/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/AntragstellerClusterTest.java`
   - `src/test/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/AuskunfteiErgebnisClusterTest.java`
@@ -181,92 +216,99 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/test/java/com/bigpugloans/scoring/domainmodel/monatlicheFinanzsituationCluster/MonatlicheFinanzsituationClusterTest.java`
   - `src/test/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnisTest.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Welche Cluster könnten später Aggregat‑Wurzeln werden?
 - Welche Regeln sind cluster‑intern, welche sind cross‑cluster?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Der Branch strukturiert Regeln fachlich und macht Modellgrenzen sichtbar.
 - Der rote Zustand bereitet die Umstrukturierung des Domänenmodells vor.
 
 ---
 
-# Branch: `origin/3_RuleGroups_green`
+# Regel-Cluster implementieren (Branch: `origin/3_RuleGroups_green`)
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Minimaler Domain‑Code wird an die neuen Regelgruppen angepasst.
 - DDD‑Fokus: Cluster werden in Produktivcode überführt, inklusive ihrer jeweils eigenen Punkte‑ und KO‑Regeln.
 > Fokus: Clustern eine Form geben, ohne Übermodellierung.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Einführung von Cluster‑Klassen und Bereinigung der alten „flachen“ Klassen.
 - **Technisch:** Neue Klassen wie `AntragstellerCluster`, `AuskunfteiErgebnisCluster`, `ImmobilienFinanzierungsCluster`.
 - **Struktur:** `ScoringErgebnis` wandert in ein eigenes Unterpaket, `MonatlicheFinanzsituationCluster` ersetzt `Haushaltsfinanzen`.
 - **Aufräumen:** `BusinessRulesTest` wird entfernt; parameterisierte Tests werden wieder vereinfacht.
  - **Regeländerung:** Marktwert‑Punkte werden in Tests/Implementierung von 15 auf 10 reduziert.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Die Teststruktur aus `2_RuleGroups_red` wird in eine erste fachliche Modellstruktur überführt.
 - Schrittweise Modell‑Evolution: erst Gruppierung, dann minimale Implementierung.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Tests bleiben gruppiert; der Code wird so angepasst, dass die Cluster‑Tests grün werden.
 - Alte Klassen/Strukturen werden zugunsten der neuen Cluster‑Grenzen ersetzt.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Cluster als Modellbaustein:** Klassen je Regelgruppe bündeln Regeln und Daten.
 - **Regelzuordnung:** Punkte und KO‑Regeln bleiben im jeweiligen Cluster verankert (fachliche Sicht).
 - **Value Objects:** `Punkte` erhält eine Additions‑Operation (`plus`) zur Aggregation von Teilpunkten.
 - **Aggregat‑Gedanke (implizit):** Cluster bündeln Regeln, ohne explizite Aggregate zu definieren.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Cluster‑Implementierungen:
   - `src/main/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/AntragstellerCluster.java`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/AuskunfteiErgebnisCluster.java`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/immobilienFinanzierungsCluster/ImmobilienFinanzierungsCluster.java`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/MonatlicheFinanzsituationCluster.java`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnis.java`
-- Tests (gruppiert): wie in `origin/2_RuleGroups_red`.
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Wo fehlen Invarianten/Validierungen in den Cluster‑Klassen?
 - Welche Regeln sollten eher in Aggregat‑Methoden oder Domain Services liegen?
 - Welche Cluster benötigen Identität und Lebenszyklus (Entity) vs. reine Value Objects?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Die fachliche Gruppierung wird in Code übersetzt, Tests sind wieder grün.
 - Damit entsteht eine stabilere Basis für spätere taktische Muster (Value Objects, Entities, Aggregate).
 
 ---
 
-# Branch: `origin/4_CommandsEvents_red`
+# Commands für fachliche Interaktion (Branch: `origin/4_CommandsEvents_red`)
 
 > Didaktischer Übergang: Nach der fachlichen Gruppierung werden nun die Interaktionen fachlich benannt. Commands ersetzen Setters, um die Sprache des Fachbereichs abzubilden.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Einführung von Commands (z. B. `...Hinzufuegen`) zur fachlichen Interaktion mit Clustern.
 - DDD‑Fokus: Fachliche Aktionen statt technischer Setter; Cluster liefern ein explizites Scoring‑Ergebnis.
 > Fokus: Sprache des Fachbereichs in der API.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Tests wurden auf Command‑Aufrufe umgestellt und erwarten Cluster‑Ergebnisobjekte.
 - **Technisch:** Neue Typen `ClusterGescored` und `KoKriterien` im Domain‑Modell.
 - **Fachlich:** Cluster „scoren“ und liefern Punkte + KO‑Kriterien zusammen zurück.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Commands machen den Fachkontext explizit („Einkommen hinzufügen“ statt „setXYZ“).
 - Das Ergebnis eines Clusters wird als Value Object greifbar und später kombinierbar.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Regelcluster bleiben erhalten, aber der Interaktionsstil ändert sich von Settern zu Commands.
 - Der rote Zustand zwingt die Modell‑API und die internen Berechnungen neu zu denken.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Command‑Stil:** Methoden wie `wohnortHinzufuegen`, `warnungenHinzufuegen`, `summeDarlehenHinzufuegen`.
 - **Ergebnisobjekt:** `ClusterGescored` kapselt Punkte und KO‑Kriterien pro Cluster.
 - **Regelzuordnung:** Punkte/KO bleiben im Cluster; das Ergebnis ist die fachliche Schnittstelle.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Neue Domain‑Typen:
   - `src/main/java/com/bigpugloans/scoring/domainmodel/ClusterGescored.java`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/KoKriterien.java`
@@ -277,44 +319,48 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/test/java/com/bigpugloans/scoring/domainmodel/monatlicheFinanzsituationCluster/MonatlicheFinanzsituationClusterTest.java`
   - `src/test/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnisTest.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Welche Commands fehlen noch, um die Fachsprache präzise abzubilden?
 - Wo ist ein Command wirklich fachlich und nicht nur ein umbenannter Setter?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Die Fachsprache wird durch Commands sichtbar.
 - Cluster liefern nun explizite Ergebnisobjekte, der Code ist bewusst wieder „rot“.
 
 ---
 
-# Branch: `origin/5_CommandsEvents_green`
+# Command-basierte Cluster umsetzen (Branch: `origin/5_CommandsEvents_green`)
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Umsetzung der Command‑Schnittstellen im Domain‑Code, sodass die Tests grün werden.
 - DDD‑Fokus: Cluster liefern `ClusterGescored` als fachliches Ergebnisobjekt.
 > Fokus: Command‑Schnittstellen als Vertrag.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Cluster implementieren `scoren()` und verarbeiten Commands.
 - **Technisch:** KO‑Logik und Punkteberechnung sind in den Clustern integriert; `ScoringErgebnis` aggregiert Cluster‑Ergebnisse.
 - **Aufräumen:** Frühere Hilfsklassen (`Wohnort`, `Guthaben`, `Eigenkapitalanteil`) werden entfernt und Logik direkt im Cluster modelliert.
 - **Wertlogik:** `Waehrungsbetrag.anteilVon` und `Prozentwert(BigDecimal)` unterstützen Berechnung des Eigenkapitalanteils.
 - **Struktur:** `MonatlicheFinanzsituationCluster` liegt nun im passenden Unterpaket.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Das fachliche „Scoren“ eines Clusters ist eine zentrale Aktion und liefert ein konsistentes Ergebnisobjekt.
 - Die Modelle werden näher an die Sprache des Fachbereichs gebracht.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Die Command‑Tests bleiben bestehen; der Code implementiert nun die erwartete API.
 - Die Cluster übernehmen sowohl Punkte‑ als auch KO‑Regeln intern.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Command‑Modellierung:** `...Hinzufuegen`‑Methoden als fachliche Befehle.
 - **Value Object:** `ClusterGescored` kapselt Ergebnis; `KoKriterien` repräsentiert Zählung.
 - **Cluster‑Schnittstelle:** `scoren()` bildet den fachlichen Abschluss eines Clusters ab.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Cluster‑Implementierungen:
   - `src/main/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/AntragstellerCluster.java`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/AuskunfteiErgebnisCluster.java`
@@ -327,43 +373,96 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/main/java/com/bigpugloans/scoring/domainmodel/Waehrungsbetrag.java`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/Prozentwert.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Welche Commands sollten invariant‑sicher sein (z. B. verbieten negativer Werte)?
 - Ist `ClusterGescored` die richtige Granularität oder braucht es reichhaltigere Ergebnisse?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Command‑basierte Interaktion ist implementiert, die Tests sind grün.
 - Die Cluster liefern fachliche Ergebnisse als Value Objects und bereiten weitere Evolution vor.
 
 ---
 
-# Branch: `origin/6_ValueObjects_red`
+# Value Objects identifizieren (Branch: `origin/6_ValueObjects_red`)
 
-> Didaktischer Übergang: Wir trennen „Attribute“ von echten fachlichen Konzepten. Value Objects kapseln Regeln und Bedeutung, nicht nur Daten.
+## Die Bedeutung von Value Objects im Tactical Design
+Value Objects dienen im Domain-driven Design dazu, fachliche Konzepte, Regeln und Invarianten explizit zu modellieren und so Entities und Aggregate zu entlasten. Ihr Wert liegt weniger in der Wiederverwendung von Typen als in der klaren Kapselung von Bedeutung und Regeln.
 
-## 1) Ziel & Kontext
-- Einführung von Value‑Object‑Tests für fachliche Konzepte (z. B. Wohnort, Guthaben, Warnung).
-- DDD‑Fokus: Ein Value Object ist kein primitives Attribut, sondern ein Business‑Objekt mit Regeln.
-> Fokus: Was ist ein Value Object – und was nicht?
+Value Objects sind fachliche Konzepte ohne eigene Identität und ohne eigenen Lebenszyklus. Sie werden über Wertgleichheit definiert: Zwei Value Objects sind gleich, wenn alle ihre relevanten Werte übereinstimmen. Sie kapseln Regeln und Validierungen und ermöglichen es, fachliche Logik aus Entities zu delegieren. Aus diesem Grund sind Value Objects in der Regel immutable; eine fachliche Änderung führt zu einer neuen Instanz.
 
-## 2) Änderungen zum vorherigen Branch
+Solange diese Eigenschaften erfüllt sind, können Value Objects fachlich reich und regelintensiv sein. Sie dürfen mehrere Attribute enthalten und komplexe Invarianten abbilden. Ein häufiger Fehler ist es, Value Objects mit einfachen Attributen einer Entity zu verwechseln. Ebenso sind sie keine reinen Datentransferobjekte (DTOs): Enthalten sie keine eigenen Regeln oder fachliche Bedeutung, sind sie keine Value Objects.
+
+Im Tactical Design entsteht häufig der Wunsch, Value Objects innerhalb eines Domänenmodells wiederzuverwenden. Dabei ist Vorsicht geboten, denn Wiederverwendung erzeugt Kopplung – und Kopplung sollte bewusst und auf das notwendige Minimum beschränkt werden.
+
+Die Entscheidung zur Wiederverwendung sollte daher nicht anhand von Namensgleichheit, sondern anhand von Bedeutungs- und Regelgleichheit getroffen werden. Werden Value Objects über mehrere Entities oder Aggregate hinweg geteilt, wirken sich Änderungen an Regeln, Validierungen oder Semantik zwangsläufig auf alle Verwendungsstellen aus. Diese Kopplung ist nur dann sinnvoll, wenn alle beteiligten Stellen dasselbe fachliche Konzept mit identischen Invarianten modellieren – heute und mit hoher Wahrscheinlichkeit auch in Zukunft.
+
+Insbesondere über Aggregatsgrenzen hinweg ist Wiederverwendung kritisch zu prüfen. Aggregate bilden eigenständige Konsistenz- und Modellierungsgrenzen; Value Objects mit domänenspezifischen Regeln gehören in der Regel in den Verantwortungsbereich eines einzelnen Aggregats. Werden sie dennoch geteilt, ist dies eine bewusste Designentscheidung mit entsprechenden Wartungs- und Evolutionskosten.
+
+Tritt der Wunsch nach Wiederverwendung von Value Objects häufig auf, sollte dies als Signal zur Modellüberprüfung verstanden werden. Entweder beschreibt das Value Object tatsächlich ein stabiles, aggregatübergreifendes Kernkonzept – oder die betroffenen Aggregate sind fachlich nicht klar genug geschnitten und teilen implizit Verantwortung, die explizit getrennt werden sollte.
+
+
+### Häufige Fallstricke bei Value Objects
+	- Namensgleichheit statt Bedeutungs­gleichheit
+	- Value Objects ohne eigenes Verhalten
+	- Typinflation ohne fachlichen Mehrwert
+Für jedes Attribut wird ein eigenes Value Object eingeführt, ohne  Regeln abzubilden. Das erhöht die Komplexität, ohne das Modell klarer zu machen.
+	- Geteilte Value Objects als versteckte Policies:
+Werden Value Objects über mehrere Aggregate hinweg geteilt, obwohl sie unterschiedliche fachliche Regeln ausdrücken müssten, werden Policies implizit gekoppelt und fachliche Unterschiede unsichtbar gemacht.
+
+### Code-Regeln für die Implementierung von Value Objects
+
+- Da Value Objects fachliche Konzepte sind benutzen wir hier keine Getter und Setter.
+- Stelle über den Konstruktor sicher, dass unsere Value Objects immutable sind.
+- Ein Value Object bietet nach außen nur fachlich motivierte Methoden an.
+
+Wir sind es gewohnt uns zu einer Klasse Getter und Setter generieren zu lassen, aber in diesem Fall wollen wir das nicht tun. Hierdurch würden wir die interne Struktur offenlegen. Unser Value Object wäre schnell nur eine Datenstruktur. Wir wollen aber die *Kapselung* von fachlichen Konzepten und Information Hiding erreichen.
+
+Im folgenden Beispiel wird ein Value Object für den Wohnort erstellt. Der Wohnort wird über einen Konstruktor initialisiert und bietet eine Methode zum Berechnen von Punkten. Durch den konstruktor stellen wir sicher, dass der Wohnort _nicht veränderbar_ (immutable) ist. Hier sollte deutlich werden warum, denn wenn wir den Wohnort verändern, dann ändert sich auch die Punkteberechnung. Solange wir den Wohnort nicht verändern, bleibt das Ergebnis konsistent.
+
+Beispiel:
+
+```java
+public class Wohnort {
+    private final String wohnort;
+
+    public Wohnort(String wohnort) {
+        this.wohnort = wohnort;
+    }
+
+    public Punkte berechnePunkte() {
+        if (wohnort.equals("Hamburg") || wohnort.equals("München"))
+            return new Punkte(10);
+        else
+            return new Punkte(0);
+    }
+}
+```
+
+## Aufgabe
+
+- Überprüfe unsere bisherigen Kandidaten, ob diese die Kriterien für ein Value Object erfüllen.
+- Halte dich an die Code-Regeln für die Implementierung von Value Objects.
+
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Tests werden auf eigenständige fachliche Begriffe aufgeteilt.
 - **Technisch:** Neue Testklassen wie `GuthabenTest`, `WohnortTest`, `WarnungTest`, `NegativMerkmalTest`, `RueckzahlungsWahrscheinlichkeitTest`, `MarktwertVergleichTest`.
 - **Fachlich:** Regeln wandern gedanklich aus den Clustern in eigenständige Begriffe.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Fachliche Konzepte werden explizit und separat testbar.
 - Es wird klar, welche Regeln zu einem Begriff gehören (nicht zu einem „zusammengewürfelten“ Cluster).
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Command‑Schnittstellen bleiben; zusätzlich werden Value‑Object‑Tests eingeführt.
 - Der rote Zustand zeigt, dass die Value Objects noch fehlen.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Value Object (neu):** `Guthaben`, `Wohnort`, `Warnung`, `NegativMerkmal`, `RueckzahlungsWahrscheinlichkeit`, `MarktwertVergleich`.
 - **Abgrenzung:** Value Objects sind fachliche Konzepte mit Regeln; kein „einfaches Attribut“.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Neue Tests:
   - `src/test/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/GuthabenTest.java`
   - `src/test/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/WohnortTest.java`
@@ -372,46 +471,50 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/test/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/RueckzahlungsWahrscheinlichkeitTest.java`
   - `src/test/java/com/bigpugloans/scoring/domainmodel/immobilienFinanzierungsCluster/MarktwertVergleichTest.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Welche Begriffe sind echte Value Objects und welche eher Entities?
 - Welche Regeln sollten direkt im Value Object validiert werden?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Die fachlichen Begriffe werden als eigene Value Objects sichtbar gemacht.
 - Der Branch ist bewusst „rot“, um die Implementierung der Konzepte zu erzwingen.
 
 ---
 
-# Branch: `origin/7_ValueObjects_green`
+# Value Objects implementieren (Branch: `origin/7_ValueObjects_green`)
 
 > Didaktischer Übergang: Value Objects werden implementiert und in die Cluster integriert. Regeln sitzen nun dort, wo der Fachbegriff lebt.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Implementierung der Value Objects und Integration in die Cluster.
 - DDD‑Fokus: Value Objects kapseln Regeln und Bedeutung, nicht nur Daten.
 > Fokus: Regeln gehören zu Begriffen.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Value Objects sind jetzt Teil des Produktivcodes.
 - **Technisch:** Klassen wie `Guthaben`, `Wohnort`, `Warnung`, `NegativMerkmal`, `RueckzahlungsWahrscheinlichkeit`, `MarktwertVergleich` werden eingeführt.
 - **Modellfluss:** Cluster delegieren Punkte/KO‑Regeln an Value Objects.
 - **Ergebniszustand:** `ClusterGescored` erhält `ClusterStatus` (gescored/nicht gescored).
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Regeln wohnen bei den passenden Begriffen, nicht verstreut in Clustern.
 - Das Modell wird ausdrucksstärker und resilient gegen Regeländerungen.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Die Value‑Object‑Tests aus `origin/6_ValueObjects_red` werden grün.
 - Cluster‑Logik wird vereinfacht, weil sie auf fachliche Objekte delegiert.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Value Object (zentral):** Kapselt Regeln und Vergleichslogik (z. B. `Warnung`, `Guthaben`).
 - **Nicht‑Beispiel:** Ein reines Feld ohne Regel wäre kein Value Object.
 - **Verschärfte Definition:** Ein Value Object ist ein fachlicher Begriff mit eigener Logik, Regeln und Invarianten, der über seinen Wert definiert ist (Gleichheit über Attribute) und keinen eigenen Lebenszyklus/Identität besitzt. Ein „String“ oder „int“ ohne Fachregel ist kein Value Object.
 - **Status‑Objekt:** `ClusterStatus` definiert den Zustand des Cluster‑Ergebnisses.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Value Objects:
   - `src/main/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/Guthaben.java`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/Wohnort.java`
@@ -427,86 +530,94 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/main/java/com/bigpugloans/scoring/domainmodel/ClusterGescored.java`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/ClusterStatus.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Welche Value Objects brauchen eigene Validierungsregeln (z. B. Grenzen, Null‑Checks)?
 - Wo könnten Value Objects wiederverwendet oder kombiniert werden?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Value Objects sind umgesetzt und tragen die fachlichen Regeln.
 - Das Modell trennt klar zwischen „Attribut“ und fachlichem Konzept.
 
 ---
 
-# Branch: `origin/8_Entities_red`
+# Entities identifizieren (Branch: `origin/8_Entities_red`)
 
 > Didaktischer Übergang: Wir prüfen, welche bisherigen Value Objects tatsächlich eine Identität und einen Lebenszyklus benötigen. Daraus entstehen Entities.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Einführung von Entity‑Tests und Identitäten (z. B. `Antragsnummer`, `AntragstellerID`).
 - DDD‑Fokus: Entities werden über Identität definiert, nicht über ihren aktuellen Wert.
 > Fokus: Lebenszyklus und Identität.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Tests verlangen Identitäten und Gleichheit über IDs.
 - **Technisch:** Neue Tests `AntragsnummerTest` und `AntragstellerIDTest`; Cluster‑Tests erwarten Konstruktoren mit IDs.
 - **Fachlich:** Auskunftei‑Ergebnisse und Scoring‑Ergebnisse sind nun an Antragsnummer/Antragsteller gebunden.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Fachliche Konzepte wie „Antrag“ und „Antragsteller“ haben einen Lebenszyklus und müssen eindeutig identifizierbar sein.
 - Value Objects allein reichen nicht aus, wenn wir historisieren oder Zustände über Zeit hinweg verfolgen müssen.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Value Objects bleiben bestehen; zusätzlich wird eine Identität eingeführt.
 - Der rote Zustand zwingt die Modellierung von Entities (und IDs) in den Clustern.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Entity (neu):** Identität als primäres Kriterium (z. B. `Antragsnummer`, `AntragstellerID`).
 - **Abgrenzung:** Sobald Lebenszyklus/Identität benötigt wird, ist es kein Value Object mehr.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Neue Tests:
   - `src/test/java/com/bigpugloans/scoring/domainmodel/AntragsnummerTest.java`
   - `src/test/java/com/bigpugloans/scoring/domainmodel/AntragstellerIDTest.java`
   - `src/test/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/AuskunfteiErgebnisClusterTest.java`
   - `src/test/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnisTest.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Welche bisherigen Value Objects benötigen tatsächlich eine Identität?
 - Welche Prozesse (z. B. Antragshistorie) erzwingen Entities?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Die Notwendigkeit von Identität wird explizit, Entities werden vorbereitet.
 - Der Branch ist bewusst „rot“, um die Entity‑Implementierung auszulösen.
 
 ---
 
-# Branch: `origin/9_Entities_green`
+# Entities implementieren (Branch: `origin/9_Entities_green`)
 
 > Didaktischer Übergang: Entities werden implementiert, Identität wird zum zentralen Gleichheitskriterium.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Umsetzung der Entities und Integration in Cluster und Scoring‑Ergebnis.
 - DDD‑Fokus: Identität und Lebenszyklus bestimmen die Modellierung.
 > Fokus: Identität als Gleichheitskriterium.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Entity‑Klassen werden eingeführt und in Cluster/Scoring verwendet.
 - **Technisch:** `Antragsnummer` und `AntragstellerID` werden implementiert; `ScoringErgebnis` und `AuskunfteiErgebnisCluster` nutzen Identitäten.
 - **Gleichheit:** `equals/hashCode` basieren auf Identität, nicht auf Attributwerten.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Fachliche Stabilität: Ein Antrag bleibt „derselbe“ trotz geänderter Attribute.
 - Identität erlaubt konsistente Referenzierung und Nachvollziehbarkeit.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Tests aus `origin/8_Entities_red` werden grün.
 - Value Objects bleiben, Entities strukturieren nun den Lebenszyklus.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Entity:** `Antragsnummer`, `AntragstellerID` als Identitätsanker.
 - **Value Object vs. Entity:** Entscheidung anhand Lebenszyklus, nicht anhand Komplexität.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Entities:
   - `src/main/java/com/bigpugloans/scoring/domainmodel/Antragsnummer.java`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/AntragstellerID.java`
@@ -514,44 +625,96 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/main/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/AuskunfteiErgebnisCluster.java`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnis.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Wo ist Identität fachlich zwingend, wo wäre sie Overhead?
 - Welche Entities könnten später Aggregate werden?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Entities sind implementiert und bilden den Lebenszyklus ab.
 - Das Modell ist bereit für Aggregat‑Entscheidungen in den nächsten Schritten.
 
 ---
 
-# Branch: `origin/10_Aggregates_red`
+# Aggregate, Konsistenzregeln und Policies identifizieren
+
+Bevor wir Aggregate umsetzen können müssen wir diese erst einmal identifizieren. Die richtigen Aggregate zu identifizieren ist herausfordernd. Wir müssen davon ausgehen, dass unser erster Entwurf nicht perfekt ist und wir unser Modell Schrittweise verbessern.
+
+Wir müssen herausfinden:
+- Welche Konsistenzregeln es gibt.
+- Welche Konsistenzregeln zusammen ausgeführt werden müssen.
+- Welche Policies es gibt.
+- Welche fachlichen Objekte Grundlagefür Aggregate sein können.
+
+Konsistenzregeln: Diese Regeln schützen uns vor Invarianten. Sie stellen also sicher, dass unser Modell konsistent ist und keine Regeln verletzt werden. Sie sind wie die Regeln bei einem Gesellschaftsspiel. Diese müssen eingehalten werden, sonst schummelt jemand. Diese Regeln gelten aber nur in einem bestimmten Rahmen, zum Beispiel in einer Spielerunde, aber nicht am Nachbartisch.
+
+Konsistenzregeln bilden die Grundlage für die Bildung von Aggregaten.
+
+Konsistenzregeln sind immer Teil eines Aggregats.
+
+Hinzu kommen Policies, sogenannte Wenn-Dann-Regeln. "Wenn jemand eine 7 legt, dann muss der nächste Spieler zwei Karten ziehen.". Policies steuern den Fluss in der Anwendung und in unserer Implementierung das Zusammenspiel aus Services und Aggreagten. Policies bilden mit Commands das Interface von Aggregaten nach außen. 
+
+#### Wo werden Policies implementiert?
+
+Policies können sowohl in Services, als auch in Aggregaten definiert werden. In Aggregaten setzen wir Policies um, die sich nur auf Abläufe innerhalb dieses Aggregates beziehen. In Services liegen Policies, die Kommunikation nach außen betreffen. Aggregate können sich auf gegenseitig aufrufen und so Policies untereinander umsetzen. 
+
+#### Unterscheidung von Policies und Konsistenzregeln
+
+Bei manchen Regeln ist die Unterscheidung einfach. So ist: "Spieler müssen mindestens 18 Jahre als sein." eine Konsistenzregel.
+
+Genauso gibt es Policies die keine weitere Validierung erfordern und nur einen simplen Ablauf beschreiben.
+
+Die Unterscheidung zwischen ist nicht immer einfach. Schauen wir uns dazu nochmal das vorherige BEsipeil an:
+"Wenn jemand eine 7 legt, dann muss der nächste Spieler zwei Karten ziehen."
+
+Hier ist ein klarer Ablauf beschrieben. Wenn wir das Spiel als Computerspiel umsetzen wollten, müssten wir diese Regel automatisieren. Wir würden erwarten, dass der Computer automatisch zwei Karten zieht, wenn eine 7 gespielt wird. Am Spieltisch muss jeder Spieler dies selbst ausführen.
+
+Genauso ist hier aber eine Konsistenzregel versteckt, denn wir müssen sicherstellen, dass dies auch wirklich passiert ist. Wir haben also auch Regeln für ein Aggregate, die prüfen wann ein Spieler wieviele Karten ziehen darf oder muss.
+
+#### Commands
+
+Commands sind Aktionen, die direkt auf einem aggregate ausgeführt werden können. Sie definieren die Schnittstelle eines Aggregates und werden entweder durch Policies oder Nutzeraktionen ausgelöst.
+
+#### Wie identifizieren wir Konsistenzregeln, Policies und Commands?
+
+Eine oft erfolgreiche Methode ist das Software-Design-level Event Storming. Bei Event Storming denken wir oft an das Big Picture Event Storming. Beim Big Picture Event Storming haben wir nicht viele Regeln. Wir wollen meistens effektiv gemeinsames Verständnis über einen Bereich aufbauen, ein "Big Picture".
+Die Design-Level Event Storming variante ist dagegen sehr strikt. Hier ist das Ziel Prozesse im Detail und lückenlos zu verstehen. Daher gibt es feste Grammatik die definiert welche Elemente vorkommen müssen und in welcher Reihenfolge.
+
+Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst bei der Umsetzung oder später als Bugs zeigen.
+
+---
+
+# Aggregate-Invarianten definieren (Branch: `origin/10_Aggregates_red`)
 
 > Didaktischer Übergang: Nach Entities definieren wir Konsistenzgrenzen. Aggregate stellen sicher, dass alle Teile zu einem Antrag gehören und vollständig sind.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Einführung von Aggregat‑Regeln (Konsistenzgrenzen, Vollständigkeit, gemeinsame Antragsnummer).
 - DDD‑Fokus: Aggregate schützen Invarianten über mehrere Cluster hinweg.
 > Fokus: Invarianten über mehrere Objekte.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Tests verlangen gleiche `Antragsnummer` in allen Cluster‑Ergebnissen und behandeln fehlende Teilergebnisse.
 - **Technisch:** Cluster‑Tests prüfen `Optional`‑Ergebnisse bei fehlenden Daten.
 - **Fachlich:** Ein Antrag kann „nicht gescored“ sein, wenn Teilinformationen fehlen.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Aggregate definieren die fachliche Konsistenz: alle Teile müssen zum selben Antrag gehören.
 - Vollständigkeit wird zu einer Invariante (kein Scoring ohne alle nötigen Daten).
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Entities bleiben, werden aber nun als Aggregate‑Schlüssel genutzt (`Antragsnummer`).
 - Der rote Zustand erzwingt Aggregate‑Logik in Scoring und Clustern.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Aggregate Root (implizit):** `ScoringErgebnis` bündelt Cluster‑Ergebnisse eines Antrags.
 - **Invarianten:** Gleichheit der `Antragsnummer` und Vollständigkeit der Teilergebnisse.
 - **Ergebniszustand:** Fehlende Cluster führen zu „nicht gescored“ statt falschem Ergebnis.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Aggregate‑Tests:
   - `src/test/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnisTest.java`
   - `src/test/java/com/bigpugloans/scoring/domainmodel/immobilienFinanzierungsCluster/ImmobilienFinanzierungsClusterTest.java`
@@ -559,45 +722,49 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/test/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/AntragstellerClusterTest.java`
   - `src/test/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/AuskunfteiErgebnisClusterTest.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Welche Invarianten gehören in die Aggregate Root und welche in die Cluster?
 - Wann ist „nicht gescored“ fachlich sinnvoller als ein negatives Ergebnis?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Aggregate‑Regeln werden explizit gefordert.
 - Konsistenz und Vollständigkeit werden als fachliche Invarianten sichtbar.
 
 ---
 
-# Branch: `origin/11_Aggregates_green`
+# Aggregate umsetzen und Ergebnisse ableiten (Branch: `origin/11_Aggregates_green`)
 
 > Didaktischer Übergang: Die Aggregat‑Invarianten werden umgesetzt; Scoring liefert fachliche Events statt nur Zustände.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Umsetzung der Aggregate‑Regeln und Ergebnis‑Events.
 - DDD‑Fokus: Aggregate Root verwaltet Konsistenz und Ergebnis‑Events.
 > Fokus: Aggregates als Konsistenzgrenzen.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Aggregate‑Regeln sind implementiert, Scoring liefert Events.
 - **Technisch:** `ClusterGescored` enthält jetzt `Antragsnummer`; Cluster‑`scoren()` liefert `Optional`.
 - **Domain Events:** `AntragScoringEvent` mit `AntragErfolgreichGescored` und `AntragKonnteNichtGescoredWerden`.
 - **Konsistenz:** `ScoringErgebnis` prüft Antragsnummern und wirft bei Abweichung.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Aggregate Root schützt die Konsistenz der Scoring‑Daten.
 - Events liefern eine klare, fachliche Schnittstelle an nachfolgende Schritte.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Tests aus `origin/10_Aggregates_red` werden grün.
 - Clustern liefern nur noch Ergebnisse, wenn alle notwendigen Daten vorliegen.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Aggregate Root:** `ScoringErgebnis` koordiniert Cluster‑Ergebnisse.
 - **Domain Event:** `AntragErfolgreichGescored`, `AntragKonnteNichtGescoredWerden`.
 - **Invarianten:** gleiche `Antragsnummer` und vollständige Cluster‑Daten.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Aggregate Root & Events:
   - `src/main/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnis.java`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/AntragScoringEvent.java`
@@ -607,44 +774,48 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/main/java/com/bigpugloans/scoring/domainmodel/ClusterGescored.java`
   - `src/main/java/com/bigpugloans/scoring/domainmodel/ClusterKonnteNochNichtGescoredWerden.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Welche Aggregate fehlen noch im Scoring‑Kontext?
 - Wo sollten Domain Events später publiziert werden?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Aggregates sind umgesetzt, Invarianten werden durchgesetzt.
 - Scoring liefert klare fachliche Events für die nächsten Prozessschritte.
 
 ---
 
-# Branch: `origin/12_Ports`
+# Ports definieren (Branch: `origin/12_Ports`)
 
 > Didaktischer Übergang: Nach der Domänenmodellierung wird die Anwendungsgrenze klar. Ports definieren, was die Domäne braucht und was sie anbietet.
 > Hinweis: Ab hier gibt es keine expliziten TDD‑Red/Green‑Schritte mehr, sondern evolutionäre Ausbauschritte.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Einführung von Ports (Driving/Driven) für das Scoring‑Modul.
 - DDD‑Fokus: Hexagonal/Ports‑&‑Adapters‑Sicht, ohne konkrete Implementierungen.
 > Fokus: Abhängigkeitsrichtung und Schnittstellen.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Neue Interfaces für Eingänge (Driving) und Abhängigkeiten (Driven).
 - **Technisch:** Ports in `application/ports/driving` und `application/ports/driven`.
 - **Fachlich:** Abhängigkeiten wie Auskunftei‑Abfrage oder Persistenz werden als Schnittstellen beschrieben.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Ports entkoppeln Domäne/Anwendung von Infrastruktur.
 - Die spätere Implementierung als Adapter wird vorbereitet.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Aggregate bleiben unverändert; es wird eine Anwendungsschicht eingeführt.
 - Ports kapseln die Kommunikation nach außen und innen, ohne Logik zu verändern.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Driving Ports:** z. B. `PreScoringStart`, `VerarbeitungImmobilienBewertung` als Eingänge.
 - **Driven Ports:** z. B. Repositories (`ScoringErgebnisRepository`, `AntragstellerClusterRepository`) und externe Services (`KonditionsAbfrage`, `LeseKontoSaldo`).
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Driving Ports:
   - `src/main/java/com/bigpugloans/scoring/application/ports/driving/PreScoringStart.java`
   - `src/main/java/com/bigpugloans/scoring/application/ports/driving/VerarbeitungImmobilienBewertung.java`
@@ -662,44 +833,48 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/main/java/com/bigpugloans/scoring/application/model/AuskunfteiErgebnis.java`
   - `src/main/java/com/bigpugloans/scoring/application/model/ImmobilienBewertung.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Welche Ports sind fachlich notwendig, welche technisch motiviert?
 - Wo gehört ein neuer Port hin (driving vs. driven)?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Ports definieren die Grenzen des Scoring‑Moduls.
 - Die Implementierung als Adapter folgt in späteren Schritten.
 
 ---
 
-# Branch: `origin/13_ApplicationServices`
+# Application Services orchestrieren (Branch: `origin/13_ApplicationServices`)
 
 > Didaktischer Übergang: Die Anwendungsebene orchestriert den Ablauf. Application Services koordinieren Ports, Infrastruktur und Domäne.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Einführung von Application Services als Use‑Case‑Orchestrierung.
 - Fokus: Prozesssteuerung (Pre‑Scoring vs. Main‑Scoring) und Integration externer Services.
 > Fokus: Orchestrierung statt Fachlogik.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Application Services implementieren Driving Ports und rufen Driven Ports/Domain‑Logik.
 - **Technisch:** `EingereicherAntragVerarbeitenApplicationService`, `FreigegebenerAntragVerarbeitenApplicationService`, `VerarbeitungImmobilienBewertungApplicationService`.
 - **Fachlich:** Pre‑Scoring und Main‑Scoring unterscheiden sich durch Auskunftei‑Abfrageart (Konditions‑ vs. Kreditabfrage).
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Application Services koordinieren den Ablauf über mehrere Systeme/Ports hinweg.
 - Sie halten Infrastruktur‑Details von der Domäne fern und definieren Transaktionsgrenzen.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Ports sind vorhanden; nun werden sie durch Application Services „verdrahtet“.
 - Domain‑Logik bleibt unangetastet, Orchestrierung kommt hinzu.
 
-## 5) Aufgaben & Abgrenzung (Application vs. Domain Service)
+### 5) Aufgaben & Abgrenzung (Application vs. Domain Service)
 - **Application Service:** Orchestriert Use Cases, ruft Ports, entscheidet Ablauf (z. B. Pre/Main‑Scoring).
 - **Domain Service:** Enthält fachliche Logik über mehrere Entities/Value Objects (ohne Infrastruktur).
 - **In diesem Schritt:** Application Services delegieren fachliche Operationen an Domain‑Services‑Ports.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Application Services:
   - `src/main/java/com/bigpugloans/scoring/application/service/EingereicherAntragVerarbeitenApplicationService.java`
   - `src/main/java/com/bigpugloans/scoring/application/service/FreigegebenerAntragVerarbeitenApplicationService.java`
@@ -711,45 +886,49 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/main/java/com/bigpugloans/scoring/application/model/Antrag.java`
   - `src/main/java/com/bigpugloans/scoring/application/model/AuskunfteiErgebnis.java`
 
-## 7) Alternative Interpretationen
+### 7) Alternative Interpretationen
 - Manche Teams verwenden „Application Services“ nur als Thin Layer und legen fast alle Regeln in Aggregate.
 - Andere schneiden Use‑Cases als „Command Handlers“ und verzichten auf explizite Services.
 - In CQRS‑Varianten kann die Orchestrierung stärker in der Infrastruktur liegen, während Domänenlogik in Aggregaten verbleibt.
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Application Services koordinieren den Prozess und integrieren Ports.
 - Die fachliche Logik bleibt in der Domäne (oder wird in Domain Services ausgelagert).
 
 ---
 
-# Branch: `origin/14_DomainServices`
+# Domain Services bündeln (Branch: `origin/14_DomainServices`)
 
 > Didaktischer Übergang: Fachliche Logik wird aus der Orchestrierung herausgezogen. Domain Services bündeln Regeln über mehrere Cluster hinweg.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Einführung von Domain Services für fachliche Operationen über mehrere Aggregate/Cluster.
 - Fokus: Wiederverwendbare Fachlogik, unabhängig von Infrastruktur.
 > Fokus: Fachlogik zentralisieren.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Domain Services entstehen, Domain‑Model wird in `domain/model` konsolidiert.
 - **Technisch:** `AntragHinzufuegenDomainService`, `AuskunfteiHinzufuegenDomainService`, `ScoringDomainService` u. a.
 - **Fachlich:** Application Services delegieren fachliche Entscheidungen an Domain Services.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Fachliche Logik über mehrere Aggregate/Cluster gehört nicht in Application Services.
 - Domain Services reduzieren Duplikation und machen Regeln zentral testbar.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Application Services bleiben, enthalten aber weniger fachliche Logik.
 - Domain Services übernehmen die konkrete Verarbeitung und arbeiten mit Repositories.
 
-## 5) Aufgaben & Abgrenzung (Domain vs. Application Service)
+### 5) Aufgaben & Abgrenzung (Domain vs. Application Service)
 - **Domain Service:** Enthält Regeln, Invarianten und fachliche Entscheidungen über mehrere Entitäten.
 - **Application Service:** Steuert den Ablauf und kümmert sich um Ports/Transaktionen.
 - **Warum diese Aufteilung:** Orchestrierung bleibt schlank, Fachlogik bleibt zentral.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Domain Services:
   - `src/main/java/com/bigpugloans/scoring/domain/service/AntragHinzufuegenDomainService.java`
   - `src/main/java/com/bigpugloans/scoring/domain/service/AuskunfteiHinzufuegenDomainService.java`
@@ -758,44 +937,48 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/main/java/com/bigpugloans/scoring/domain/model/scoringErgebnis/ScoringErgebnis.java`
   - `src/main/java/com/bigpugloans/scoring/domain/model/ClusterScoring.java`
 
-## 7) Alternative Interpretationen
+### 7) Alternative Interpretationen
 - Manche Ansätze vermeiden Domain Services und legen Regeln direkt in Aggregate (rich domain model).
 - Andere nutzen Domain Services als reine „Policy Objects“ ohne Repositories (funktionaler Stil).
 - In anämischen Modellen verbleibt die Logik oft in Application Services — das wird hier bewusst vermieden.
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Domain Services bündeln fachliche Logik, Application Services orchestrieren.
 - Die Trennung erhöht Klarheit und Wiederverwendbarkeit im Scoring‑Prozess.
 
 ---
 
-# Branch: `origin/15-0_DrivenAdapters_UnitTests`
+# Adapter-Verträge testen (Branch: `origin/15-0_DrivenAdapters_UnitTests`)
 
 > Didaktischer Übergang: Bevor konkrete Infrastruktur gewählt wird, definieren wir die Adapter‑Verträge mit Tests.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Einführung von Adapter‑Unit‑Tests für die Driven Ports (Repository‑Verträge).
 - Fokus: Infrastruktur bleibt offen, aber Verhalten der Adapter wird festgelegt.
 > Fokus: Infrastrukturverträge definieren.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Neue Adapter‑Tests für Repositories.
 - **Technisch:** Tests in `src/test/java/com/bigpugloans/scoring/adapter/driven/*`.
 - **Fachlich:** Persistenz wird als austauschbarer Mechanismus betrachtet.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Adapter‑Tests definieren die Erwartungen an Persistenz, unabhängig von Technologie.
 - Erlaubt spätere Varianten (Memento, Mongo, JPA) ohne die Domäne zu ändern.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Ports und Services bleiben; es kommen nur Adapter‑Tests hinzu.
 - In‑Memory‑Repos dienen als Test‑Double.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Ports & Adapters:** Ports definieren, Adapter erfüllen Verträge.
 - **Test‑First Infrastruktur:** Verhalten wird getestet, bevor Technologie feststeht.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Adapter‑Tests:
   - `src/test/java/com/bigpugloans/scoring/adapter/driven/antragstellerCluster/AntragstellerClusterRepositoryTest.java`
   - `src/test/java/com/bigpugloans/scoring/adapter/driven/auskunfteiErgebnisCluster/AuskunfteiErgebnisClusterRepositoryTest.java`
@@ -803,45 +986,49 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/test/java/com/bigpugloans/scoring/adapter/driven/monatlicheFinanzsituationCluster/MonatlicheFinanzsituationClusterRepositoryTest.java`
   - `src/test/java/com/bigpugloans/scoring/adapter/driven/scoringErgebnis/ScoringErgebnisRepositoryTest.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Welche Adapter‑Verträge sind kritisch für die Domäne?
 - Welche Anforderungen würden sich bei Technologie‑Wechsel ändern?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Adapter‑Verträge sind testgetrieben fixiert.
 - Die konkrete Persistenz ist bewusst noch offen.
 
 ---
 
-# Branch: `origin/15-1_DrivenAdapters_Memento-Pattern`
+# Adapter mit Memento/JDBC umsetzen (Branch: `origin/15-1_DrivenAdapters_Memento-Pattern`)
 
 > Didaktischer Übergang: Erste Adapter‑Implementierung mit relationaler Persistenz und Memento‑Pattern.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Umsetzung der Repository‑Adapter mit Spring Data JDBC + Memento.
 - Fokus: Persistenz getrennt halten, aber Snapshot‑Mechanismus nutzen.
 > Fokus: Explizites Mapping ohne JPA.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** JDBC‑Adapter und Record‑Klassen werden eingeführt.
 - **Technisch:** `*JDBCRepository`, `*Record`, `schema.sql`, `data.sql`.
 - **Memento:** Domain‑Objekte liefern ein Memento zur Persistenz (`...Memento`).
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Memento erlaubt Persistenz ohne JPA‑Annotationen im Domain‑Model.
 - Relationale DB bleibt möglich, Mapping bleibt explizit.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Adapter‑Tests werden mit JDBC‑Implementierungen erfüllt.
 - Domain‑Objekte erhalten Memento‑Funktionen (Persistenzwissen).
 
-## 5) Bewertung & DDD‑Nähe
+### 5) Bewertung & DDD‑Nähe
 - **Stärken:** Domain bleibt weitgehend frei von ORM‑Anmerkungen; Mapping ist explizit.
 - **Kompromiss:** Memento‑Klassen im Domain‑Model leaken Persistenz‑Interessen in die Domäne.
 - **Risiko:** Gefahr der „Daten‑Aufblähung“ im Domain‑Model (UI‑Felder, technische Daten ohne Regelbezug).
 - **Wann sinnvoll:** Wenn relationale DB gefordert ist und JPA bewusst vermieden werden soll, aber mit klarer Disziplin: Domain nur um regelrelevante Daten erweitern.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - JDBC‑Adapter:
   - `src/main/java/com/bigpugloans/scoring/adapter/driven/*/*JDBCRepository.java`
   - `src/main/java/com/bigpugloans/scoring/adapter/driven/*/*Record.java`
@@ -853,45 +1040,49 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
 - Memento‑Logik:
   - `src/main/java/com/bigpugloans/scoring/domain/model/antragstellerCluster/AntragstellerCluster.java` (Memento)
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Ist ein Memento ein akzeptabler „technical leak“ in der Domäne?
 - Welche Aggregate profitieren von expliziten Snapshots?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - JDBC‑Adapter funktionieren, Persistenz ist relational.
 - Memento‑Pattern ist ein bewusster Kompromiss zwischen Reinheit und Praktikabilität.
 
 ---
 
-# Branch: `origin/15-2_DrivenAdapters_SpringData-MongoDB`
+# Adapter mit MongoDB umsetzen (Branch: `origin/15-2_DrivenAdapters_SpringData-MongoDB`)
 
 > Didaktischer Übergang: Alternative Persistenz mit MongoDB und separatem Dokument‑Modell.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Umsetzung der Adapter mit Spring Data MongoDB.
 - Fokus: Persistenzmodelle getrennt vom Domain‑Model halten.
 > Fokus: Dokument‑Mapping für Aggregate.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** JDBC‑Adapter werden durch Mongo‑Adapter ersetzt.
 - **Technisch:** `*Document` + `*MongoDbRepository` + Spring Data Repositories.
 - **Domain‑Model:** bleibt ohne Persistenz‑Annotationen.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - MongoDB erlaubt flexible Dokument‑Strukturen für Aggregate.
 - Dokument‑Klassen kapseln Persistenzdetails im Adapter.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Adapter‑Tests werden mit Mongo‑Implementierungen erfüllt.
 - Domain‑Model bleibt technologisch neutral.
 
-## 5) Bewertung & DDD‑Nähe
+### 5) Bewertung & DDD‑Nähe
 - **Stärken:** Domain bleibt frei von Persistenz‑Annotations; Adapter kapseln Infrastruktur.
 - **Kompromiss:** Dokumente speichern Domain‑Objekte (Kopplung Domain ↔ Dokument‑Schema).
 - **Einwand (berechtigt):** Schema‑Migrationen werden schwieriger/unklar, wenn das Domain‑Model direkt in Dokumenten persistiert wird.
 - **Wann sinnvoll:** Wenn Dokument‑DB genutzt wird und Aggregate als Dokumente gespeichert werden sollen.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Mongo‑Adapter:
   - `src/main/java/com/bigpugloans/scoring/adapter/driven/*/*Document.java`
   - `src/main/java/com/bigpugloans/scoring/adapter/driven/*/*MongoDbRepository.java`
@@ -901,44 +1092,48 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/main/java/com/bigpugloans/scoring/adapter/driven/scoringErgebnis/ScoringErgebnisDocument.java`
   - `src/main/java/com/bigpugloans/scoring/adapter/driven/scoringErgebnis/ScoringErgebnisMongoDbRepository.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Welche Teile der Aggregate sollten dokumentbasiert gespeichert werden?
 - Wo droht enge Kopplung zwischen Document und Domain?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Mongo‑Variante ist DDD‑nah, da Domain sauber bleibt.
 - Dokument‑Mapping ist der Hauptkompromiss dieser Variante.
 
 ---
 
-# Branch: `origin/15-3_DrivenAdapters_JPA-Annotated`
+# Adapter mit JPA-Annotations umsetzen (Branch: `origin/15-3_DrivenAdapters_JPA-Annotated`)
 
 > Didaktischer Übergang: Alternative Persistenz mit JPA‑Annotationen direkt im Domänenmodell.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Umsetzung der Adapter mit Spring Data JPA.
 - Fokus: Schnell integrierbare Persistenz, aber stärkere Kopplung.
 > Fokus: Pragmatismus vs. Domänenreinheit.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Mongo‑Dokumente werden durch JPA‑Repositories ersetzt.
 - **Technisch:** Domain‑Model wird mit `@Entity`, `@Embedded`, `@Id` annotiert.
 - **Domänenänderung:** No‑Arg‑Konstruktoren und technische IDs entstehen.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - JPA ist verbreitet und produktiv für relationale Datenbanken.
 - Infrastruktur wird schneller integrierbar, Tests werden vereinheitlicht.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Adapter‑Tests laufen nun gegen JPA‑Repos.
 - Domain‑Klassen tragen Persistenz‑Details.
 
-## 5) Bewertung & DDD‑Nähe
+### 5) Bewertung & DDD‑Nähe
 - **Stärken:** Schnelle Umsetzung mit Standard‑Stack, gute Tooling‑Unterstützung.
 - **Kompromiss:** Domain‑Model ist nicht mehr persistence‑ignorant; technische Anforderungen prägen das Modell.
 - **Wann sinnvoll:** Wenn Team/Organisation stark auf JPA setzt und Time‑to‑Market wichtiger ist als maximale Domänenreinheit.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - JPA‑Adapter:
   - `src/main/java/com/bigpugloans/scoring/adapter/driven/*/*JpaRepository.java`
   - `src/main/java/com/bigpugloans/scoring/adapter/driven/*/*SpringDataRepository.java`
@@ -949,11 +1144,11 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/main/java/com/bigpugloans/scoring/domain/model/monatlicheFinanzsituationCluster/MonatlicheFinanzsituationCluster.java`
   - `src/main/java/com/bigpugloans/scoring/domain/model/scoringErgebnis/ScoringErgebnis.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Welche Persistenz‑Details dürfen im Domain‑Model sichtbar sein?
 - Wie beeinflussen JPA‑Constraints die Modellierung von Aggregaten?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - JPA‑Variante ist pragmatisch, aber am weitesten von DDD‑Reinheit entfernt.
 - Technische Kopplung wird zugunsten von Produktivität akzeptiert.
 
@@ -981,33 +1176,37 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
 - **Abgrenzung:** Gehört es in die Domäne oder in einen Adapter/View‑Model?
 - **Schlankheit:** Entfernt dieses Feld Modell‑Komplexität oder erhöht es nur die Datenlast?
 
-# Branch: `origin/16_DrivenAdapters_Backends`
+# Backend-Adapter integrieren (Branch: `origin/16_DrivenAdapters_Backends`)
 
 > Didaktischer Übergang: Neben Persistenz‑Adaptern werden nun Backend‑Adapter für externe Systeme eingeführt.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Einführung konkreter Adapter für Auskunftei‑ und Kontosaldo‑Abfragen.
 - Fokus: Externe Systeme als Driven Adapter, weiterhin hinter Ports gekapselt.
 > Fokus: Externe Systeme kapseln.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Backend‑Adapter implementieren Ports für Konditionsabfrage und Kontosaldo.
 - **Technisch:** `KonditionsAbfrageAdapter`, `LeseKontoSaldoAdapter` sowie Tests.
 - **Fachlich:** Externe Datenquellen werden in die Anwendung integriert.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Fachliche Prozesse benötigen externe Daten (Auskunftei, Kernbank).
 - Adapter halten die Domäne frei von Infrastruktur‑Details.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Persistenz‑Adapter bleiben; es kommen Backend‑Adapter für externe Services hinzu.
 - Ports (`KonditionsAbfrage`, `LeseKontoSaldo`) werden nun konkret umgesetzt.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Driven Adapter:** Implementieren Infrastrukturzugriff, liefern Domänen‑nahe Daten zurück.
 - **Abgrenzung:** Domain/Services kennen nur Ports, nicht die Adapter.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Backend‑Adapter:
   - `src/main/java/com/bigpugloans/scoring/adapter/driven/backends/KonditionsAbfrageAdapter.java`
   - `src/main/java/com/bigpugloans/scoring/adapter/driven/backends/LeseKontoSaldoAdapter.java`
@@ -1020,43 +1219,47 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/test/java/com/bigpugloans/scoring/adapter/driven/backends/KonditionsAbfrageAdapterTest.java`
   - `src/test/java/com/bigpugloans/scoring/adapter/driven/backends/LeseKontoSaldoAdapterTest.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Wie unterscheiden sich Infrastruktur‑Ports (Auskunftei) von Persistenz‑Ports?
 - Welche Fehler‑/Timeout‑Strategien sollten diese Adapter besitzen?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Backend‑Adapter sind eingeführt und kapseln externe Systeme.
 - Die Port‑Struktur bewahrt die Domäne vor Infrastruktur‑Abhängigkeiten.
 
 ---
 
-# Branch: `origin/17-1_MessagingAdapters_SpringApplicationEvents`
+# Messaging-Adapter mit Events (Branch: `origin/17-1_MessagingAdapters_SpringApplicationEvents`)
 
 > Didaktischer Übergang: Ereignisse werden als Integrationsmechanismus eingeführt. Driving/Driven Adapter reagieren und veröffentlichen Events.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Einführung von Messaging‑Adaptern auf Basis von Spring Application Events.
 - Fokus: Integration über Events, ohne direkte Kopplung zwischen Systemen.
 > Fokus: Lose Kopplung via Events.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Neue Event‑Typen und Listener, Publishing von Scoring‑Ergebnissen.
 - **Technisch:** Listener in `adapter.driving`, Publisher in `adapter.driven.messaging`.
 - **Fachlich:** Eingehende Events („Antrag eingereicht“, „Immobilie bewertet“) stoßen Use‑Cases an.
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Ereignisse ermöglichen lose Kopplung und asynchrone Integration.
 - Die Domäne bleibt von Messaging‑Details entkoppelt.
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Ports/Services bleiben; Events binden sie an die Außenwelt an.
 - Scoring‑Ergebnisse werden als Events veröffentlicht.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Domain Events / Integration Events:** Publishing basiert auf Scoring‑Ergebnis.
 - **Adapters:** Listener (Driving) und Publisher (Driven) kapseln Infrastruktur.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Events:
   - `src/main/java/com/bigpugloans/events/AntragEingereicht.java`
   - `src/main/java/com/bigpugloans/events/ImmobilieBewertet.java`
@@ -1071,47 +1274,51 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
 - Driven Adapter (Publisher):
   - `src/main/java/com/bigpugloans/scoring/adapter/driven/messaging/ScoringErgebnisVeroeffentlichenAdapter.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Sind diese Events Domain‑ oder Integration‑Events?
 - Welche Informationen dürfen in Events enthalten sein, ohne die Domäne zu leaken?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Messaging‑Adapter führen Ereignisfluss ein und koppeln Systeme lose.
 - Use‑Cases werden über Events ausgelöst und Ergebnisse veröffentlicht.
 
 ---
 
-# Branch: `origin/18_Architecture_Tests`
+# Architektur mit Tests sichern (Branch: `origin/18_Architecture_Tests`)
 
 > Didaktischer Übergang: Architektur wird nicht nur beschrieben, sondern aktiv überprüft. Tests schützen Onion/Hexagonal‑Prinzipien.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Einführung von Architekturtests mit ArchUnit und jMolecules.
 - Fokus: Onion und Hexagonal Architecture sowie DDD‑Regeln automatisiert sichern.
 > Fokus: Architektur als überprüfbarer Vertrag.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** ArchUnit‑Tests prüfen Paket‑, Schicht‑ und Abhängigkeitsregeln.
 - **Technisch:** Neue Tests in `src/test/java/com/bigpugloans/architecture`.
 - **Fachlich:** Architekturinvarianten werden als Code überprüfbar.
 
-## 3) Warum Architekturtests (besonders bei Onion/Hexagonal)?
+### 3) Warum Architekturtests (besonders bei Onion/Hexagonal)?
 - Diese Architekturen leben von **Richtung der Abhängigkeiten**; Verstöße sind schwer sichtbar.
 - Ohne Tests schleichen sich Framework‑Abhängigkeiten in die Domäne ein.
 - Architekturtests wirken als **Regression‑Schutz** gegen schleichende Kopplung.
 
-## 4) Wie wurden sie hier umgesetzt?
+### 4) Wie wurden sie hier umgesetzt?
 - **Hexagonal‑Regeln:** `HexagonalArchitectureTests` prüfen Schichten und Dependency‑Direction.
 - **Onion‑Regeln:** `ArchUnitTests` erzwingen Domänen‑Isolation.
 - **DDD‑Regeln:** `DddTacticalPatternsTests` + `JMoleculesArchUnitTests`.
 - **Paket‑/Naming‑Regeln:** `PackageStructureTests` verhindern Zyklen und falsche Platzierungen.
 
-## 5) Warum diese Regeln?
+### 5) Warum diese Regeln?
 - **Domäne unabhängig:** Keine Abhängigkeiten zu Adaptern oder Frameworks.
 - **Ports zentral:** Adapter hängen von Ports ab, nicht umgekehrt.
 - **Clusters isoliert:** Fachliche Cluster sollen nicht quer abhängen.
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Architekturtests:
   - `src/test/java/com/bigpugloans/architecture/HexagonalArchitectureTests.java`
   - `src/test/java/com/bigpugloans/architecture/ArchUnitTests.java`
@@ -1121,44 +1328,48 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
 - Bounded Context Annotation:
   - `src/main/java/com/bigpugloans/scoring/package-info.java`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Welche Architekturregel schützt euch am stärksten vor Kopplung?
 - Welche Regel würdet ihr lockern oder verschärfen – und warum?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Architekturtests sind essenziell, weil Onion/Hexagonal nur durch konsequente Abhängigkeitsrichtung funktionieren.
 - Die Tests machen Architektur überprüfbar und stabil.
 
 ---
 
-# Branch: `origin/19_Antragserfassung_DomainModeling_EventSourced`
+# Event Sourcing als Ausblick (Branch: `origin/19_Antragserfassung_DomainModeling_EventSourced`)
 
 > Bonus‑Ausblick: Event Sourcing als Alternative für antragsbezogene Modellierung – mit Commands, Events und Projections.
 
-## 1) Ziel & Kontext
+## Aufgabe
+- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
+
 - Demonstration eines event‑sourced Subsystems für die Antragserfassung.
 - Fokus: Event Sourcing + CQRS (Command‑/Query‑Separation) als mögliche Evolutionsrichtung.
 > Fokus: Event Sourcing als Ausblick.
 
-## 2) Änderungen zum vorherigen Branch
+## Lösungsweg
+
+### Änderungen zum vorherigen Branch
 - **Kurzfassung:** Neuer Bounded Context `antragserfassung` mit Axon‑Aggregate, Commands, Events und Projections.
 - **Technisch:** Axon‑Konfiguration, Projections, Web‑UI für Antragserfassung.
 - **Fachlich:** Antragserfassung wird als sequenzieller Prozess modelliert (Schritte, Status, Abschluss).
 
-## 3) Warum diese Änderungen?
+### 3) Warum diese Änderungen?
 - Event Sourcing eignet sich für Prozesse mit Audit‑Bedarf und klaren Status‑Übergängen.
 - Änderungen werden als Ereignisse nachvollziehbar (Nachvollziehbarkeit, Historie).
 
-## 4) Wie baut der Branch auf dem vorherigen auf?
+### 4) Wie baut der Branch auf dem vorherigen auf?
 - Das Scoring bleibt bestehen; zusätzlich wird eine event‑sourced Antragserfassung gezeigt.
 - Dient als Ausblick, nicht als Migration des bestehenden Scoring‑Modells.
 
-## 5) DDD‑Tactical‑Patterns im Detail
+### 5) DDD‑Tactical‑Patterns im Detail
 - **Aggregate Root:** `Antragserfassung` als Event‑sourced Aggregate.
 - **Commands/Events:** `StarteAntragCommand`, `AntragGestartetEvent`, `AntragserfassungAbgeschlossenEvent`, etc.
 - **Projections:** Read‑Model wird aus Events aufgebaut (Query‑Seite).
 
-## 6) Code‑Navigationshilfe
+### 6) Code‑Navigationshilfe
 - Aggregate & Events:
   - `src/main/java/com/bigpugloans/antragserfassung/domain/model/Antragserfassung.java`
   - `src/main/java/com/bigpugloans/antragserfassung/domain/model/StarteAntragCommand.java`
@@ -1172,11 +1383,11 @@ Dieses Training basiert auf der Fallstudie **„Big Pug Loans“** der Mops Bank
   - `src/main/java/com/bigpugloans/antragserfassung/web/AntragserfassungController.java`
   - `src/main/resources/templates/antragserfassung/neu.html`
 
-## 7) Übungen / Reflexion
+### 7) Übungen / Reflexion
 - Für welche Teile des Scorings wäre Event Sourcing sinnvoll – und wo nicht?
 - Welche zusätzlichen Anforderungen (Event‑Versioning, Projections‑Rebuilds) entstehen?
 
-## 8) Zusammenfassung
+### 8) Zusammenfassung
 - Event Sourcing wird als Bonus‑Ausblick gezeigt, nicht als Pflichtpfad.
 - Der Branch demonstriert Commands, Events und Projections als Alternative Modellierungsoption.
 

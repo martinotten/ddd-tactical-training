@@ -99,7 +99,22 @@ Die inneren Schichten dürfen nicht direkt auf die Implementierungen der äußer
 
 Durch diese Isolation wird nicht nur das Testen der inneren Schichten erleichtert. Die Application Services sind ähnlich gut testbar, wie das Domain Model. Die Infrastruktur kann aber auch isoliert getestet werden indem man ihre Funktion mit den externen Abhängigkeiten testet, aber die eigentliche Anwendungslogik nicht mitgetestet wird. Durch die Nutzung von Interfaces kann leicht gemockt werden, z.B. durch eine `TestKontostandsAbfrage`.
 
-# Testen der fachlichen Regeln (Branch: `origin/0_UnitTests_red`)
+**Repository in der Onion Architektur:** Ein Repository ist ein fachliches Zugriffskonzept, kein technisches Detail. Es wird als Interface in einer inneren Schicht definiert (meist Application oder Domain), damit das Domain Model Aggregates laden und speichern kann, ohne die Infrastruktur zu kennen. Das Repository bildet also die Grenze zwischen fachlicher Welt und Persistenz: Es liefert Aggregate als Ganzes, kapselt Abfragen in fachlicher Sprache und verhindert, dass Fachlogik SQL/ORM oder API-Details kennen muss. Die konkrete Umsetzung (JDBC/JPA/Mongo/HTTP) liegt in der Infrastructure-Schicht und wird per Dependency Injection an die innere Schicht geliefert. Wichtig: Repositories speichern Aggregate Roots, nicht beliebige Entitaeten oder Value Objects, um Konsistenzgrenzen zu respektieren. Ein reines CRUD-Interface sollte beim Repository daher vermieden werden. Die Methoden stellen fachliche motivierte Funktionen dar um Aggregate zu laden oder zu verändern.
+
+Beispiel:
+```java
+public interface ScoringErgebnisRepository {
+    void scoringErgebnisSpeichern(ScoringErgebnis scoringErgebnis);
+
+    Optional<ScoringErgebnis> scoringErgebnisZu(ScoringId scoringId);
+
+    boolean scoringBereitsAbgeschlossen(ScoringId scoringId);
+}
+```
+
+# Testen der fachlichen Regeln
+Ausgangspunkt: `origin/main`
+Lösung: `origin/0_UnitTests_red`
 
 ## Aufgabe
 - Lese dir die fachlichen Scoring-Regeln durch, diese findest du in der Fallstudie.
@@ -127,12 +142,11 @@ Durch diese Isolation wird nicht nur das Testen der inneren Schichten erleichter
 - **Value Object (Kandidaten):** Die fachlichen Begriffe und Regelzuordnungen sind erste Kandidaten für Value Objects. Durch dieses Vorgehen identifizieren wir die kleinst möglichen Kandidaten. Wir können später entscheiden, ob wir sie als Value Objects oder Entities gruppieren.
 - **Versteckte Bezugspunkte**: Bei der Regel für die "Antragssteller aus Hamburg oder München" ist der eigentliche fachliche Bezugspunkt die Stadt oder der Wohnort nicht explizit genannt. Wir müssen hier erkennen, dass der Antragssteller hier nicht passen kann, da er zu grob ist und viel mehr Infomrationen zu diesem gehören werden. Wir wollen schließlich kleinere und präzise Kandidaten für Value Objects oder Entities identifizieren.
 
-### Code‑Navigationshilfe
-- Einstiegspunkt: `src/test/java/com/bigpugloans/scoring/domainmodel/BusinessRulesTest.java`
-
 ---
 
-# Minimaler Code für grüne Unit-Tests (Branch: `origin/1_UnitTests_green`)
+# Minimaler Code für grüne Unit-Tests
+Ausgangspunkt: `origin/0_UnitTests_red`
+Lösung: `origin/1_UnitTests_green`
 
 ## Aufgabe
 - Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
@@ -155,25 +169,11 @@ Durch diese Isolation wird nicht nur das Testen der inneren Schichten erleichter
 ### 5) DDD‑Tactical‑Patterns 
   - `Waehrungsbetrag`, `Prozentwert`, `Punkte`, `ScoringErgebnis`, `Finanzierung`, `Haushaltsfinanzen` sind erste Kandidaten für Domänenobjekte.
 
-### 6) Code‑Navigationshilfe
-- Implementierungen: `src/main/java/com/bigpugloans/scoring/domainmodel/*`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/Waehrungsbetrag.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/Prozentwert.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/Punkte.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/ScoringErgebnis.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/Finanzierung.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/Haushaltsfinanzen.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/AuskunfteiErgebnis.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/Eigenkapitalanteil.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/Guthaben.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/Immobilie.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/Wohnort.java`
-- Tests: `src/test/java/com/bigpugloans/scoring/domainmodel/BusinessRulesTest.java`
-
 ---
 
-# Fachliche Regel-Cluster erkennen (Branch: `origin/2_RuleGroups_red`)
-
+# Fachliche Regel-Cluster erkennen
+Ausgangspunkt: `origin/1_UnitTests_green`
+Lösung: `origin/2_RuleGroups_red`
 Die Regeln wurden bisher bewusst ungruppiert formuliert. Ab diesem Schritt wird die Fachsicht explizit: Regel‑Cluster werden erkannt, benannt und als Struktur eingeführt.
 
 ## Aufgabe
@@ -208,14 +208,6 @@ Die Regeln wurden bisher bewusst ungruppiert formuliert. Ab diesem Schritt wird 
 - **Regelzuordnung:** Die fachliche Gruppierung in Regelcluster wird übernommen. Eine Gruppierung nach KO‑Kriterien und Punkte-Regeln ist zwar auf den ersten Blick naheliegend, aber nicht sinnvoll. Die Folge wäre zunächst Kommunikationsprobleme mit dem Fachbereich, der anders denkt. Und das aus gutem Grund, denn bis auf die Art der Regel gibt es insgesamt keinen Zusammenhang zwischen Regeln des selben Typs. Die Folge ist, dass eine solche Gruppierung nach Regeltyp (Punkte/KO) nicht skaliert. In diesem Beispiel sind es nur wenige Regeln, aber in einer realen Anwendung wären es deutlich mehr. Dann hätte eine solche Gruppe vielleicht hunderte Regeln. Da ist es einfacher Cluster von weniger Regeln zu bilden die zumindest fachlich zusammen gehören und die Regeln so in mindestens 5 statt 2 Gruppen aufzuteilen.
 - **Value Objects:** Weiterhin in den Tests benannt (z. B. `Waehrungsbetrag`, `Prozentwert`, `Punkte`), aber die Struktur liegt jetzt in Cluster‑Tests.
 
-### 6) Code‑Navigationshilfe
-- Neue Testgruppen:
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/AntragstellerClusterTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/AuskunfteiErgebnisClusterTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/immobilienFinanzierungsCluster/ImmobilienFinanzierungsClusterTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/monatlicheFinanzsituationCluster/MonatlicheFinanzsituationClusterTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnisTest.java`
-
 ### 7) Übungen / Reflexion
 - Welche Cluster könnten später Aggregat‑Wurzeln werden?
 - Welche Regeln sind cluster‑intern, welche sind cross‑cluster?
@@ -226,7 +218,9 @@ Die Regeln wurden bisher bewusst ungruppiert formuliert. Ab diesem Schritt wird 
 
 ---
 
-# Regel-Cluster implementieren (Branch: `origin/3_RuleGroups_green`)
+# Regel-Cluster implementieren
+Ausgangspunkt: `origin/2_RuleGroups_red`
+Lösung: `origin/3_RuleGroups_green`
 
 ## Aufgabe
 - Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
@@ -258,14 +252,6 @@ Die Regeln wurden bisher bewusst ungruppiert formuliert. Ab diesem Schritt wird 
 - **Value Objects:** `Punkte` erhält eine Additions‑Operation (`plus`) zur Aggregation von Teilpunkten.
 - **Aggregat‑Gedanke (implizit):** Cluster bündeln Regeln, ohne explizite Aggregate zu definieren.
 
-### 6) Code‑Navigationshilfe
-- Cluster‑Implementierungen:
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/AntragstellerCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/AuskunfteiErgebnisCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/immobilienFinanzierungsCluster/ImmobilienFinanzierungsCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/MonatlicheFinanzsituationCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnis.java`
-
 ### 7) Übungen / Reflexion
 - Wo fehlen Invarianten/Validierungen in den Cluster‑Klassen?
 - Welche Regeln sollten eher in Aggregat‑Methoden oder Domain Services liegen?
@@ -277,8 +263,9 @@ Die Regeln wurden bisher bewusst ungruppiert formuliert. Ab diesem Schritt wird 
 
 ---
 
-# Commands für fachliche Interaktion (Branch: `origin/4_CommandsEvents_red`)
-
+# Commands für fachliche Interaktion
+Ausgangspunkt: `origin/3_RuleGroups_green`
+Lösung: `origin/4_CommandsEvents_red`
 > Didaktischer Übergang: Nach der fachlichen Gruppierung werden nun die Interaktionen fachlich benannt. Commands ersetzen Setters, um die Sprache des Fachbereichs abzubilden.
 
 ## Aufgabe
@@ -308,17 +295,6 @@ Die Regeln wurden bisher bewusst ungruppiert formuliert. Ab diesem Schritt wird 
 - **Ergebnisobjekt:** `ClusterGescored` kapselt Punkte und KO‑Kriterien pro Cluster.
 - **Regelzuordnung:** Punkte/KO bleiben im Cluster; das Ergebnis ist die fachliche Schnittstelle.
 
-### 6) Code‑Navigationshilfe
-- Neue Domain‑Typen:
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/ClusterGescored.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/KoKriterien.java`
-- Tests (Command‑basiert):
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/AntragstellerClusterTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/AuskunfteiErgebnisClusterTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/immobilienFinanzierungsCluster/ImmobilienFinanzierungsClusterTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/monatlicheFinanzsituationCluster/MonatlicheFinanzsituationClusterTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnisTest.java`
-
 ### 7) Übungen / Reflexion
 - Welche Commands fehlen noch, um die Fachsprache präzise abzubilden?
 - Wo ist ein Command wirklich fachlich und nicht nur ein umbenannter Setter?
@@ -329,7 +305,9 @@ Die Regeln wurden bisher bewusst ungruppiert formuliert. Ab diesem Schritt wird 
 
 ---
 
-# Command-basierte Cluster umsetzen (Branch: `origin/5_CommandsEvents_green`)
+# Command-basierte Cluster umsetzen
+Ausgangspunkt: `origin/4_CommandsEvents_red`
+Lösung: `origin/5_CommandsEvents_green`
 
 ## Aufgabe
 - Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
@@ -360,19 +338,6 @@ Die Regeln wurden bisher bewusst ungruppiert formuliert. Ab diesem Schritt wird 
 - **Value Object:** `ClusterGescored` kapselt Ergebnis; `KoKriterien` repräsentiert Zählung.
 - **Cluster‑Schnittstelle:** `scoren()` bildet den fachlichen Abschluss eines Clusters ab.
 
-### 6) Code‑Navigationshilfe
-- Cluster‑Implementierungen:
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/AntragstellerCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/AuskunfteiErgebnisCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/immobilienFinanzierungsCluster/ImmobilienFinanzierungsCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/monatlicheFinanzsituationCluster/MonatlicheFinanzsituationCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnis.java`
-- Ergebnisobjekte/Value Objects:
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/ClusterGescored.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/KoKriterien.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/Waehrungsbetrag.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/Prozentwert.java`
-
 ### 7) Übungen / Reflexion
 - Welche Commands sollten invariant‑sicher sein (z. B. verbieten negativer Werte)?
 - Ist `ClusterGescored` die richtige Granularität oder braucht es reichhaltigere Ergebnisse?
@@ -383,7 +348,9 @@ Die Regeln wurden bisher bewusst ungruppiert formuliert. Ab diesem Schritt wird 
 
 ---
 
-# Value Objects identifizieren (Branch: `origin/6_ValueObjects_red`)
+# Value Objects identifizieren
+Ausgangspunkt: `origin/5_CommandsEvents_green`
+Lösung: `origin/6_ValueObjects_red`
 
 ## Die Bedeutung von Value Objects im Tactical Design
 Value Objects dienen im Domain-driven Design dazu, fachliche Konzepte, Regeln und Invarianten explizit zu modellieren und so Entities und Aggregate zu entlasten. Ihr Wert liegt weniger in der Wiederverwendung von Typen als in der klaren Kapselung von Bedeutung und Regeln.
@@ -450,99 +417,40 @@ public class Wohnort {
 - **Technisch:** Neue Testklassen wie `GuthabenTest`, `WohnortTest`, `WarnungTest`, `NegativMerkmalTest`, `RueckzahlungsWahrscheinlichkeitTest`, `MarktwertVergleichTest`.
 - **Fachlich:** Regeln wandern gedanklich aus den Clustern in eigenständige Begriffe.
 
-### 3) Warum diese Änderungen?
+### Warum diese Änderungen?
 - Fachliche Konzepte werden explizit und separat testbar.
 - Es wird klar, welche Regeln zu einem Begriff gehören (nicht zu einem „zusammengewürfelten“ Cluster).
 
-### 4) Wie baut der Branch auf dem vorherigen auf?
-- Command‑Schnittstellen bleiben; zusätzlich werden Value‑Object‑Tests eingeführt.
-- Der rote Zustand zeigt, dass die Value Objects noch fehlen.
-
-### 5) DDD‑Tactical‑Patterns im Detail
-- **Value Object (neu):** `Guthaben`, `Wohnort`, `Warnung`, `NegativMerkmal`, `RueckzahlungsWahrscheinlichkeit`, `MarktwertVergleich`.
-- **Abgrenzung:** Value Objects sind fachliche Konzepte mit Regeln; kein „einfaches Attribut“.
-
-### 6) Code‑Navigationshilfe
-- Neue Tests:
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/GuthabenTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/WohnortTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/NegativMerkmalTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/WarnungTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/RueckzahlungsWahrscheinlichkeitTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/immobilienFinanzierungsCluster/MarktwertVergleichTest.java`
-
-### 7) Übungen / Reflexion
-- Welche Begriffe sind echte Value Objects und welche eher Entities?
-- Welche Regeln sollten direkt im Value Object validiert werden?
-
-### 8) Zusammenfassung
-- Die fachlichen Begriffe werden als eigene Value Objects sichtbar gemacht.
-- Der Branch ist bewusst „rot“, um die Implementierung der Konzepte zu erzwingen.
-
 ---
 
-# Value Objects implementieren (Branch: `origin/7_ValueObjects_green`)
-
-> Didaktischer Übergang: Value Objects werden implementiert und in die Cluster integriert. Regeln sitzen nun dort, wo der Fachbegriff lebt.
+# Value Objects implementieren
+Ausgangspunkt: `origin/6_ValueObjects_red`
+Lösung: `origin/7_ValueObjects_green`
 
 ## Aufgabe
-- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
-
-- Implementierung der Value Objects und Integration in die Cluster.
-- DDD‑Fokus: Value Objects kapseln Regeln und Bedeutung, nicht nur Daten.
-> Fokus: Regeln gehören zu Begriffen.
+- Führe die notwendigen Änderungen um damit die ValueObjects die in den Tests definiereten Kriterien erfüllen.
 
 ## Lösungsweg
 
-### Änderungen zum vorherigen Branch
-- **Kurzfassung:** Value Objects sind jetzt Teil des Produktivcodes.
-- **Technisch:** Klassen wie `Guthaben`, `Wohnort`, `Warnung`, `NegativMerkmal`, `RueckzahlungsWahrscheinlichkeit`, `MarktwertVergleich` werden eingeführt.
-- **Modellfluss:** Cluster delegieren Punkte/KO‑Regeln an Value Objects.
-- **Ergebniszustand:** `ClusterGescored` erhält `ClusterStatus` (gescored/nicht gescored).
-
-### 3) Warum diese Änderungen?
-- Regeln wohnen bei den passenden Begriffen, nicht verstreut in Clustern.
+### Änderungen 
+- Value Objects wurden implementiert und bilden die Basis für den weiteren Ausbau unseres Domändenmodells.
+- Regeln gehören zu den Fachbegriffen
+- Es ist klar, dass ein Domänenmodell ein fachliches Regelmodell ist und diese Regeln das Design treiben.
 - Das Modell wird ausdrucksstärker und resilient gegen Regeländerungen.
+- Durch das Bottom-Up-Design stellen wir sicher, dass wir ein Modell entwerfen, dass sich an den Bedürfnissen der Fachlichkeit orientiert und wir nicht stattdessen Top-Down Fachobjekte definieren, die gut aussehen, aber in der Architektur keinen Mehrwert liefern.
 
-### 4) Wie baut der Branch auf dem vorherigen auf?
-- Die Value‑Object‑Tests aus `origin/6_ValueObjects_red` werden grün.
-- Cluster‑Logik wird vereinfacht, weil sie auf fachliche Objekte delegiert.
-
-### 5) DDD‑Tactical‑Patterns im Detail
+### DDD‑Tactical‑Patterns in einer Nussschale
 - **Value Object (zentral):** Kapselt Regeln und Vergleichslogik (z. B. `Warnung`, `Guthaben`).
 - **Nicht‑Beispiel:** Ein reines Feld ohne Regel wäre kein Value Object.
 - **Verschärfte Definition:** Ein Value Object ist ein fachlicher Begriff mit eigener Logik, Regeln und Invarianten, der über seinen Wert definiert ist (Gleichheit über Attribute) und keinen eigenen Lebenszyklus/Identität besitzt. Ein „String“ oder „int“ ohne Fachregel ist kein Value Object.
-- **Status‑Objekt:** `ClusterStatus` definiert den Zustand des Cluster‑Ergebnisses.
-
-### 6) Code‑Navigationshilfe
-- Value Objects:
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/Guthaben.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/Wohnort.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/NegativMerkmal.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/Warnung.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/RueckzahlungsWahrscheinlichkeit.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/immobilienFinanzierungsCluster/MarktwertVergleich.java`
-- Cluster‑Integration:
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/AntragstellerCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/AuskunfteiErgebnisCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/immobilienFinanzierungsCluster/ImmobilienFinanzierungsCluster.java`
-- Ergebnisstatus:
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/ClusterGescored.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/ClusterStatus.java`
-
-### 7) Übungen / Reflexion
-- Welche Value Objects brauchen eigene Validierungsregeln (z. B. Grenzen, Null‑Checks)?
-- Wo könnten Value Objects wiederverwendet oder kombiniert werden?
-
-### 8) Zusammenfassung
-- Value Objects sind umgesetzt und tragen die fachlichen Regeln.
-- Das Modell trennt klar zwischen „Attribut“ und fachlichem Konzept.
 
 ---
 
-# Entities identifizieren (Branch: `origin/8_Entities_red`)
+# Entities identifizieren
+Ausgangspunkt: `origin/7_ValueObjects_green`
+Lösung: `origin/8_Entities_red`
 
-> Didaktischer Übergang: Wir prüfen, welche bisherigen Value Objects tatsächlich eine Identität und einen Lebenszyklus benötigen. Daraus entstehen Entities.
+## Von Value Objects zu Entities
 
 ## Aufgabe
 - Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
@@ -570,13 +478,6 @@ public class Wohnort {
 - **Entity (neu):** Identität als primäres Kriterium (z. B. `Antragsnummer`, `AntragstellerID`).
 - **Abgrenzung:** Sobald Lebenszyklus/Identität benötigt wird, ist es kein Value Object mehr.
 
-### 6) Code‑Navigationshilfe
-- Neue Tests:
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/AntragsnummerTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/AntragstellerIDTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/AuskunfteiErgebnisClusterTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnisTest.java`
-
 ### 7) Übungen / Reflexion
 - Welche bisherigen Value Objects benötigen tatsächlich eine Identität?
 - Welche Prozesse (z. B. Antragshistorie) erzwingen Entities?
@@ -587,8 +488,9 @@ public class Wohnort {
 
 ---
 
-# Entities implementieren (Branch: `origin/9_Entities_green`)
-
+# Entities implementieren
+Ausgangspunkt: `origin/8_Entities_red`
+Lösung: `origin/9_Entities_green`
 > Didaktischer Übergang: Entities werden implementiert, Identität wird zum zentralen Gleichheitskriterium.
 
 ## Aufgabe
@@ -616,14 +518,6 @@ public class Wohnort {
 ### 5) DDD‑Tactical‑Patterns im Detail
 - **Entity:** `Antragsnummer`, `AntragstellerID` als Identitätsanker.
 - **Value Object vs. Entity:** Entscheidung anhand Lebenszyklus, nicht anhand Komplexität.
-
-### 6) Code‑Navigationshilfe
-- Entities:
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/Antragsnummer.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/AntragstellerID.java`
-- Entity‑Nutzung:
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/AuskunfteiErgebnisCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnis.java`
 
 ### 7) Übungen / Reflexion
 - Wo ist Identität fachlich zwingend, wo wäre sie Overhead?
@@ -663,7 +557,7 @@ Bei manchen Regeln ist die Unterscheidung einfach. So ist: "Spieler müssen mind
 
 Genauso gibt es Policies die keine weitere Validierung erfordern und nur einen simplen Ablauf beschreiben.
 
-Die Unterscheidung zwischen ist nicht immer einfach. Schauen wir uns dazu nochmal das vorherige BEsipeil an:
+Die Unterscheidung zwischen Policies und Konsistenzregeln ist nicht immer einfach. Schauen wir uns dazu nochmal das vorherige Beispiel an:
 "Wenn jemand eine 7 legt, dann muss der nächste Spieler zwei Karten ziehen."
 
 Hier ist ein klarer Ablauf beschrieben. Wenn wir das Spiel als Computerspiel umsetzen wollten, müssten wir diese Regel automatisieren. Wir würden erwarten, dass der Computer automatisch zwei Karten zieht, wenn eine 7 gespielt wird. Am Spieltisch muss jeder Spieler dies selbst ausführen.
@@ -681,18 +575,147 @@ Die Design-Level Event Storming variante ist dagegen sehr strikt. Hier ist das Z
 
 Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst bei der Umsetzung oder später als Bugs zeigen.
 
+```digraph
+digraph AlmostEverything {
+  rankdir=LR;
+  fontsize=12;
+  labelloc="t";
+  label="Software design picture that explains \"Almost\" everything";
+
+  // Layout tuning to reduce crossings
+  graph [
+    splines=ortho,
+    nodesep=0.9,
+    ranksep=1.2,
+    overlap=false,
+    concentrate=false
+  ];
+
+  edge [
+    penwidth=2.2,
+    fontname="Helvetica"
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="Helvetica",
+    fixedsize=true
+  ];
+
+  // --- Post-it sizing ---
+  actor [
+    label="actor",
+    fillcolor="#FFF59D",
+    width=1.1,
+    height=1.4
+  ];
+
+  command [
+    label="Command / Action",
+    fillcolor="#81D4FA",
+    width=2.0,
+    height=1.4
+  ];
+
+  query [
+    label="Query Model /\nInformation",
+    fillcolor="#C5E1A5",
+    width=2.0,
+    height=1.4
+  ];
+
+  event [
+    label="Domain Event",
+    fillcolor="#FFCC80",
+    width=2.0,
+    height=1.4
+  ];
+
+  policy [
+    label="Policy",
+    fillcolor="#CE93D8",
+    width=3.2,
+    height=1.4
+  ];
+
+  external [
+    label="External System",
+    fillcolor="#F8BBD0",
+    width=3.6,
+    height=1.4
+  ];
+
+  constraint [
+    label="Constraint",
+    fillcolor="#FFF9C4",
+    width=3.2,
+    height=1.4
+  ];
+
+  // --- Explicit layout constraints (columns + vertical ordering) ---
+  // Column 1
+  { rank=same;  actor }
+
+  // Column 2
+  { rank=same; policy; command; query }
+
+  // Column 3 (stacked: constraint above external)
+  { rank=same; constraint; external }
+//   constraint -> external [style=invis, weight=100];
+
+  // Column 4
+  { rank=same; event }
+
+  policy -> query [style=invis, weight=100];
+
+  // Keep left-to-right ordering stable
+//   actor   -> command   [style=invis, weight=200];
+//   command -> constraint[style=invis, weight=200];
+//   external-> event     [style=invis, weight=200];
+//   event   -> policy    [style=invis, weight=200];
+
+  // --- Your corrected connections (semantics unchanged) ---
+  actor   -> command     [label="decides to"];
+
+  command -> external    [label="invoked on"];
+  command -> constraint  [label="invoked on", constraint=false, minlen=2];
+  
+
+  constraint -> event    [label="produces an"];
+  external   -> event    [label="produces an"];
+
+  event  -> policy       [label="activates a"];
+
+  // Back-edge: route it "around" (avoid forcing rank changes)
+  policy -> command      [label="issues a", constraint=false, minlen=2];
+
+  event -> query         [label="results in one or more"];
+
+  // Long edge: keep it from influencing ranks; attach to reduce clutter
+  actor -> query         [label="observes"];
+}
+```
+
+
 ---
 
-# Aggregate-Invarianten definieren (Branch: `origin/10_Aggregates_red`)
-
+# Aggregate-Invarianten definieren
+Ausgangspunkt: `origin/9_Entities_green`
+Lösung: `origin/10_Aggregates_red`
 > Didaktischer Übergang: Nach Entities definieren wir Konsistenzgrenzen. Aggregate stellen sicher, dass alle Teile zu einem Antrag gehören und vollständig sind.
 
 ## Aufgabe
-- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
 
 - Einführung von Aggregat‑Regeln (Konsistenzgrenzen, Vollständigkeit, gemeinsame Antragsnummer).
-- DDD‑Fokus: Aggregate schützen Invarianten über mehrere Cluster hinweg.
-> Fokus: Invarianten über mehrere Objekte.
+- Prüfe ob die Regel-Cluster als Aggregate funktionieren.
+- Die fachlichen Regeln für jeden Cluster in der Fallstudie sind Konsistenzregeln.
+- Setze für jedes Aggregat ein Interface um, das zur fachlichkeit passt und den schrittweisen Aufbau von Aggregaten ermöglicht.
+- Wenn alle Informationen vorhanden sind kann ein Cluster-Aggregat unabhängig von anderen Clustern gescored werden.
+- Das Interface für jedes Aggregat entspricht den Commands aus dem Softwaredesign Event Storming.
+- Definiere wie die Aggregate miteinander verbunden werden.
+- Wie kannst du in Java damit umgehen, dass ein Aggregate nur dann gescoret wird, wenn alle Teile vorhanden sind?
+- Konzentriere dich in diesem Schritt weiterhin erstmal auf die Unit Tests.
 
 ## Lösungsweg
 
@@ -714,34 +737,21 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 - **Invarianten:** Gleichheit der `Antragsnummer` und Vollständigkeit der Teilergebnisse.
 - **Ergebniszustand:** Fehlende Cluster führen zu „nicht gescored“ statt falschem Ergebnis.
 
-### 6) Code‑Navigationshilfe
-- Aggregate‑Tests:
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnisTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/immobilienFinanzierungsCluster/ImmobilienFinanzierungsClusterTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/monatlicheFinanzsituationCluster/MonatlicheFinanzsituationClusterTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/antragstellerCluster/AntragstellerClusterTest.java`
-  - `src/test/java/com/bigpugloans/scoring/domainmodel/auskunfteiErgebnisCluster/AuskunfteiErgebnisClusterTest.java`
-
-### 7) Übungen / Reflexion
-- Welche Invarianten gehören in die Aggregate Root und welche in die Cluster?
-- Wann ist „nicht gescored“ fachlich sinnvoller als ein negatives Ergebnis?
-
 ### 8) Zusammenfassung
 - Aggregate‑Regeln werden explizit gefordert.
 - Konsistenz und Vollständigkeit werden als fachliche Invarianten sichtbar.
 
 ---
 
-# Aggregate umsetzen und Ergebnisse ableiten (Branch: `origin/11_Aggregates_green`)
-
-> Didaktischer Übergang: Die Aggregat‑Invarianten werden umgesetzt; Scoring liefert fachliche Events statt nur Zustände.
+# Aggregate umsetzen und Ergebnisse ableiten
+Ausgangspunkt: `origin/10_Aggregates_red`
+Lösung: `origin/11_Aggregates_green`
 
 ## Aufgabe
-- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
 
-- Umsetzung der Aggregate‑Regeln und Ergebnis‑Events.
-- DDD‑Fokus: Aggregate Root verwaltet Konsistenz und Ergebnis‑Events.
-> Fokus: Aggregates als Konsistenzgrenzen.
+- Umsetzung der Aggregate‑Regeln und Ergebnis‑Events im Code.
+- Stelle sicher, dass die Aggregate in sich geschlossen sind.
+- Stelle sicher, dass alle Konsitenzregeln zusammen ausgeführt werden.
 
 ## Lösungsweg
 
@@ -764,16 +774,6 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 - **Domain Event:** `AntragErfolgreichGescored`, `AntragKonnteNichtGescoredWerden`.
 - **Invarianten:** gleiche `Antragsnummer` und vollständige Cluster‑Daten.
 
-### 6) Code‑Navigationshilfe
-- Aggregate Root & Events:
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/scoringErgebnis/ScoringErgebnis.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/AntragScoringEvent.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/AntragErfolgreichGescored.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/AntragKonnteNichtGescoredWerden.java`
-- Cluster‑Ergebnisse:
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/ClusterGescored.java`
-  - `src/main/java/com/bigpugloans/scoring/domainmodel/ClusterKonnteNochNichtGescoredWerden.java`
-
 ### 7) Übungen / Reflexion
 - Welche Aggregate fehlen noch im Scoring‑Kontext?
 - Wo sollten Domain Events später publiziert werden?
@@ -784,17 +784,17 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 
 ---
 
-# Ports definieren (Branch: `origin/12_Ports`)
-
-> Didaktischer Übergang: Nach der Domänenmodellierung wird die Anwendungsgrenze klar. Ports definieren, was die Domäne braucht und was sie anbietet.
-> Hinweis: Ab hier gibt es keine expliziten TDD‑Red/Green‑Schritte mehr, sondern evolutionäre Ausbauschritte.
+# Ports definieren
+Ausgangspunkt: `origin/11_Aggregates_green`
+Lösung: `origin/12_Ports`
+> Hinweis: Ab hier gibt es keine expliziten TDD‑Red/Green‑Schritte mehr, sondern evolutionäre Ausbauschritte. Fahre gerne mit TDD weiter fort.
 
 ## Aufgabe
-- Aufgabe: Versuche die Änderungen selbst umzusetzen, bevor du den Lösungsweg vergleichst.
 
-- Einführung von Ports (Driving/Driven) für das Scoring‑Modul.
-- DDD‑Fokus: Hexagonal/Ports‑&‑Adapters‑Sicht, ohne konkrete Implementierungen.
-> Fokus: Abhängigkeitsrichtung und Schnittstellen.
+- Einführung von Ports (Driving/Driven).
+- Hexagonal/Ports‑&‑Adapters‑Sicht, ohne konkrete Implementierungen.
+- Überlege wo Ports (Interfaces) eingeführt werden müssen, damit die inneren Schichten mit der Außenwelt kommunizieren können. Wo ist dies nötig?
+- Wie sind diese Schnittstellen gestaltet? Versuche auch diese Schnittstellen so fachlich wie möglich zu gestalten.
 
 ## Lösungsweg
 
@@ -815,24 +815,6 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 - **Driving Ports:** z. B. `PreScoringStart`, `VerarbeitungImmobilienBewertung` als Eingänge.
 - **Driven Ports:** z. B. Repositories (`ScoringErgebnisRepository`, `AntragstellerClusterRepository`) und externe Services (`KonditionsAbfrage`, `LeseKontoSaldo`).
 
-### 6) Code‑Navigationshilfe
-- Driving Ports:
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driving/PreScoringStart.java`
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driving/VerarbeitungImmobilienBewertung.java`
-- Driven Ports:
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driven/ScoringErgebnisRepository.java`
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driven/AntragstellerClusterRepository.java`
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driven/AuskunfteiErgebnisClusterRepository.java`
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driven/ImmobilienFinanzierungClusterRepository.java`
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driven/MonatlicheFinanzsituationClusterRepository.java`
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driven/KonditionsAbfrage.java`
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driven/LeseKontoSaldo.java`
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driven/ScoringErgebnisVeroeffentlichen.java`
-- Application Modelle:
-  - `src/main/java/com/bigpugloans/scoring/application/model/Antrag.java`
-  - `src/main/java/com/bigpugloans/scoring/application/model/AuskunfteiErgebnis.java`
-  - `src/main/java/com/bigpugloans/scoring/application/model/ImmobilienBewertung.java`
-
 ### 7) Übungen / Reflexion
 - Welche Ports sind fachlich notwendig, welche technisch motiviert?
 - Wo gehört ein neuer Port hin (driving vs. driven)?
@@ -843,8 +825,9 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 
 ---
 
-# Application Services orchestrieren (Branch: `origin/13_ApplicationServices`)
-
+# Application Services orchestrieren
+Ausgangspunkt: `origin/12_Ports`
+Lösung: `origin/13_ApplicationServices`
 > Didaktischer Übergang: Die Anwendungsebene orchestriert den Ablauf. Application Services koordinieren Ports, Infrastruktur und Domäne.
 
 ## Aufgabe
@@ -874,18 +857,6 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 - **Domain Service:** Enthält fachliche Logik über mehrere Entities/Value Objects (ohne Infrastruktur).
 - **In diesem Schritt:** Application Services delegieren fachliche Operationen an Domain‑Services‑Ports.
 
-### 6) Code‑Navigationshilfe
-- Application Services:
-  - `src/main/java/com/bigpugloans/scoring/application/service/EingereicherAntragVerarbeitenApplicationService.java`
-  - `src/main/java/com/bigpugloans/scoring/application/service/FreigegebenerAntragVerarbeitenApplicationService.java`
-  - `src/main/java/com/bigpugloans/scoring/application/service/VerarbeitungImmobilienBewertungApplicationService.java`
-- Driving Ports:
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driving/EingereicherAntragVerarbeiten.java`
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driving/FreigegebenerAntragVerarbeiten.java`
-- Unterstützende Modelle:
-  - `src/main/java/com/bigpugloans/scoring/application/model/Antrag.java`
-  - `src/main/java/com/bigpugloans/scoring/application/model/AuskunfteiErgebnis.java`
-
 ### 7) Alternative Interpretationen
 - Manche Teams verwenden „Application Services“ nur als Thin Layer und legen fast alle Regeln in Aggregate.
 - Andere schneiden Use‑Cases als „Command Handlers“ und verzichten auf explizite Services.
@@ -897,8 +868,9 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 
 ---
 
-# Domain Services bündeln (Branch: `origin/14_DomainServices`)
-
+# Domain Services bündeln
+Ausgangspunkt: `origin/13_ApplicationServices`
+Lösung: `origin/14_DomainServices`
 > Didaktischer Übergang: Fachliche Logik wird aus der Orchestrierung herausgezogen. Domain Services bündeln Regeln über mehrere Cluster hinweg.
 
 ## Aufgabe
@@ -928,15 +900,6 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 - **Application Service:** Steuert den Ablauf und kümmert sich um Ports/Transaktionen.
 - **Warum diese Aufteilung:** Orchestrierung bleibt schlank, Fachlogik bleibt zentral.
 
-### 6) Code‑Navigationshilfe
-- Domain Services:
-  - `src/main/java/com/bigpugloans/scoring/domain/service/AntragHinzufuegenDomainService.java`
-  - `src/main/java/com/bigpugloans/scoring/domain/service/AuskunfteiHinzufuegenDomainService.java`
-  - `src/main/java/com/bigpugloans/scoring/domain/service/ScoringDomainService.java`
-- Domain‑Model (neu strukturiert):
-  - `src/main/java/com/bigpugloans/scoring/domain/model/scoringErgebnis/ScoringErgebnis.java`
-  - `src/main/java/com/bigpugloans/scoring/domain/model/ClusterScoring.java`
-
 ### 7) Alternative Interpretationen
 - Manche Ansätze vermeiden Domain Services und legen Regeln direkt in Aggregate (rich domain model).
 - Andere nutzen Domain Services als reine „Policy Objects“ ohne Repositories (funktionaler Stil).
@@ -948,8 +911,9 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 
 ---
 
-# Adapter-Verträge testen (Branch: `origin/15-0_DrivenAdapters_UnitTests`)
-
+# Adapter-Verträge testen
+Ausgangspunkt: `origin/14_DomainServices`
+Lösung: `origin/15-0_DrivenAdapters_UnitTests`
 > Didaktischer Übergang: Bevor konkrete Infrastruktur gewählt wird, definieren wir die Adapter‑Verträge mit Tests.
 
 ## Aufgabe
@@ -978,14 +942,6 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 - **Ports & Adapters:** Ports definieren, Adapter erfüllen Verträge.
 - **Test‑First Infrastruktur:** Verhalten wird getestet, bevor Technologie feststeht.
 
-### 6) Code‑Navigationshilfe
-- Adapter‑Tests:
-  - `src/test/java/com/bigpugloans/scoring/adapter/driven/antragstellerCluster/AntragstellerClusterRepositoryTest.java`
-  - `src/test/java/com/bigpugloans/scoring/adapter/driven/auskunfteiErgebnisCluster/AuskunfteiErgebnisClusterRepositoryTest.java`
-  - `src/test/java/com/bigpugloans/scoring/adapter/driven/immobilienFinanzierungsCluster/ImmobilienFinanzierungsClusterRepositoryTest.java`
-  - `src/test/java/com/bigpugloans/scoring/adapter/driven/monatlicheFinanzsituationCluster/MonatlicheFinanzsituationClusterRepositoryTest.java`
-  - `src/test/java/com/bigpugloans/scoring/adapter/driven/scoringErgebnis/ScoringErgebnisRepositoryTest.java`
-
 ### 7) Übungen / Reflexion
 - Welche Adapter‑Verträge sind kritisch für die Domäne?
 - Welche Anforderungen würden sich bei Technologie‑Wechsel ändern?
@@ -996,8 +952,9 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 
 ---
 
-# Adapter mit Memento/JDBC umsetzen (Branch: `origin/15-1_DrivenAdapters_Memento-Pattern`)
-
+# Adapter mit Memento/JDBC umsetzen
+Ausgangspunkt: `origin/15-0_DrivenAdapters_UnitTests`
+Lösung: `origin/15-1_DrivenAdapters_Memento-Pattern`
 > Didaktischer Übergang: Erste Adapter‑Implementierung mit relationaler Persistenz und Memento‑Pattern.
 
 ## Aufgabe
@@ -1028,18 +985,6 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 - **Risiko:** Gefahr der „Daten‑Aufblähung“ im Domain‑Model (UI‑Felder, technische Daten ohne Regelbezug).
 - **Wann sinnvoll:** Wenn relationale DB gefordert ist und JPA bewusst vermieden werden soll, aber mit klarer Disziplin: Domain nur um regelrelevante Daten erweitern.
 
-### 6) Code‑Navigationshilfe
-- JDBC‑Adapter:
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/*/*JDBCRepository.java`
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/*/*Record.java`
-- Konkrete Beispiele:
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/antragstellerCluster/AntragstellerClusterJDBCRespository.java`
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/antragstellerCluster/AntragstellerClusterRecord.java`
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/scoringErgebnis/ScoringErgebnisJDBCRepository.java`
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/scoringErgebnis/ScoringErgebnisRecord.java`
-- Memento‑Logik:
-  - `src/main/java/com/bigpugloans/scoring/domain/model/antragstellerCluster/AntragstellerCluster.java` (Memento)
-
 ### 7) Übungen / Reflexion
 - Ist ein Memento ein akzeptabler „technical leak“ in der Domäne?
 - Welche Aggregate profitieren von expliziten Snapshots?
@@ -1050,8 +995,9 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 
 ---
 
-# Adapter mit MongoDB umsetzen (Branch: `origin/15-2_DrivenAdapters_SpringData-MongoDB`)
-
+# Adapter mit MongoDB umsetzen
+Ausgangspunkt: `origin/15-1_DrivenAdapters_Memento-Pattern`
+Lösung: `origin/15-2_DrivenAdapters_SpringData-MongoDB`
 > Didaktischer Übergang: Alternative Persistenz mit MongoDB und separatem Dokument‑Modell.
 
 ## Aufgabe
@@ -1082,16 +1028,6 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 - **Einwand (berechtigt):** Schema‑Migrationen werden schwieriger/unklar, wenn das Domain‑Model direkt in Dokumenten persistiert wird.
 - **Wann sinnvoll:** Wenn Dokument‑DB genutzt wird und Aggregate als Dokumente gespeichert werden sollen.
 
-### 6) Code‑Navigationshilfe
-- Mongo‑Adapter:
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/*/*Document.java`
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/*/*MongoDbRepository.java`
-- Konkrete Beispiele:
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/antragstellerCluster/AntragstellerClusterDocument.java`
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/antragstellerCluster/AntragstellerClusterMongoDbRepository.java`
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/scoringErgebnis/ScoringErgebnisDocument.java`
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/scoringErgebnis/ScoringErgebnisMongoDbRepository.java`
-
 ### 7) Übungen / Reflexion
 - Welche Teile der Aggregate sollten dokumentbasiert gespeichert werden?
 - Wo droht enge Kopplung zwischen Document und Domain?
@@ -1102,8 +1038,9 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 
 ---
 
-# Adapter mit JPA-Annotations umsetzen (Branch: `origin/15-3_DrivenAdapters_JPA-Annotated`)
-
+# Adapter mit JPA-Annotations umsetzen
+Ausgangspunkt: `origin/15-2_DrivenAdapters_SpringData-MongoDB`
+Lösung: `origin/15-3_DrivenAdapters_JPA-Annotated`
 > Didaktischer Übergang: Alternative Persistenz mit JPA‑Annotationen direkt im Domänenmodell.
 
 ## Aufgabe
@@ -1132,17 +1069,6 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 - **Stärken:** Schnelle Umsetzung mit Standard‑Stack, gute Tooling‑Unterstützung.
 - **Kompromiss:** Domain‑Model ist nicht mehr persistence‑ignorant; technische Anforderungen prägen das Modell.
 - **Wann sinnvoll:** Wenn Team/Organisation stark auf JPA setzt und Time‑to‑Market wichtiger ist als maximale Domänenreinheit.
-
-### 6) Code‑Navigationshilfe
-- JPA‑Adapter:
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/*/*JpaRepository.java`
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/*/*SpringDataRepository.java`
-- JPA‑Annotations im Domain‑Model:
-  - `src/main/java/com/bigpugloans/scoring/domain/model/antragstellerCluster/AntragstellerCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domain/model/auskunfteiErgebnisCluster/AuskunfteiErgebnisCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domain/model/immobilienFinanzierungsCluster/ImmobilienFinanzierungsCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domain/model/monatlicheFinanzsituationCluster/MonatlicheFinanzsituationCluster.java`
-  - `src/main/java/com/bigpugloans/scoring/domain/model/scoringErgebnis/ScoringErgebnis.java`
 
 ### 7) Übungen / Reflexion
 - Welche Persistenz‑Details dürfen im Domain‑Model sichtbar sein?
@@ -1176,8 +1102,9 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 - **Abgrenzung:** Gehört es in die Domäne oder in einen Adapter/View‑Model?
 - **Schlankheit:** Entfernt dieses Feld Modell‑Komplexität oder erhöht es nur die Datenlast?
 
-# Backend-Adapter integrieren (Branch: `origin/16_DrivenAdapters_Backends`)
-
+# Backend-Adapter integrieren
+Ausgangspunkt: `origin/15-3_DrivenAdapters_JPA-Annotated`
+Lösung: `origin/16_DrivenAdapters_Backends`
 > Didaktischer Übergang: Neben Persistenz‑Adaptern werden nun Backend‑Adapter für externe Systeme eingeführt.
 
 ## Aufgabe
@@ -1206,19 +1133,6 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 - **Driven Adapter:** Implementieren Infrastrukturzugriff, liefern Domänen‑nahe Daten zurück.
 - **Abgrenzung:** Domain/Services kennen nur Ports, nicht die Adapter.
 
-### 6) Code‑Navigationshilfe
-- Backend‑Adapter:
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/backends/KonditionsAbfrageAdapter.java`
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/backends/LeseKontoSaldoAdapter.java`
-- Ports:
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driven/KonditionsAbfrage.java`
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driven/KreditAbfrageService.java`
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driven/KonditionsAbfrageService.java`
-  - `src/main/java/com/bigpugloans/scoring/application/ports/driven/LeseKontoSaldo.java`
-- Tests:
-  - `src/test/java/com/bigpugloans/scoring/adapter/driven/backends/KonditionsAbfrageAdapterTest.java`
-  - `src/test/java/com/bigpugloans/scoring/adapter/driven/backends/LeseKontoSaldoAdapterTest.java`
-
 ### 7) Übungen / Reflexion
 - Wie unterscheiden sich Infrastruktur‑Ports (Auskunftei) von Persistenz‑Ports?
 - Welche Fehler‑/Timeout‑Strategien sollten diese Adapter besitzen?
@@ -1229,8 +1143,9 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 
 ---
 
-# Messaging-Adapter mit Events (Branch: `origin/17-1_MessagingAdapters_SpringApplicationEvents`)
-
+# Messaging-Adapter mit Events
+Ausgangspunkt: `origin/16_DrivenAdapters_Backends`
+Lösung: `origin/17-1_MessagingAdapters_SpringApplicationEvents`
 > Didaktischer Übergang: Ereignisse werden als Integrationsmechanismus eingeführt. Driving/Driven Adapter reagieren und veröffentlichen Events.
 
 ## Aufgabe
@@ -1259,21 +1174,6 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 - **Domain Events / Integration Events:** Publishing basiert auf Scoring‑Ergebnis.
 - **Adapters:** Listener (Driving) und Publisher (Driven) kapseln Infrastruktur.
 
-### 6) Code‑Navigationshilfe
-- Events:
-  - `src/main/java/com/bigpugloans/events/AntragEingereicht.java`
-  - `src/main/java/com/bigpugloans/events/ImmobilieBewertet.java`
-  - `src/main/java/com/bigpugloans/events/PreScoringGruen.java`
-  - `src/main/java/com/bigpugloans/events/PreScoringRot.java`
-  - `src/main/java/com/bigpugloans/events/MainScoringGruen.java`
-  - `src/main/java/com/bigpugloans/events/MainScoringRot.java`
-- Driving Adapter (Listener):
-  - `src/main/java/com/bigpugloans/scoring/adapter/driving/AntragEingereichtMessageListener.java`
-  - `src/main/java/com/bigpugloans/scoring/adapter/driving/ImmobilieBewertetMessageListener.java`
-  - `src/main/java/com/bigpugloans/scoring/adapter/driving/AntragFreigegebenMessageListener.java`
-- Driven Adapter (Publisher):
-  - `src/main/java/com/bigpugloans/scoring/adapter/driven/messaging/ScoringErgebnisVeroeffentlichenAdapter.java`
-
 ### 7) Übungen / Reflexion
 - Sind diese Events Domain‑ oder Integration‑Events?
 - Welche Informationen dürfen in Events enthalten sein, ohne die Domäne zu leaken?
@@ -1284,8 +1184,9 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 
 ---
 
-# Architektur mit Tests sichern (Branch: `origin/18_Architecture_Tests`)
-
+# Architektur mit Tests sichern
+Ausgangspunkt: `origin/17-1_MessagingAdapters_SpringApplicationEvents`
+Lösung: `origin/18_Architecture_Tests`
 > Didaktischer Übergang: Architektur wird nicht nur beschrieben, sondern aktiv überprüft. Tests schützen Onion/Hexagonal‑Prinzipien.
 
 ## Aufgabe
@@ -1318,16 +1219,6 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 - **Ports zentral:** Adapter hängen von Ports ab, nicht umgekehrt.
 - **Clusters isoliert:** Fachliche Cluster sollen nicht quer abhängen.
 
-### 6) Code‑Navigationshilfe
-- Architekturtests:
-  - `src/test/java/com/bigpugloans/architecture/HexagonalArchitectureTests.java`
-  - `src/test/java/com/bigpugloans/architecture/ArchUnitTests.java`
-  - `src/test/java/com/bigpugloans/architecture/DddTacticalPatternsTests.java`
-  - `src/test/java/com/bigpugloans/architecture/PackageStructureTests.java`
-  - `src/test/java/com/bigpugloans/architecture/JMoleculesArchUnitTests.java`
-- Bounded Context Annotation:
-  - `src/main/java/com/bigpugloans/scoring/package-info.java`
-
 ### 7) Übungen / Reflexion
 - Welche Architekturregel schützt euch am stärksten vor Kopplung?
 - Welche Regel würdet ihr lockern oder verschärfen – und warum?
@@ -1338,8 +1229,9 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 
 ---
 
-# Event Sourcing als Ausblick (Branch: `origin/19_Antragserfassung_DomainModeling_EventSourced`)
-
+# Event Sourcing als Ausblick
+Ausgangspunkt: `origin/18_Architecture_Tests`
+Lösung: `origin/19_Antragserfassung_DomainModeling_EventSourced`
 > Bonus‑Ausblick: Event Sourcing als Alternative für antragsbezogene Modellierung – mit Commands, Events und Projections.
 
 ## Aufgabe
@@ -1369,20 +1261,6 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 - **Commands/Events:** `StarteAntragCommand`, `AntragGestartetEvent`, `AntragserfassungAbgeschlossenEvent`, etc.
 - **Projections:** Read‑Model wird aus Events aufgebaut (Query‑Seite).
 
-### 6) Code‑Navigationshilfe
-- Aggregate & Events:
-  - `src/main/java/com/bigpugloans/antragserfassung/domain/model/Antragserfassung.java`
-  - `src/main/java/com/bigpugloans/antragserfassung/domain/model/StarteAntragCommand.java`
-  - `src/main/java/com/bigpugloans/antragserfassung/domain/model/AntragGestartetEvent.java`
-  - `src/main/java/com/bigpugloans/antragserfassung/domain/model/AntragserfassungAbgeschlossenEvent.java`
-- Projections/Queries:
-  - `src/main/java/com/bigpugloans/antragserfassung/query/AntragsdetailProjection.java`
-  - `src/main/java/com/bigpugloans/antragserfassung/query/AntragserfassungUebersichtProjection.java`
-- Konfiguration & UI:
-  - `src/main/java/com/bigpugloans/antragserfassung/config/AxonConfiguration.java`
-  - `src/main/java/com/bigpugloans/antragserfassung/web/AntragserfassungController.java`
-  - `src/main/resources/templates/antragserfassung/neu.html`
-
 ### 7) Übungen / Reflexion
 - Für welche Teile des Scorings wäre Event Sourcing sinnvoll – und wo nicht?
 - Welche zusätzlichen Anforderungen (Event‑Versioning, Projections‑Rebuilds) entstehen?
@@ -1405,10 +1283,16 @@ Wir wollen so sicherstellen, dass wir keine Lücken hinterlassen, die sich erst 
 | Value Object | Fachlicher Begriff ohne Identität, Gleichheit über Wert |
 | Entity | Fachlicher Begriff mit Identität und Lebenszyklus |
 | Aggregate | Konsistenzgrenze, schützt Invarianten |
+| Aggregate Root | Einstiegspunkt eines Aggregates; einzige Entitaet, die von außen direkt referenziert wird |
 | Port | Schnittstelle der Anwendung (Driving/Driven) |
 | Adapter | Technische Implementierung eines Ports |
+| Repository | Fachliches Interface zum Laden/Speichern von Aggregate Roots, ohne Technikbezug |
 | Application Service | Orchestriert Use‑Cases, keine Fachlogik |
 | Domain Service | Fachlogik über mehrere Aggregate/Entities |
+| Domain Event | Fachliches Ereignis, das im Modell passiert und nach außen kommuniziert werden kann |
+| Factory | Erzeugt komplexe Aggregate/Entities konsistent (statt verteilte Konstruktor-Logik) |
+| Specification | Kapselt fachliche Regeln/Filter als wiederverwendbare Praedikat-Objekte |
+| Module | Fachliche Gruppierung von Konzepten im Code zur Begrenzung von Kopplung |
 | Event Sourcing | Zustand aus Events rekonstruiert |
 
 ---
